@@ -4,13 +4,13 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.meal.italianCuisine;
+package assignments.restaurant.component.italianCuisine;
 
+import assignments.restaurant.component.MainCourse;
 import assignments.restaurant.cuisine.ItalianCuisineFactory;
-import assignments.restaurant.meal.Appetizer;
 
-public class ItalianCuisineAppetizer
-        extends Appetizer {
+public class ItalianCuisineMainCourse
+        extends MainCourse {
 
     @Override
     public double getCost() {

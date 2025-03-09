@@ -4,15 +4,15 @@ Atividade realizada para a disciplina **DCC078** Aspectos Avançados em Engenhar
 
 Este repositório utiliza os seguintes padrões:
 
-- Singleton
-- Abstract Factory
-- Factory Method
-- Decorator
-- State
-- Observer
-- Strategy
-- Template Method
-- Iterator
+- [X] Singleton
+- [X] Abstract Factory
+- [] Factory Method
+- [] Decorator
+- [] State
+- [] Observer
+- [] Strategy
+- [] Template Method
+- [] Iterator
 
 ## Diagrama de classe
 

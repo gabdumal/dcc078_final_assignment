@@ -6,17 +6,17 @@
 
 package assignments.restaurant.cuisine;
 
-import assignments.restaurant.meal.Appetizer;
-import assignments.restaurant.meal.Beverage;
-import assignments.restaurant.meal.Dessert;
-import assignments.restaurant.meal.MainCourse;
-import assignments.restaurant.meal.brazilianCuisine.BrazilianCuisineAppetizer;
-import assignments.restaurant.meal.brazilianCuisine.BrazilianCuisineBeverage;
-import assignments.restaurant.meal.brazilianCuisine.BrazilianCuisineDessert;
-import assignments.restaurant.meal.brazilianCuisine.BrazilianCuisineMainCourse;
+import assignments.restaurant.component.Appetizer;
+import assignments.restaurant.component.Beverage;
+import assignments.restaurant.component.Dessert;
+import assignments.restaurant.component.MainCourse;
+import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineAppetizer;
+import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineBeverage;
+import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineDessert;
+import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineMainCourse;
 
 /**
- * Factory class for creating Brazilian cuisine meal components.
+ * Factory class for creating Brazilian cuisine component components.
  * Implements the CuisineFactory interface to provide specific
  * implementations for Brazilian cuisine appetizers, beverages,
  * desserts, and main courses.

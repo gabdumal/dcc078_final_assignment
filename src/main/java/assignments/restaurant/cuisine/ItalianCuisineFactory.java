@@ -6,17 +6,17 @@
 
 package assignments.restaurant.cuisine;
 
-import assignments.restaurant.meal.Appetizer;
-import assignments.restaurant.meal.Beverage;
-import assignments.restaurant.meal.Dessert;
-import assignments.restaurant.meal.MainCourse;
-import assignments.restaurant.meal.italianCuisine.ItalianCuisineAppetizer;
-import assignments.restaurant.meal.italianCuisine.ItalianCuisineBeverage;
-import assignments.restaurant.meal.italianCuisine.ItalianCuisineDessert;
-import assignments.restaurant.meal.italianCuisine.ItalianCuisineMainCourse;
+import assignments.restaurant.component.Appetizer;
+import assignments.restaurant.component.Beverage;
+import assignments.restaurant.component.Dessert;
+import assignments.restaurant.component.MainCourse;
+import assignments.restaurant.component.italianCuisine.ItalianCuisineAppetizer;
+import assignments.restaurant.component.italianCuisine.ItalianCuisineBeverage;
+import assignments.restaurant.component.italianCuisine.ItalianCuisineDessert;
+import assignments.restaurant.component.italianCuisine.ItalianCuisineMainCourse;
 
 /**
- * Factory class for creating Italian cuisine meal components.
+ * Factory class for creating Italian cuisine component components.
  * Implements the CuisineFactory interface to provide specific
  * implementations for Italian cuisine appetizers, beverages,
  * desserts, and main courses.

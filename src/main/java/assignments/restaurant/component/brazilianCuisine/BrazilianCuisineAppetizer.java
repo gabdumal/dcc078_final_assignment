@@ -4,13 +4,13 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.meal.italianCuisine;
+package assignments.restaurant.component.brazilianCuisine;
 
-import assignments.restaurant.cuisine.ItalianCuisineFactory;
-import assignments.restaurant.meal.MainCourse;
+import assignments.restaurant.component.Appetizer;
+import assignments.restaurant.cuisine.BrazilianCuisineFactory;
 
-public class ItalianCuisineMainCourse
-        extends MainCourse {
+public class BrazilianCuisineAppetizer
+        extends Appetizer {
 
     @Override
     public double getCost() {
@@ -19,7 +19,7 @@ public class ItalianCuisineMainCourse
 
     @Override
     public String getCuisine() {
-        return ItalianCuisineFactory.getCuisine();
+        return BrazilianCuisineFactory.getCuisine();
     }
 
     @Override

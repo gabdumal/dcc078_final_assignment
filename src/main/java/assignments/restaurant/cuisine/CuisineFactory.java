@@ -6,10 +6,10 @@
 
 package assignments.restaurant.cuisine;
 
-import assignments.restaurant.meal.Appetizer;
-import assignments.restaurant.meal.Beverage;
-import assignments.restaurant.meal.Dessert;
-import assignments.restaurant.meal.MainCourse;
+import assignments.restaurant.component.Appetizer;
+import assignments.restaurant.component.Beverage;
+import assignments.restaurant.component.Dessert;
+import assignments.restaurant.component.MainCourse;
 
 /*
  * Design Pattern: Abstract Factory
