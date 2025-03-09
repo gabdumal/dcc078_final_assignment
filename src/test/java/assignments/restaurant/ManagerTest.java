@@ -10,13 +10,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class RestaurantManagerTest {
+class ManagerTest {
 
-    private static final RestaurantManager restaurantManager = RestaurantManager.getInstance();
+    private static final Manager MANAGER = Manager.getInstance();
 
     @Test
     public void shouldReturnSameRestaurantInstance() {
-        assertEquals(restaurantManager, RestaurantManager.getInstance());
+        assertEquals(MANAGER, Manager.getInstance());
+    }
+
+    @Test
+    public void shouldReturnSameRestaurantInstanceAfterMultipleCalls() {
+        assertEquals(MANAGER, Manager.getInstance());
+        assertEquals(MANAGER, Manager.getInstance());
+        assertEquals(MANAGER, Manager.getInstance());
     }
 
 }

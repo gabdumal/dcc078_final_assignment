@@ -3,6 +3,7 @@
 Atividade realizada para a disciplina **DCC078** Aspectos Avançados em Engenharia de Software.
 
 Este repositório utiliza os seguintes padrões:
+
 - Singleton
 - Abstract Factory
 - Factory Method
@@ -11,7 +12,7 @@ Este repositório utiliza os seguintes padrões:
 - Observer
 - Strategy
 - Template Method
-- Command
+- Iterator
 
 ## Diagrama de classe
 

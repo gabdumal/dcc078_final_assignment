@@ -13,21 +13,42 @@
 
 package assignments.restaurant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Singleton class to manage restaurant operations.
  */
-public class RestaurantManager {
+public class Manager {
 
-    private static RestaurantManager instance;
+    private static Manager      instance;
+    private final  List<String> orders = new ArrayList<>();
 
-    private RestaurantManager() {
+    private Manager() {
     }
 
-    public static synchronized RestaurantManager getInstance() {
+    public static synchronized Manager getInstance() {
         if (instance == null) {
-            instance = new RestaurantManager();
+            instance = new Manager();
         }
         return instance;
+    }
+
+    public synchronized void addOrder(String order) {
+        orders.add(order);
+        System.out.println("Current Orders: " + orders);
+    }
+
+    public String getHost() {
+        return "localhost";
+    }
+
+    public int getMaximumOfClients() {
+        return 5;
+    }
+
+    public int getSocketPort() {
+        return 12345;
     }
 
 }
