@@ -29,25 +29,9 @@ public class Client {
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in))
         ) {
-
-            if (args.length != 1) {
-                throw new IllegalArgumentException(Client.invalidArgumentsMessage);
-            }
-
-            var interfaceType = args[0];
-            if (interfaceType.equals(Client.employeeInterface)) {
-                System.out.println("Employee Interface");
-                Client.loop(in, out, consoleInput);
-            }
-            else if (interfaceType.equals(Client.customerInterface)) {
-                System.out.println("Customer Interface");
-                Client.loop(in, out, consoleInput);
-            }
-            else {
-                throw new IllegalArgumentException(Client.invalidArgumentsMessage);
-            }
-
+            var userInterfaceType = Client.processArguments(args);
             System.out.println(in.readLine()); // Welcome message
+            Client.loop(consoleInput, out, in);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -69,6 +53,25 @@ public class Client {
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    protected static UserInterfaceType processArguments(String[] args) {
+        if (args.length != 1) {
+            throw new IllegalArgumentException(Client.invalidArgumentsMessage);
+        }
+
+        var interfaceType = args[0];
+        if (interfaceType.equals(Client.employeeInterface)) {
+            System.out.println("Employee Interface");
+            return UserInterfaceType.Employee;
+        }
+        else if (interfaceType.equals(Client.customerInterface)) {
+            System.out.println("Customer Interface");
+            return UserInterfaceType.Customer;
+        }
+        else {
+            throw new IllegalArgumentException(Client.invalidArgumentsMessage);
         }
     }
 
