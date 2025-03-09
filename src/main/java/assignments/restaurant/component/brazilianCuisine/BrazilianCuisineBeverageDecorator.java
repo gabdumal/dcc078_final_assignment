@@ -6,15 +6,21 @@
 
 package assignments.restaurant.component.brazilianCuisine;
 
-import assignments.restaurant.component.Dessert;
+import assignments.restaurant.component.Beverage;
 import assignments.restaurant.cuisine.BrazilianCuisineFactory;
 
-public class BrazilianCuisineDessert
-        extends Dessert {
+public class BrazilianCuisineBeverageDecorator
+        extends Beverage {
+
+    private final Beverage beverage;
+
+    public BrazilianCuisineBeverageDecorator(Beverage beverage) {
+        this.beverage = beverage;
+    }
 
     @Override
     public double getCost() {
-        return 0;
+        return this.beverage.getCost();
     }
 
     @Override

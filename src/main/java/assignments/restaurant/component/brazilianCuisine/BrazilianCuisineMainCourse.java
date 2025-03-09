@@ -22,14 +22,4 @@ public class BrazilianCuisineMainCourse
         return BrazilianCuisineFactory.getCuisine();
     }
 
-    @Override
-    public String getDescription() {
-        return "";
-    }
-
-    @Override
-    public String getName() {
-        return "";
-    }
-
 }

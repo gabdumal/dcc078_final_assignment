@@ -4,22 +4,28 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.component.italianCuisine;
+package assignments.restaurant.component.brazilianCuisine;
 
 import assignments.restaurant.component.Appetizer;
-import assignments.restaurant.cuisine.ItalianCuisineFactory;
+import assignments.restaurant.cuisine.BrazilianCuisineFactory;
 
-public class ItalianCuisineAppetizer
+public class BrazilianCuisineAppetizerDecorator
         extends Appetizer {
+
+    private final Appetizer appetizer;
+
+    public BrazilianCuisineAppetizerDecorator(Appetizer appetizer) {
+        this.appetizer = appetizer;
+    }
 
     @Override
     public double getCost() {
-        return 0;
+        return this.appetizer.getCost();
     }
 
     @Override
     public String getCuisine() {
-        return ItalianCuisineFactory.getCuisine();
+        return BrazilianCuisineFactory.getCuisine();
     }
 
 }

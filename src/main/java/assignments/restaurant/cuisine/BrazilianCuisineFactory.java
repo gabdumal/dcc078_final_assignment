@@ -10,10 +10,7 @@ import assignments.restaurant.component.Appetizer;
 import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
-import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineAppetizer;
-import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineBeverage;
-import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineDessert;
-import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineMainCourse;
+import assignments.restaurant.component.brazilianCuisine.*;
 
 /**
  * Factory class for creating Brazilian cuisine component components.
@@ -44,6 +41,16 @@ public class BrazilianCuisineFactory
     }
 
     /**
+     * Creates a Brazilian cuisine appetizer decorator.
+     *
+     * @return An instance of BrazilianCuisineAppetizerDecorator.
+     */
+    @Override
+    public Appetizer createAppetizerDecorator(Appetizer appetizer) {
+        return new BrazilianCuisineAppetizerDecorator(appetizer);
+    }
+
+    /**
      * Creates a Brazilian cuisine beverage.
      *
      * @return An instance of BrazilianCuisineBeverage.
@@ -51,6 +58,16 @@ public class BrazilianCuisineFactory
     @Override
     public Beverage createBeverage() {
         return new BrazilianCuisineBeverage();
+    }
+
+    /**
+     * Creates a Brazilian cuisine beverage decorator.
+     *
+     * @return An instance of BrazilianCuisineBeverageDecorator.
+     */
+    @Override
+    public Beverage createBeverageDecorator(Beverage beverage) {
+        return new BrazilianCuisineBeverageDecorator(beverage);
     }
 
     /**
@@ -64,6 +81,16 @@ public class BrazilianCuisineFactory
     }
 
     /**
+     * Creates a Brazilian cuisine dessert decorator.
+     *
+     * @return An instance of BrazilianCuisineDessertDecorator.
+     */
+    @Override
+    public Dessert createDessertDecorator(Dessert dessert) {
+        return new BrazilianCuisineDessertDecorator(dessert);
+    }
+
+    /**
      * Creates a Brazilian cuisine main course.
      *
      * @return An instance of BrazilianCuisineMainCourse.
@@ -71,6 +98,16 @@ public class BrazilianCuisineFactory
     @Override
     public MainCourse createMainCourse() {
         return new BrazilianCuisineMainCourse();
+    }
+
+    /**
+     * Creates a Brazilian cuisine main course decorator.
+     *
+     * @return An instance of BrazilianCuisineMainCourseDecorator.
+     */
+    @Override
+    public MainCourse createMainCourseDecorator(MainCourse mainCourse) {
+        return new BrazilianCuisineMainCourseDecorator(mainCourse);
     }
 
 }

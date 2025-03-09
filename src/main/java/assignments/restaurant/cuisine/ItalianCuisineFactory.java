@@ -10,10 +10,7 @@ import assignments.restaurant.component.Appetizer;
 import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
-import assignments.restaurant.component.italianCuisine.ItalianCuisineAppetizer;
-import assignments.restaurant.component.italianCuisine.ItalianCuisineBeverage;
-import assignments.restaurant.component.italianCuisine.ItalianCuisineDessert;
-import assignments.restaurant.component.italianCuisine.ItalianCuisineMainCourse;
+import assignments.restaurant.component.italianCuisine.*;
 
 /**
  * Factory class for creating Italian cuisine component components.
@@ -44,6 +41,16 @@ public class ItalianCuisineFactory
     }
 
     /**
+     * Creates a Italian cuisine appetizer decorator.
+     *
+     * @return An instance of ItalianCuisineAppetizerDecorator.
+     */
+    @Override
+    public Appetizer createAppetizerDecorator(Appetizer appetizer) {
+        return new ItalianCuisineAppetizerDecorator(appetizer);
+    }
+
+    /**
      * Creates an Italian cuisine beverage.
      *
      * @return An instance of ItalianCuisineBeverage.
@@ -51,6 +58,16 @@ public class ItalianCuisineFactory
     @Override
     public Beverage createBeverage() {
         return new ItalianCuisineBeverage();
+    }
+
+    /**
+     * Creates a Italian cuisine beverage decorator.
+     *
+     * @return An instance of ItalianCuisineBeverageDecorator.
+     */
+    @Override
+    public Beverage createBeverageDecorator(Beverage beverage) {
+        return new ItalianCuisineBeverageDecorator(beverage);
     }
 
     /**
@@ -64,6 +81,16 @@ public class ItalianCuisineFactory
     }
 
     /**
+     * Creates a Italian cuisine dessert decorator.
+     *
+     * @return An instance of ItalianCuisineDessertDecorator.
+     */
+    @Override
+    public Dessert createDessertDecorator(Dessert dessert) {
+        return new ItalianCuisineDessertDecorator(dessert);
+    }
+
+    /**
      * Creates an Italian cuisine main course.
      *
      * @return An instance of ItalianCuisineMainCourse.
@@ -71,6 +98,16 @@ public class ItalianCuisineFactory
     @Override
     public MainCourse createMainCourse() {
         return new ItalianCuisineMainCourse();
+    }
+
+    /**
+     * Creates a Italian cuisine main course decorator.
+     *
+     * @return An instance of ItalianCuisineMainCourseDecorator.
+     */
+    @Override
+    public MainCourse createMainCourseDecorator(MainCourse mainCourse) {
+        return new ItalianCuisineMainCourseDecorator(mainCourse);
     }
 
 }

@@ -9,9 +9,22 @@ package assignments.restaurant.component;
 public abstract class Beverage
         implements Component {
 
+    private String description;
+    private String name;
+
     @Override
     public String getCategory() {
         return "Bebida";
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
 }

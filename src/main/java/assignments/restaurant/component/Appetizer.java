@@ -9,9 +9,22 @@ package assignments.restaurant.component;
 public abstract class Appetizer
         implements Component {
 
+    private String description;
+    private String name;
+
     @Override
     public String getCategory() {
         return "Entrada";
+    }
+
+    @Override
+    public String getDescription() {
+        return this.description;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
 }

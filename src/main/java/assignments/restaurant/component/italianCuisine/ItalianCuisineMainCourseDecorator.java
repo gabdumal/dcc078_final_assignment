@@ -6,15 +6,21 @@
 
 package assignments.restaurant.component.italianCuisine;
 
-import assignments.restaurant.component.Appetizer;
+import assignments.restaurant.component.MainCourse;
 import assignments.restaurant.cuisine.ItalianCuisineFactory;
 
-public class ItalianCuisineAppetizer
-        extends Appetizer {
+public class ItalianCuisineMainCourseDecorator
+        extends MainCourse {
+
+    private final MainCourse mainCourse;
+
+    public ItalianCuisineMainCourseDecorator(MainCourse mainCourse) {
+        this.mainCourse = mainCourse;
+    }
 
     @Override
     public double getCost() {
-        return 0;
+        return this.mainCourse.getCost();
     }
 
     @Override

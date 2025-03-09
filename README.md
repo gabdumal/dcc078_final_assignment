@@ -7,7 +7,7 @@ Este repositório utiliza os seguintes padrões:
 - [X] Singleton
 - [X] Abstract Factory
 - [] Factory Method
-- [] Decorator
+- [X] Decorator
 - [] State
 - [] Observer
 - [] Strategy

@@ -22,14 +22,4 @@ public class ItalianCuisineDessert
         return ItalianCuisineFactory.getCuisine();
     }
 
-    @Override
-    public String getDescription() {
-        return "";
-    }
-
-    @Override
-    public String getName() {
-        return "";
-    }
-
 }
