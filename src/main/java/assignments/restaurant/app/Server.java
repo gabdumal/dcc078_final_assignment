@@ -17,14 +17,13 @@ import java.util.concurrent.Executors;
 public class Server {
 
     private static final Manager         manager    = Manager.getInstance();
-    private static final boolean         running    = true;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(manager.getMaximumOfClients());
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(manager.getSocketPort())) {
             System.out.println("Restaurant Server is running...");
 
-            while (Server.running) {
+            while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected!");
 

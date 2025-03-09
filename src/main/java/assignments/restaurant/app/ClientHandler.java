@@ -29,8 +29,6 @@ public class ClientHandler
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
         ) {
 
-            out.println("Welcome to the restaurant!");
-
             while (true) {
                 String order = in.readLine();
                 if (order == null || order.equalsIgnoreCase("exit")) {

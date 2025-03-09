@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Client -e" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.Client" />
+    <module name="dcc078" />
+    <option name="PROGRAM_PARAMETERS" value="-e" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="assignments.restaurant.app.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

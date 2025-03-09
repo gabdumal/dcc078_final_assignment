@@ -36,7 +36,7 @@ public class Client {
 
             var interfaceType = args[0];
             if (interfaceType.equals(Client.employeeInterface)) {
-                System.out.println("Restaurant Interface");
+                System.out.println("Employee Interface");
                 Client.loop(in, out, consoleInput);
             }
             else if (interfaceType.equals(Client.customerInterface)) {
