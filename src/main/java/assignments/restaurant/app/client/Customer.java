@@ -122,8 +122,10 @@ public class Customer
         this.decorateMenuComponent(CategoryType.Dessert);
 
         Order order = this.orderBuilder.build();
+        sendToServer.writeObject(order);
+        sendToServer.flush();
 
-        System.out.println("Seu pedido foi feito com sucesso!");
+        System.out.println("Seu pedido foi recebido com sucesso!");
         System.out.println();
 
         this.keepUpOrder(order);

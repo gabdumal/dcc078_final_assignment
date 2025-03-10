@@ -8,35 +8,40 @@ package assignments.restaurant.app.client;
 
 import assignments.restaurant.Manager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
 
     private static final String        customerInterface       = "-c";
     private static final String        employeeInterface       = "-e";
-    private static final String        invalidArgumentsMessage = "You must provide a valid interface: " +
-                                                                 employeeInterface + " (employer) or " +
-                                                                 customerInterface + " (customer)!";
+    private static final String        invalidArgumentsMessage =
+            "Você deve fornecer uma interface de usuário válida: " + employeeInterface + " (funcionário) ou " +
+            customerInterface + " (cliente)!";
     private static       UserInterface userInterface;
 
     public static void main(String[] args) {
         Manager manager = Manager.getInstance();
+
         try (
                 Socket socket = new Socket(manager.getHost(), manager.getSocketPort());
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in))
+                ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream receiveFromServer = new ObjectInputStream(socket.getInputStream());
+                BufferedReader scanner = new BufferedReader(new InputStreamReader(System.in))
         ) {
-            var userInterfaceType = Client.processArguments(args);
+            var userInterfaceType = processArguments(args);
             switch (userInterfaceType) {
-                //                case Employee -> userInterface = new Employee();
                 case Customer -> userInterface = new Customer();
+                // case Employee -> userInterface = new Employee();
+                default -> throw new IllegalArgumentException("Tipo de interface não suportado.");
             }
-            Client.userInterface.start(consoleInput, out, in);
+
+            if (userInterface != null) {
+                userInterface.start(scanner, receiveFromServer, sendToServer);
+            }
+            else {
+                System.err.println("Erro: Interface de usuário não inicializada corretamente.");
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -45,21 +50,14 @@ public class Client {
 
     protected static UserInterfaceType processArguments(String[] args) {
         if (args.length != 1) {
-            throw new IllegalArgumentException(Client.invalidArgumentsMessage);
+            throw new IllegalArgumentException(invalidArgumentsMessage);
         }
 
-        var interfaceType = args[0];
-        if (interfaceType.equals(Client.employeeInterface)) {
-            System.out.println("Employee Interface");
-            return UserInterfaceType.Employee;
-        }
-        else if (interfaceType.equals(Client.customerInterface)) {
-            System.out.println("Customer Interface");
-            return UserInterfaceType.Customer;
-        }
-        else {
-            throw new IllegalArgumentException(Client.invalidArgumentsMessage);
-        }
+        return switch (args[0]) {
+            case "-e" -> UserInterfaceType.Employee;
+            case "-c" -> UserInterfaceType.Customer;
+            default -> throw new IllegalArgumentException(invalidArgumentsMessage);
+        };
     }
 
 }

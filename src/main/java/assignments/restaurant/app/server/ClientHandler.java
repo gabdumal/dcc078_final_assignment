@@ -7,11 +7,11 @@
 package assignments.restaurant.app.server;
 
 import assignments.restaurant.Manager;
+import assignments.restaurant.order.Order;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ClientHandler
@@ -23,29 +23,40 @@ public class ClientHandler
         this.socket = socket;
     }
 
+    @Override
     public void run() {
         try (
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
+                ObjectOutputStream sendToClient = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream receiveFromClient = new ObjectInputStream(socket.getInputStream())
         ) {
-
             while (true) {
-                String order = in.readLine();
-                if (order == null || order.equalsIgnoreCase("exit")) {
+                Object receivedObject = receiveFromClient.readObject();
+
+                if (receivedObject instanceof Order order) {
+                    System.out.println("Pedido recebido: " + order);
+                    Manager.getInstance().addOrder(order);
+                    sendToClient.writeObject("Pedido recebido com sucesso!");
+                }
+                else {
+                    System.out.println("Objeto desconhecido recebido: " + receivedObject);
                     break;
                 }
-
-                System.out.println("Received Order: " + order);
-                Manager.getInstance().addOrder(order);
-
-                out.println("Order Received: " + order);
             }
-
-            System.out.println("Client disconnected.");
         }
-        catch (IOException e) {
+        catch (IOException |
+               ClassNotFoundException e) {
             e.printStackTrace();
+        }
+        finally {
+            try {
+                socket.close();
+                System.out.println("Um cliente se desconectou.");
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
 }
+

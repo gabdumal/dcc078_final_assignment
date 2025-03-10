@@ -11,16 +11,22 @@ import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Represents an order in the restaurant.
  */
-public class Order {
+public class Order
+        implements Serializable {
 
-    private Appetizer  appetizer;
-    private Beverage   beverage;
-    private String     customerName;
-    private Dessert    dessert;
-    private MainCourse mainCourse;
+    @Serial
+    private static final long       serialVersionUID = 1L;
+    private              Appetizer  appetizer;
+    private              Beverage   beverage;
+    private              String     customerName;
+    private              Dessert    dessert;
+    private              MainCourse mainCourse;
 
     /**
      * Protected constructor to prevent direct instantiation except for the builder.

@@ -21,14 +21,14 @@ public class Server {
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(manager.getSocketPort())) {
-            System.out.println("Restaurant Server is running...");
+            System.out.println("O servidor do Restaurante está rodando na porta " + manager.getSocketPort() + "...");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected!");
+                System.out.println("Um novo cliente se conectou.");
 
-                // Handle each client in a new thread
-                Server.threadPool.execute(new ClientHandler(clientSocket));
+                // ✅ Run the client handler in a separate thread
+                threadPool.execute(new ClientHandler(clientSocket));
             }
         }
         catch (IOException e) {
@@ -37,3 +37,4 @@ public class Server {
     }
 
 }
+

@@ -6,8 +6,9 @@
 
 package assignments.restaurant;
 
-import java.util.ArrayList;
-import java.util.List;
+import assignments.restaurant.order.Order;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /*
  * Design Pattern: Singleton
@@ -21,8 +22,8 @@ import java.util.List;
  */
 public class Manager {
 
-    private static Manager      instance;
-    private final  List<String> orders = new ArrayList<>();
+    private static Manager                     instance;
+    private final  CopyOnWriteArrayList<Order> orders = new CopyOnWriteArrayList<>();
 
     private Manager() {
     }
@@ -34,20 +35,19 @@ public class Manager {
         return instance;
     }
 
-    public synchronized void addOrder(String order) {
+    public synchronized void addOrder(Order order) {
         orders.add(order);
-        System.out.println("Current Orders: " + orders);
     }
 
-    public String getHost() {
+    public synchronized String getHost() {
         return "localhost";
     }
 
-    public int getMaximumOfClients() {
+    public synchronized int getMaximumOfClients() {
         return 5;
     }
 
-    public int getSocketPort() {
+    public synchronized int getSocketPort() {
         return 29100;
     }
 

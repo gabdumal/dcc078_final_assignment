@@ -8,11 +8,17 @@ package assignments.restaurant.component;
 
 import assignments.restaurant.cuisine.CuisineType;
 
-public abstract class MenuComponent {
+import java.io.Serial;
+import java.io.Serializable;
 
-    protected double cost        = 0.0d;
-    protected String description = "";
-    protected String name        = "";
+public abstract class MenuComponent
+        implements Serializable {
+
+    @Serial
+    private static final long   serialVersionUID = 1L;
+    protected            double cost             = 0.0d;
+    protected            String description      = "";
+    protected            String name             = "";
 
     public abstract CategoryType getCategory();
 

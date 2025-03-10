@@ -7,20 +7,21 @@
 package assignments.restaurant.app.client;
 
 import java.io.BufferedReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public abstract class UserInterface {
 
-    protected BufferedReader receiveFromServer;
-    protected BufferedReader scanner;
-    protected PrintWriter    sendToServer;
+    protected ObjectInputStream  receiveFromServer;
+    protected BufferedReader     scanner;
+    protected ObjectOutputStream sendToServer;
 
     protected abstract UserInterfaceType getUserInterfaceType();
 
-    public void start(BufferedReader scanner, PrintWriter sendToServer, BufferedReader receiveFromServer) {
+    public void start(BufferedReader scanner, ObjectInputStream receiveFromServer, ObjectOutputStream sendToServer) {
         this.scanner = scanner;
-        this.sendToServer = sendToServer;
         this.receiveFromServer = receiveFromServer;
+        this.sendToServer = sendToServer;
 
         this.run();
     }
