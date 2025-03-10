@@ -7,8 +7,8 @@
 package assignments.restaurant.component;
 
 import assignments.restaurant.cuisine.BrazilianCuisineFactory;
-import assignments.restaurant.cuisine.CuisineType;
 import assignments.restaurant.cuisine.CuisineFactory;
+import assignments.restaurant.cuisine.CuisineType;
 import assignments.restaurant.cuisine.ItalianCuisineFactory;
 
 import java.util.function.Function;
