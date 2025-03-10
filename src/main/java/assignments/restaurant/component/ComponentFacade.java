@@ -14,6 +14,13 @@ import assignments.restaurant.cuisine.ItalianCuisineFactory;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/*
+ * Design Pattern: Facade
+ *
+ * This class is part of the Facade design pattern.
+ * It provides a simplified interface for creating various types of components (Appetizer, Beverage, Dessert, MainCourse) for different cuisines (Brazilian, Italian).
+ */
+
 /**
  * The ComponentFacade class provides a facade for creating various types of components
  * (Appetizer, Beverage, Dessert, MainCourse) for different cuisines (Brazilian, Italian).
