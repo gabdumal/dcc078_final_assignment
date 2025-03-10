@@ -31,12 +31,12 @@ import assignments.restaurant.component.MainCourse;
 public interface CuisineFactory {
 
     /**
-     * Returns the name of the cuisine.
+     * Retrieves the cuisine type.
      *
-     * @return A string representing the name of the cuisine.
+     * @return The cuisine type. Currently, returns null.
      */
-    static String getCuisine() {
-        return "Generic";
+    static Cuisine getCuisine() {
+        return null;
     }
 
     /**

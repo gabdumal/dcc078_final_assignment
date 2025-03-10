@@ -7,24 +7,11 @@
 package assignments.restaurant.component;
 
 public abstract class MainCourse
-        implements Component {
-
-    private String description;
-    private String name;
+        extends Component {
 
     @Override
     public String getCategory() {
         return "Prato principal";
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
     }
 
 }

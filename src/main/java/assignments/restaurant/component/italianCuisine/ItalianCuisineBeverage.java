@@ -7,19 +7,14 @@
 package assignments.restaurant.component.italianCuisine;
 
 import assignments.restaurant.component.Beverage;
-import assignments.restaurant.cuisine.ItalianCuisineFactory;
+import assignments.restaurant.cuisine.Cuisine;
 
 public class ItalianCuisineBeverage
         extends Beverage {
 
     @Override
-    public double getCost() {
-        return 0;
-    }
-
-    @Override
-    public String getCuisine() {
-        return ItalianCuisineFactory.getCuisine();
+    public Cuisine getCuisine() {
+        return Cuisine.Italian;
     }
 
 }

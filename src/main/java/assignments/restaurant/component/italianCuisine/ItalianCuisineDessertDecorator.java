@@ -7,7 +7,7 @@
 package assignments.restaurant.component.italianCuisine;
 
 import assignments.restaurant.component.Dessert;
-import assignments.restaurant.cuisine.ItalianCuisineFactory;
+import assignments.restaurant.cuisine.Cuisine;
 
 public class ItalianCuisineDessertDecorator
         extends Dessert {
@@ -20,12 +20,12 @@ public class ItalianCuisineDessertDecorator
 
     @Override
     public double getCost() {
-        return this.dessert.getCost();
+        return this.cost + this.dessert.getCost();
     }
 
     @Override
-    public String getCuisine() {
-        return ItalianCuisineFactory.getCuisine();
+    public Cuisine getCuisine() {
+        return Cuisine.Italian;
     }
 
 }

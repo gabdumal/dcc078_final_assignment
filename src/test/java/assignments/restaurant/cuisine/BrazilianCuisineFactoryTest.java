@@ -4,14 +4,13 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.app.cuisine;
+package assignments.restaurant.cuisine;
 
 import assignments.restaurant.component.Component;
 import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineAppetizer;
 import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineBeverage;
 import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineDessert;
 import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineMainCourse;
-import assignments.restaurant.cuisine.BrazilianCuisineFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BrazilianCuisineFactoryTest {
 
-    private static final String                  cuisine = "Culinária brasileira";
-    private              BrazilianCuisineFactory brazilianCuisineFactory;
+    private BrazilianCuisineFactory brazilianCuisineFactory;
 
     @AfterEach
     public void afterEach() {
@@ -38,7 +36,7 @@ public class BrazilianCuisineFactoryTest {
         Component component = this.brazilianCuisineFactory.createAppetizer();
         assertNotNull(component);
         assertSame(BrazilianCuisineAppetizer.class, component.getClass());
-        assertEquals(cuisine, component.getCuisine());
+        assertEquals(Cuisine.Brazilian, component.getCuisine());
         assertEquals("Entrada", component.getCategory());
     }
 
@@ -47,7 +45,7 @@ public class BrazilianCuisineFactoryTest {
         Component component = this.brazilianCuisineFactory.createBeverage();
         assertNotNull(component);
         assertSame(BrazilianCuisineBeverage.class, component.getClass());
-        assertEquals(cuisine, component.getCuisine());
+        assertEquals(Cuisine.Brazilian, component.getCuisine());
         assertEquals("Bebida", component.getCategory());
     }
 
@@ -56,7 +54,7 @@ public class BrazilianCuisineFactoryTest {
         Component component = this.brazilianCuisineFactory.createDessert();
         assertNotNull(component);
         assertSame(BrazilianCuisineDessert.class, component.getClass());
-        assertEquals(cuisine, component.getCuisine());
+        assertEquals(Cuisine.Brazilian, component.getCuisine());
         assertEquals("Sobremesa", component.getCategory());
     }
 
@@ -65,7 +63,7 @@ public class BrazilianCuisineFactoryTest {
         Component component = this.brazilianCuisineFactory.createMainCourse();
         assertNotNull(component);
         assertSame(BrazilianCuisineMainCourse.class, component.getClass());
-        assertEquals(cuisine, component.getCuisine());
+        assertEquals(Cuisine.Brazilian, component.getCuisine());
         assertEquals("Prato principal", component.getCategory());
     }
 

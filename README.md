@@ -6,13 +6,13 @@ Este repositório utiliza os seguintes padrões:
 
 - [X] Singleton
 - [X] Abstract Factory
-- [] Factory Method
+- [ ] Factory Method
 - [X] Decorator
-- [] State
-- [] Observer
-- [] Strategy
-- [] Template Method
-- [] Iterator
+- [ ] State
+- [ ] Observer
+- [ ] Strategy
+- [ ] Template Method
+- [X] Facade
 
 ## Diagrama de classe
 

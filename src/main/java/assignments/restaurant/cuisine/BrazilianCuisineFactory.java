@@ -22,12 +22,12 @@ public class BrazilianCuisineFactory
         implements CuisineFactory {
 
     /**
-     * Returns the name of the cuisine.
+     * Retrieves the cuisine type.
      *
-     * @return A string representing the name of the cuisine.
+     * @return The cuisine type.
      */
-    public static String getCuisine() {
-        return "Culinária brasileira";
+    public static Cuisine getCuisine() {
+        return Cuisine.Brazilian;
     }
 
     /**

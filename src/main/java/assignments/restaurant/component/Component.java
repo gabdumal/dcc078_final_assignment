@@ -6,16 +6,40 @@
 
 package assignments.restaurant.component;
 
-public interface Component {
+import assignments.restaurant.cuisine.Cuisine;
 
-    String getCategory();
+public abstract class Component {
 
-    double getCost();
+    protected double cost        = 0.0d;
+    protected String description = "";
+    protected String name        = "";
 
-    String getCuisine();
+    public abstract String getCategory();
 
-    String getDescription();
+    public double getCost() {
+        return this.cost;
+    }
 
-    String getName();
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public abstract Cuisine getCuisine();
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

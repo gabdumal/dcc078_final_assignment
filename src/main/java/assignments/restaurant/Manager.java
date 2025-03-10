@@ -48,7 +48,7 @@ public class Manager {
     }
 
     public int getSocketPort() {
-        return 12345;
+        return 29100;
     }
 
 }
