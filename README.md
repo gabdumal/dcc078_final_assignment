@@ -13,6 +13,7 @@ Este repositório utiliza os seguintes padrões:
 - [ ] Strategy
 - [ ] Template Method
 - [X] Facade
+- [X] Builder
 
 ## Diagrama de classe
 

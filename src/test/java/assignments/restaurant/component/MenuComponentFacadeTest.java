@@ -35,7 +35,7 @@ public class MenuComponentFacadeTest {
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
                 appetizer.getDescription()
                     );
-        assertEquals(6.0d, appetizer.getCost());
+        assertEquals(6.0d, appetizer.getCost(), 0.001d);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class MenuComponentFacadeTest {
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
                 "Fatias finas de queijo muçarela.", decorator.getDescription()
                     );
-        assertEquals(8.0d, decorator.getCost());
+        assertEquals(8.0d, decorator.getCost(), 0.001d);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class MenuComponentFacadeTest {
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
                 menuComponent.getDescription()
                     );
-        assertEquals(6.0d, menuComponent.getCost());
+        assertEquals(6.0d, menuComponent.getCost(), 0.001d);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class MenuComponentFacadeTest {
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
                 "Fatias finas de queijo muçarela.", decorator.getDescription()
                     );
-        assertEquals(8.0d, decorator.getCost());
+        assertEquals(8.0d, decorator.getCost(), 0.001d);
     }
 
 }

@@ -53,12 +53,12 @@ public class BrazilianCuisineTypeAppetizerTest {
 
     @Test
     public void shouldGetCostOfAppetizer() {
-        assertEquals(6.0d, this.paoDeAlho.getCost());
+        assertEquals(6.0d, this.paoDeAlho.getCost(), 0.001d);
     }
 
     @Test
     public void shouldGetCostOfDecoratedAppetizer() {
-        assertEquals(8.0d, this.paoDeAlhoComMucarela.getCost());
+        assertEquals(8.0d, this.paoDeAlhoComMucarela.getCost(), 0.001d);
     }
 
     @Test

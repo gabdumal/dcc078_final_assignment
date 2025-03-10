@@ -13,6 +13,10 @@ public class Query {
 
     private static final Data data = Data.getInstance();
 
+    private Query() {
+        throw new IllegalStateException("This is a utility class!");
+    }
+
     private static CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> and(
             CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> first,
             CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> second
@@ -31,13 +35,71 @@ public class Query {
             RestrictByCategory restrictByCategory,
             RestrictByDecorator restrictByDecorator
                                                                                   ) {
-        var lists = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>(and(
+        var lists = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>();
+
+        lists = and(
                 and(restrictByCuisine(restrictByCuisine), restrictByCategory(restrictByCategory)),
                 restrictByDecorator(restrictByDecorator)
-                                                                                           ));
+                   );
+
         return lists.stream()
                     .flatMap(CopyOnWriteArrayList::stream)
                     .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+    }
+
+    public static CopyOnWriteArrayList<MenuComponentRecord> fetchMenuComponentById(
+            String restrictById
+                                                                                  ) {
+        var lists = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>();
+
+        if (restrictById != null && !restrictById.isBlank()) {
+            lists = restrictById(restrictById);
+        }
+
+        return lists.stream()
+                    .flatMap(CopyOnWriteArrayList::stream)
+                    .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+    }
+
+    public static CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> restrictById(String id) {
+        var result = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>();
+        for (var list : returnAllLists()) {
+            for (var record : list) {
+                if (record.id().equals(id)) {
+                    result.add(list);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> returnAllLists() {
+        var result = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>();
+        returnAllBrazilianCuisineMenuComponents(result);
+        returnAllItalianCuisineMenuComponents(result);
+        return result;
+    }
+
+    private static void returnAllBrazilianCuisineMenuComponents(CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> result) {
+        result.add(data.getBrazilianCuisineAppetizers());
+        result.add(data.getBrazilianCuisineAppetizersDecorators());
+        result.add(data.getBrazilianCuisineBeverages());
+        result.add(data.getBrazilianCuisineBeveragesDecorators());
+        result.add(data.getBrazilianCuisineDesserts());
+        result.add(data.getBrazilianCuisineDessertsDecorators());
+        result.add(data.getBrazilianCuisineMainCourses());
+        result.add(data.getBrazilianCuisineMainCoursesDecorators());
+    }
+
+    private static void returnAllItalianCuisineMenuComponents(CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> result) {
+        result.add(data.getItalianCuisineAppetizers());
+        result.add(data.getItalianCuisineAppetizersDecorators());
+        result.add(data.getItalianCuisineBeverages());
+        result.add(data.getItalianCuisineBeveragesDecorators());
+        result.add(data.getItalianCuisineDesserts());
+        result.add(data.getItalianCuisineDessertsDecorators());
+        result.add(data.getItalianCuisineMainCourses());
+        result.add(data.getItalianCuisineMainCoursesDecorators());
     }
 
     private static CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> restrictByCategory(
@@ -123,35 +185,6 @@ public class Query {
                 result.addAll(returnAllLists());
             }
         }
-        return result;
-    }
-
-    private static void returnAllBrazilianCuisineMenuComponents(CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> result) {
-        result.add(data.getBrazilianCuisineAppetizers());
-        result.add(data.getBrazilianCuisineAppetizersDecorators());
-        result.add(data.getBrazilianCuisineBeverages());
-        result.add(data.getBrazilianCuisineBeveragesDecorators());
-        result.add(data.getBrazilianCuisineDesserts());
-        result.add(data.getBrazilianCuisineDessertsDecorators());
-        result.add(data.getBrazilianCuisineMainCourses());
-        result.add(data.getBrazilianCuisineMainCoursesDecorators());
-    }
-
-    private static void returnAllItalianCuisineMenuComponents(CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> result) {
-        result.add(data.getItalianCuisineAppetizers());
-        result.add(data.getItalianCuisineAppetizersDecorators());
-        result.add(data.getItalianCuisineBeverages());
-        result.add(data.getItalianCuisineBeveragesDecorators());
-        result.add(data.getItalianCuisineDesserts());
-        result.add(data.getItalianCuisineDessertsDecorators());
-        result.add(data.getItalianCuisineMainCourses());
-        result.add(data.getItalianCuisineMainCoursesDecorators());
-    }
-
-    private static CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>> returnAllLists() {
-        var result = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>();
-        returnAllBrazilianCuisineMenuComponents(result);
-        returnAllItalianCuisineMenuComponents(result);
         return result;
     }
 

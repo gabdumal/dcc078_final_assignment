@@ -57,6 +57,7 @@ public class Data {
 
     private void populateBrazilianCuisineAppetizers() {
         brazilianCuisineAppetizers.add(new MenuComponentRecord(
+                "pao_de_alho",
                 CategoryType.Appetizer,
                 CuisineType.Brazilian,
                 false,
@@ -64,34 +65,38 @@ public class Data {
                 "Pão francês assado ao molho de alho, azeite e ervas.",
                 6.0d
         ));
-        //        brazilianCuisineAppetizers.add(new MenuComponentRecord(
-        //                CategoryType.Appetizer,
-        //                CuisineType.Brazilian,
-        //                false,
-        //                "Coxinha",
-        //                "Massa de batata recheada com frango desfiado.",
-        //                5.0d
-        //        ));
-        //        brazilianCuisineAppetizers.add(new MenuComponentRecord(
-        //                CategoryType.Appetizer,
-        //                CuisineType.Brazilian,
-        //                false,
-        //                "Pastel",
-        //                "Massa de pastel recheada com carne moída.",
-        //                4.0d
-        //        ));
-        //        brazilianCuisineAppetizers.add(new MenuComponentRecord(
-        //                CategoryType.Appetizer,
-        //                CuisineType.Brazilian,
-        //                false,
-        //                "Caldo de feijão",
-        //                "Caldo de feijão temperado com bacon e linguiça.",
-        //                12.0d
-        //        ));
+        brazilianCuisineAppetizers.add(new MenuComponentRecord(
+                "coxinha",
+                CategoryType.Appetizer,
+                CuisineType.Brazilian,
+                false,
+                "Coxinha",
+                "Massa de batata recheada com frango desfiado.",
+                5.0d
+        ));
+        brazilianCuisineAppetizers.add(new MenuComponentRecord(
+                "pastel",
+                CategoryType.Appetizer,
+                CuisineType.Brazilian,
+                false,
+                "Pastel",
+                "Massa de pastel recheada com carne moída.",
+                4.0d
+        ));
+        brazilianCuisineAppetizers.add(new MenuComponentRecord(
+                "caldo_de_feijao",
+                CategoryType.Appetizer,
+                CuisineType.Brazilian,
+                false,
+                "Caldo de feijão",
+                "Caldo de feijão temperado com bacon e linguiça.",
+                12.0d
+        ));
     }
 
     private void populateBrazilianCuisineAppetizersDecorators() {
         brazilianCuisineAppetizersDecorators.add(new MenuComponentRecord(
+                "mucarela",
                 CategoryType.Appetizer,
                 CuisineType.Brazilian,
                 true,
@@ -103,6 +108,7 @@ public class Data {
 
     private void populateBrazilianCuisineBeverages() {
         brazilianCuisineBeverages.add(new MenuComponentRecord(
+                "caipirinha",
                 CategoryType.Beverage,
                 CuisineType.Brazilian,
                 false,
@@ -114,7 +120,8 @@ public class Data {
 
     private void populateBrazilianCuisineBeveragesDecorators() {
         brazilianCuisineBeveragesDecorators.add(new MenuComponentRecord(
-                CategoryType.Beverage,
+                "mel",
+                                                                        CategoryType.Beverage,
                                                                         CuisineType.Brazilian,
                                                                         true,
                                                                         "Mel",
@@ -125,6 +132,7 @@ public class Data {
 
     private void populateBrazilianCuisineDesserts() {
         brazilianCuisineDesserts.add(new MenuComponentRecord(
+                "brigadeiro",
                 CategoryType.Dessert,
                 CuisineType.Brazilian,
                 false,
@@ -136,28 +144,31 @@ public class Data {
 
     private void populateBrazilianCuisineDessertsDecorators() {
         brazilianCuisineDessertsDecorators.add(new MenuComponentRecord(
+                "doce_de_leite",
                 CategoryType.Dessert,
-                                                                       CuisineType.Brazilian,
-                                                                       true,
-                                                                       "Doce de leite",
-                                                                       "Doce de leite pastoso.",
-                                                                       4.0d
+                CuisineType.Brazilian,
+                true,
+                "Doce de leite",
+                "Doce de leite pastoso.",
+                4.0d
         ));
     }
 
     private void populateBrazilianCuisineMainCourses() {
         brazilianCuisineMainCourses.add(new MenuComponentRecord(
+                "feijoada",
                 CategoryType.MainCourse,
                 CuisineType.Brazilian,
                 false,
                 "Feijoada",
-                "Prato típico brasileiro com feijão preto, carne de porco e linguiça.",
+                "Feijoada completa com arroz, couve, farofa, laranja e torresmo.",
                 30.0d
         ));
     }
 
     private void populateBrazilianCuisineMainCoursesDecorators() {
         brazilianCuisineMainCoursesDecorators.add(new MenuComponentRecord(
+                "farofa",
                 CategoryType.MainCourse,
                 CuisineType.Brazilian,
                 true,
@@ -169,6 +180,7 @@ public class Data {
 
     private void populateItalianCuisineAppetizers() {
         italianCuisineAppetizers.add(new MenuComponentRecord(
+                "bruschetta",
                 CategoryType.Appetizer,
                 CuisineType.Italian,
                 false,
@@ -176,26 +188,29 @@ public class Data {
                 "Pão italiano torrado com tomate, manjericão e azeite.",
                 10.0d
         ));
-        //        italianCuisineAppetizers.add(new MenuComponentRecord(
-        //                CategoryType.Appetizer,
-        //                CuisineType.Italian,
-        //                false,
-        //                "Carpaccio",
-        //                "Fatias finas de carne crua temperadas com molho de mostarda.",
-        //                15.0d
-        //        ));
-        //        italianCuisineAppetizers.add(new MenuComponentRecord(
-        //                CategoryType.Appetizer,
-        //                CuisineType.Italian,
-        //                false,
-        //                "Focaccia",
-        //                "Pão italiano achatado com azeite e alecrim.",
-        //                8.0d
-        //        ));
+        italianCuisineAppetizers.add(new MenuComponentRecord(
+                "carpaccio",
+                CategoryType.Appetizer,
+                CuisineType.Italian,
+                false,
+                "Carpaccio",
+                "Fatias finas de carne crua temperadas com molho de mostarda.",
+                15.0d
+        ));
+        italianCuisineAppetizers.add(new MenuComponentRecord(
+                "focaccia",
+                CategoryType.Appetizer,
+                CuisineType.Italian,
+                false,
+                "Focaccia",
+                "Pão italiano achatado com azeite e alecrim.",
+                8.0d
+        ));
     }
 
     private void populateItalianCuisineAppetizersDecorators() {
         italianCuisineAppetizersDecorators.add(new MenuComponentRecord(
+                "molho_pesto",
                 CategoryType.Appetizer,
                 CuisineType.Italian,
                 true,
@@ -207,18 +222,20 @@ public class Data {
 
     private void populateItalianCuisineBeverages() {
         italianCuisineBeverages.add(new MenuComponentRecord(
+                "vinho_chianti",
                 CategoryType.Beverage,
-                                                            CuisineType.Italian,
-                                                            false,
-                                                            "Vinho Chianti",
-                                                            "Vinho tinto seco.",
-                                                            50.0d
+                CuisineType.Italian,
+                false,
+                "Vinho Chianti",
+                "Vinho tinto seco.",
+                50.0d
         ));
     }
 
     private void populateItalianCuisineBeveragesDecorators() {
         italianCuisineBeveragesDecorators.add(new MenuComponentRecord(
-                CategoryType.Beverage,
+                "gelo",
+                                                                      CategoryType.Beverage,
                                                                       CuisineType.Italian,
                                                                       true,
                                                                       "Gelo",
@@ -229,6 +246,7 @@ public class Data {
 
     private void populateItalianCuisineDesserts() {
         italianCuisineDesserts.add(new MenuComponentRecord(
+                "tiramisu",
                 CategoryType.Dessert,
                 CuisineType.Italian,
                 false,
@@ -240,7 +258,8 @@ public class Data {
 
     private void populateItalianCuisineDessertsDecorators() {
         italianCuisineDessertsDecorators.add(new MenuComponentRecord(
-                CategoryType.Dessert,
+                "cereja",
+                                                                     CategoryType.Dessert,
                                                                      CuisineType.Italian,
                                                                      true,
                                                                      "Cereja",
@@ -251,6 +270,7 @@ public class Data {
 
     private void populateItalianCuisineMainCourses() {
         italianCuisineMainCourses.add(new MenuComponentRecord(
+                "fettuccine_alfredo",
                 CategoryType.MainCourse,
                 CuisineType.Italian,
                 false,
@@ -262,6 +282,7 @@ public class Data {
 
     private void populateItalianCuisineMainCoursesDecorators() {
         italianCuisineMainCoursesDecorators.add(new MenuComponentRecord(
+                "molho_bolonhesa",
                 CategoryType.MainCourse,
                 CuisineType.Italian,
                 true,

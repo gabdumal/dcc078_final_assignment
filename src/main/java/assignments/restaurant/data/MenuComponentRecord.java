@@ -10,7 +10,8 @@ import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.cuisine.CuisineType;
 
 public record MenuComponentRecord(
-        CategoryType category, CuisineType cuisine, boolean isDecorator, String name, String description, double cost
+        String id, CategoryType category, CuisineType cuisine, boolean isDecorator, String name, String description,
+        double cost
 ) {
 
 }
