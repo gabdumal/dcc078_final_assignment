@@ -35,7 +35,7 @@ public interface CuisineFactory {
      *
      * @return The cuisine type. Currently, returns null.
      */
-    static Cuisine getCuisine() {
+    static CuisineType getCuisine() {
         return null;
     }
 

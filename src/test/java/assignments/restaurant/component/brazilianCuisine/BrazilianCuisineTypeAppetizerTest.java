@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BrazilianCuisineAppetizerTest {
+public class BrazilianCuisineTypeAppetizerTest {
 
     private final BrazilianCuisineFactory brazilianCuisineFactory = new BrazilianCuisineFactory();
     private final Appetizer               paoDeAlho               = this.createAppetizer(
@@ -20,6 +20,12 @@ public class BrazilianCuisineAppetizerTest {
             "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
             6.0d
                                                                                         );
+    private final Appetizer               paoDeAlhoComMucarela    = this.createAppetizerDecorator(
+            this.paoDeAlho,
+            "Muçarela",
+            "Fatias finas de queijo muçarela.",
+            2.0d
+                                                                                                 );
 
     private Appetizer createAppetizer(String name, String description, double cost) {
         Appetizer appetizer = this.createAppetizer();
@@ -34,7 +40,7 @@ public class BrazilianCuisineAppetizerTest {
     }
 
     private Appetizer createAppetizerDecorator(Appetizer appetizer, String name, String description, double cost) {
-        Appetizer appetizerDecorator = this.createAppetizerDecorator(createAppetizer());
+        Appetizer appetizerDecorator = this.createAppetizerDecorator(appetizer);
         appetizerDecorator.setName(name);
         appetizerDecorator.setDescription(description);
         appetizerDecorator.setCost(cost);
@@ -51,6 +57,11 @@ public class BrazilianCuisineAppetizerTest {
     }
 
     @Test
+    public void shouldGetCostOfDecoratedAppetizer() {
+        assertEquals(8.0d, this.paoDeAlhoComMucarela.getCost());
+    }
+
+    @Test
     public void shouldGetDescriptionOfAppetizer() {
         assertEquals(
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
@@ -59,8 +70,21 @@ public class BrazilianCuisineAppetizerTest {
     }
 
     @Test
+    public void shouldGetDescriptionOfDecoratedAppetizer() {
+        assertEquals(
+                "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
+                "Fatias finas de queijo muçarela.", paoDeAlhoComMucarela.getDescription()
+                    );
+    }
+
+    @Test
     public void shouldGetNameOfAppetizer() {
         assertEquals("Pão de alho", paoDeAlho.getName());
+    }
+
+    @Test
+    public void shouldGetNameOfDecoratedAppetizer() {
+        assertEquals("Pão de alho", paoDeAlhoComMucarela.getName());
     }
 
 }

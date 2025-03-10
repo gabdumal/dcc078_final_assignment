@@ -7,11 +7,11 @@
 package assignments.restaurant.component;
 
 public abstract class Appetizer
-        extends Component {
+        extends MenuComponent {
 
     @Override
-    public String getCategory() {
-        return "Entrada";
+    public CategoryType getCategory() {
+        return CategoryType.Appetizer;
     }
 
 }

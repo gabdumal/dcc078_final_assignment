@@ -9,7 +9,7 @@ package assignments.restaurant.cuisine;
 /**
  * Enum representing different types of cuisine.
  */
-public enum Cuisine {
+public enum CuisineType {
     Brazilian,
     Italian;
 

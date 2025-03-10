@@ -7,14 +7,14 @@
 package assignments.restaurant.component.brazilianCuisine;
 
 import assignments.restaurant.component.Appetizer;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.cuisine.CuisineType;
 
 public class BrazilianCuisineAppetizer
         extends Appetizer {
 
     @Override
-    public Cuisine getCuisine() {
-        return Cuisine.Brazilian;
+    public CuisineType getCuisine() {
+        return CuisineType.Brazilian;
     }
 
 }

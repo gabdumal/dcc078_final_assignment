@@ -7,25 +7,19 @@
 package assignments.restaurant.component.brazilianCuisine;
 
 import assignments.restaurant.component.Appetizer;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.component.AppetizerDecorator;
+import assignments.restaurant.cuisine.CuisineType;
 
 public class BrazilianCuisineAppetizerDecorator
-        extends Appetizer {
-
-    private final Appetizer appetizer;
+        extends AppetizerDecorator {
 
     public BrazilianCuisineAppetizerDecorator(Appetizer appetizer) {
-        this.appetizer = appetizer;
+        super(appetizer);
     }
 
     @Override
-    public double getCost() {
-        return this.cost + this.appetizer.getCost();
-    }
-
-    @Override
-    public Cuisine getCuisine() {
-        return Cuisine.Brazilian;
+    public CuisineType getCuisine() {
+        return CuisineType.Brazilian;
     }
 
 }

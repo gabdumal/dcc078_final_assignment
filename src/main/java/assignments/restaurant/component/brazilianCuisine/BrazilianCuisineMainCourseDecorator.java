@@ -7,25 +7,19 @@
 package assignments.restaurant.component.brazilianCuisine;
 
 import assignments.restaurant.component.MainCourse;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.component.MainCourseDecorator;
+import assignments.restaurant.cuisine.CuisineType;
 
 public class BrazilianCuisineMainCourseDecorator
-        extends MainCourse {
-
-    private final MainCourse mainCourse;
+        extends MainCourseDecorator {
 
     public BrazilianCuisineMainCourseDecorator(MainCourse mainCourse) {
-        this.mainCourse = mainCourse;
+        super(mainCourse);
     }
 
     @Override
-    public double getCost() {
-        return this.cost + this.mainCourse.getCost();
-    }
-
-    @Override
-    public Cuisine getCuisine() {
-        return Cuisine.Brazilian;
+    public CuisineType getCuisine() {
+        return CuisineType.Brazilian;
     }
 
 }

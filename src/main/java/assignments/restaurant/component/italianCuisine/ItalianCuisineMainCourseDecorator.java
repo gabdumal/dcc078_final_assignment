@@ -7,25 +7,19 @@
 package assignments.restaurant.component.italianCuisine;
 
 import assignments.restaurant.component.MainCourse;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.component.MainCourseDecorator;
+import assignments.restaurant.cuisine.CuisineType;
 
 public class ItalianCuisineMainCourseDecorator
-        extends MainCourse {
-
-    private final MainCourse mainCourse;
+        extends MainCourseDecorator {
 
     public ItalianCuisineMainCourseDecorator(MainCourse mainCourse) {
-        this.mainCourse = mainCourse;
+        super(mainCourse);
     }
 
     @Override
-    public double getCost() {
-        return this.cost + this.mainCourse.getCost();
-    }
-
-    @Override
-    public Cuisine getCuisine() {
-        return Cuisine.Italian;
+    public CuisineType getCuisine() {
+        return CuisineType.Italian;
     }
 
 }

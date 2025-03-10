@@ -7,14 +7,14 @@
 package assignments.restaurant.component.italianCuisine;
 
 import assignments.restaurant.component.MainCourse;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.cuisine.CuisineType;
 
 public class ItalianCuisineMainCourse
         extends MainCourse {
 
     @Override
-    public Cuisine getCuisine() {
-        return Cuisine.Italian;
+    public CuisineType getCuisine() {
+        return CuisineType.Italian;
     }
 
 }

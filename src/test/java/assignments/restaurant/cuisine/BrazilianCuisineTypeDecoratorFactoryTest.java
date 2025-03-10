@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BrazilianCuisineDecoratorFactoryTest {
+public class BrazilianCuisineTypeDecoratorFactoryTest {
 
     private BrazilianCuisineFactory brazilianCuisineFactory;
 
@@ -34,41 +34,41 @@ public class BrazilianCuisineDecoratorFactoryTest {
     @Test
     public void shouldCreateAppetizerDecorator() {
         Appetizer appetizer = this.brazilianCuisineFactory.createAppetizer();
-        Component component = this.brazilianCuisineFactory.createAppetizerDecorator(appetizer);
-        assertNotNull(component);
-        assertSame(BrazilianCuisineAppetizerDecorator.class, component.getClass());
-        assertEquals(Cuisine.Brazilian, component.getCuisine());
-        assertEquals("Entrada", component.getCategory());
+        MenuComponent menuComponent = this.brazilianCuisineFactory.createAppetizerDecorator(appetizer);
+        assertNotNull(menuComponent);
+        assertSame(BrazilianCuisineAppetizerDecorator.class, menuComponent.getClass());
+        assertEquals(CuisineType.Brazilian, menuComponent.getCuisine());
+        assertEquals(CategoryType.Appetizer, menuComponent.getCategory());
     }
 
     @Test
     public void shouldCreateBeverageDecorator() {
         Beverage beverage = this.brazilianCuisineFactory.createBeverage();
-        Component component = this.brazilianCuisineFactory.createBeverageDecorator(beverage);
-        assertNotNull(component);
-        assertSame(BrazilianCuisineBeverageDecorator.class, component.getClass());
-        assertEquals(Cuisine.Brazilian, component.getCuisine());
-        assertEquals("Bebida", component.getCategory());
+        MenuComponent menuComponent = this.brazilianCuisineFactory.createBeverageDecorator(beverage);
+        assertNotNull(menuComponent);
+        assertSame(BrazilianCuisineBeverageDecorator.class, menuComponent.getClass());
+        assertEquals(CuisineType.Brazilian, menuComponent.getCuisine());
+        assertEquals(CategoryType.Beverage, menuComponent.getCategory());
     }
 
     @Test
     public void shouldCreateDessert() {
         Dessert dessert = this.brazilianCuisineFactory.createDessert();
-        Component component = this.brazilianCuisineFactory.createDessertDecorator(dessert);
-        assertNotNull(component);
-        assertSame(BrazilianCuisineDessertDecorator.class, component.getClass());
-        assertEquals(Cuisine.Brazilian, component.getCuisine());
-        assertEquals("Sobremesa", component.getCategory());
+        MenuComponent menuComponent = this.brazilianCuisineFactory.createDessertDecorator(dessert);
+        assertNotNull(menuComponent);
+        assertSame(BrazilianCuisineDessertDecorator.class, menuComponent.getClass());
+        assertEquals(CuisineType.Brazilian, menuComponent.getCuisine());
+        assertEquals(CategoryType.Dessert, menuComponent.getCategory());
     }
 
     @Test
     public void shouldCreateMainCourse() {
         MainCourse mainCourse = this.brazilianCuisineFactory.createMainCourse();
-        Component component = this.brazilianCuisineFactory.createMainCourseDecorator(mainCourse);
-        assertNotNull(component);
-        assertSame(BrazilianCuisineMainCourseDecorator.class, component.getClass());
-        assertEquals(Cuisine.Brazilian, component.getCuisine());
-        assertEquals("Prato principal", component.getCategory());
+        MenuComponent menuComponent = this.brazilianCuisineFactory.createMainCourseDecorator(mainCourse);
+        assertNotNull(menuComponent);
+        assertSame(BrazilianCuisineMainCourseDecorator.class, menuComponent.getClass());
+        assertEquals(CuisineType.Brazilian, menuComponent.getCuisine());
+        assertEquals(CategoryType.MainCourse, menuComponent.getCategory());
     }
 
 }

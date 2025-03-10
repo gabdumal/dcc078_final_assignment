@@ -6,15 +6,15 @@
 
 package assignments.restaurant.component;
 
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.cuisine.CuisineType;
 
-public abstract class Component {
+public abstract class MenuComponent {
 
     protected double cost        = 0.0d;
     protected String description = "";
     protected String name        = "";
 
-    public abstract String getCategory();
+    public abstract CategoryType getCategory();
 
     public double getCost() {
         return this.cost;
@@ -24,7 +24,7 @@ public abstract class Component {
         this.cost = cost;
     }
 
-    public abstract Cuisine getCuisine();
+    public abstract CuisineType getCuisine();
 
     public String getDescription() {
         return this.description;

@@ -7,25 +7,19 @@
 package assignments.restaurant.component.italianCuisine;
 
 import assignments.restaurant.component.Dessert;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.component.DessertDecorator;
+import assignments.restaurant.cuisine.CuisineType;
 
 public class ItalianCuisineDessertDecorator
-        extends Dessert {
-
-    private final Dessert dessert;
+        extends DessertDecorator {
 
     public ItalianCuisineDessertDecorator(Dessert dessert) {
-        this.dessert = dessert;
+        super(dessert);
     }
 
     @Override
-    public double getCost() {
-        return this.cost + this.dessert.getCost();
-    }
-
-    @Override
-    public Cuisine getCuisine() {
-        return Cuisine.Italian;
+    public CuisineType getCuisine() {
+        return CuisineType.Italian;
     }
 
 }

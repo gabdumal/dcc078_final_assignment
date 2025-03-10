@@ -9,18 +9,18 @@ package assignments.restaurant.component;
 import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineAppetizer;
 import assignments.restaurant.component.brazilianCuisine.BrazilianCuisineAppetizerDecorator;
 import assignments.restaurant.cuisine.BrazilianCuisineFactory;
-import assignments.restaurant.cuisine.Cuisine;
+import assignments.restaurant.cuisine.CuisineType;
 import org.junit.jupiter.api.Test;
 
 import static assignments.restaurant.component.ComponentFacade.getCuisineFactory;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ComponentFacadeTest {
+public class MenuComponentFacadeTest {
 
     @Test
     public void createAppetizer() {
         Appetizer appetizer = ComponentFacade.createAppetizer(
-                Cuisine.Brazilian,
+                CuisineType.Brazilian,
                 "Pão de alho",
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
                 6.0d
@@ -28,8 +28,8 @@ public class ComponentFacadeTest {
 
         assertNotNull(appetizer);
         assertSame(BrazilianCuisineAppetizer.class, appetizer.getClass());
-        assertEquals(Cuisine.Brazilian, appetizer.getCuisine());
-        assertEquals("Entrada", appetizer.getCategory());
+        assertEquals(CuisineType.Brazilian, appetizer.getCuisine());
+        assertEquals(CategoryType.Appetizer, appetizer.getCategory());
         assertEquals("Pão de alho", appetizer.getName());
         assertEquals(
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
@@ -41,7 +41,7 @@ public class ComponentFacadeTest {
     @Test
     public void createAppetizerDecorator() {
         Appetizer appetizer = ComponentFacade.createAppetizer(
-                Cuisine.Brazilian,
+                CuisineType.Brazilian,
                 "Pão de alho",
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
                 6.0d
@@ -49,7 +49,7 @@ public class ComponentFacadeTest {
 
         Appetizer decorator = ComponentFacade.createAppetizerDecorator(
                 appetizer,
-                Cuisine.Brazilian,
+                CuisineType.Brazilian,
                 "Muçarela",
                 "Fatias finas de queijo muçarela.",
                 2.0d
@@ -57,61 +57,67 @@ public class ComponentFacadeTest {
 
         assertNotNull(decorator);
         assertSame(BrazilianCuisineAppetizerDecorator.class, decorator.getClass());
-        assertEquals(Cuisine.Brazilian, decorator.getCuisine());
-        assertEquals("Entrada", decorator.getCategory());
-        assertEquals("Muçarela", decorator.getName());
-        assertEquals("Fatias finas de queijo muçarela.", decorator.getDescription());
+        assertEquals(CuisineType.Brazilian, decorator.getCuisine());
+        assertEquals(CategoryType.Appetizer, decorator.getCategory());
+        assertEquals("Pão de alho", decorator.getName());
+        assertEquals(
+                "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
+                "Fatias finas de queijo muçarela.", decorator.getDescription()
+                    );
         assertEquals(8.0d, decorator.getCost());
     }
 
     @Test
-    public void createComponent() {
+    public void createMenuComponent() {
         BrazilianCuisineFactory brazilianCuisineFactory = new BrazilianCuisineFactory();
 
-        Component component = ComponentFacade.createComponent(
+        MenuComponent menuComponent = ComponentFacade.createMenuComponent(
                 brazilianCuisineFactory::createAppetizer,
                 "Pão de alho",
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
                 6.0d
-                                                             );
+                                                                         );
 
-        assertNotNull(component);
-        assertSame(BrazilianCuisineAppetizer.class, component.getClass());
-        assertEquals(Cuisine.Brazilian, component.getCuisine());
-        assertEquals("Entrada", component.getCategory());
-        assertEquals("Pão de alho", component.getName());
+        assertNotNull(menuComponent);
+        assertSame(BrazilianCuisineAppetizer.class, menuComponent.getClass());
+        assertEquals(CuisineType.Brazilian, menuComponent.getCuisine());
+        assertEquals(CategoryType.Appetizer, menuComponent.getCategory());
+        assertEquals("Pão de alho", menuComponent.getName());
         assertEquals(
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
-                component.getDescription()
+                menuComponent.getDescription()
                     );
-        assertEquals(6.0d, component.getCost());
+        assertEquals(6.0d, menuComponent.getCost());
     }
 
     @Test
-    public void createComponentDecorator() {
+    public void createMenuComponentDecorator() {
         BrazilianCuisineFactory brazilianCuisineFactory = new BrazilianCuisineFactory();
 
-        Component component = ComponentFacade.createComponent(
+        MenuComponent menuComponent = ComponentFacade.createMenuComponent(
                 brazilianCuisineFactory::createAppetizer,
                 "Pão de alho",
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
                 6.0d
-                                                             );
+                                                                         );
 
-        Component decorator = ComponentFacade.createComponentDecorator(
-                component,
-                lambdaComponent -> getCuisineFactory(Cuisine.Brazilian).createAppetizerDecorator((Appetizer) lambdaComponent),
+        MenuComponent decorator = ComponentFacade.createMenuComponentDecorator(
+                menuComponent,
+                lambdaComponent -> getCuisineFactory(CuisineType.Brazilian).createAppetizerDecorator((Appetizer) lambdaComponent),
                 "Muçarela",
                 "Fatias finas de queijo muçarela.",
                 2.0d
-                                                                      );
+                                                                              );
 
         assertNotNull(decorator);
         assertSame(BrazilianCuisineAppetizerDecorator.class, decorator.getClass());
-        assertEquals(Cuisine.Brazilian, decorator.getCuisine());
-        assertEquals("Entrada", decorator.getCategory());
-        assertEquals("Muçarela", decorator.getName());
-        assertEquals("Fatias finas de queijo muçarela.", decorator.getDescription());
+        assertEquals(CuisineType.Brazilian, decorator.getCuisine());
+        assertEquals(CategoryType.Appetizer, decorator.getCategory());
+        assertEquals("Pão de alho", decorator.getName());
+        assertEquals(
+                "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
+                "Fatias finas de queijo muçarela.", decorator.getDescription()
+                    );
         assertEquals(8.0d, decorator.getCost());
     }
 

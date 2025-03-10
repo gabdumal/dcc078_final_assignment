@@ -26,8 +26,8 @@ public class ItalianCuisineFactory
      *
      * @return The cuisine type.
      */
-    public static Cuisine getCuisine() {
-        return Cuisine.Italian;
+    public static CuisineType getCuisine() {
+        return CuisineType.Italian;
     }
 
     /**
