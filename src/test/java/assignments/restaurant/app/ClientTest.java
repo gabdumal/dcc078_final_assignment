@@ -6,6 +6,8 @@
 
 package assignments.restaurant.app;
 
+import assignments.restaurant.app.client.Client;
+import assignments.restaurant.app.client.UserInterfaceType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

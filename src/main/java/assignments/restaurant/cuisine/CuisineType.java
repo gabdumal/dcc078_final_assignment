@@ -18,7 +18,7 @@ public enum CuisineType {
      *
      * @return The name of the cuisine in the local language.
      */
-    private String getCuisineName() {
+    public String toString() {
         return switch (this) {
             case Brazilian -> "Culinária brasileira";
             case Italian -> "Culinária italiana";

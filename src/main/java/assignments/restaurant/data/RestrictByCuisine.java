@@ -6,7 +6,21 @@
 
 package assignments.restaurant.data;
 
+import assignments.restaurant.cuisine.CuisineType;
+
 public enum RestrictByCuisine {
     Brazilian,
-    Italian
+    Italian;
+
+    public static RestrictByCuisine convertCuisineType(CuisineType cuisineType) {
+        switch (cuisineType) {
+            case Brazilian -> {
+                return RestrictByCuisine.Brazilian;
+            }
+            case Italian -> {
+                return RestrictByCuisine.Italian;
+            }
+        }
+        throw new IllegalArgumentException("Unknown cusine type: " + cuisineType);
+    }
 }

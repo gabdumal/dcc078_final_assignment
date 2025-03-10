@@ -1,11 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Client -c" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.Client" />
+    <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.client.Client" />
     <module name="dcc078" />
     <option name="PROGRAM_PARAMETERS" value="-c" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="assignments.restaurant.app.*" />
+        <option name="PATTERN" value="assignments.restaurant.app.client.Customer" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

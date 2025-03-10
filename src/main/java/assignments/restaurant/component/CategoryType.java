@@ -20,7 +20,7 @@ public enum CategoryType {
      *
      * @return The name of the category in the local language.
      */
-    private String getCategoryName() {
+    public String toString() {
         return switch (this) {
             case Appetizer -> "Entrada";
             case Beverage -> "Bebida";

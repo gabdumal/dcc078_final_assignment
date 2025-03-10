@@ -4,7 +4,7 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.app;
+package assignments.restaurant.app.client;
 
 import assignments.restaurant.Manager;
 
@@ -16,10 +16,12 @@ import java.net.Socket;
 
 public class Client {
 
-    private static final String customerInterface       = "-c";
-    private static final String employeeInterface       = "-e";
-    private static final String invalidArgumentsMessage = "You must provide a valid interface: " + employeeInterface +
-                                                          " (employer) or " + customerInterface + " (customer)!";
+    private static final String        customerInterface       = "-c";
+    private static final String        employeeInterface       = "-e";
+    private static final String        invalidArgumentsMessage = "You must provide a valid interface: " +
+                                                                 employeeInterface + " (employer) or " +
+                                                                 customerInterface + " (customer)!";
+    private static       UserInterface userInterface;
 
     public static void main(String[] args) {
         Manager manager = Manager.getInstance();
@@ -30,26 +32,11 @@ public class Client {
                 BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in))
         ) {
             var userInterfaceType = Client.processArguments(args);
-            System.out.println(in.readLine()); // Welcome message
-            Client.loop(consoleInput, out, in);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void loop(BufferedReader in, PrintWriter out, BufferedReader consoleInput) {
-        try {
-            while (true) {
-                System.out.print("Enter order (or 'exit' to quit): ");
-                String order = consoleInput.readLine();
-                if (order.equalsIgnoreCase("exit")) {
-                    break;
-                }
-
-                out.println(order);
-                System.out.println("Server: " + in.readLine()); // Response from restaurant
+            switch (userInterfaceType) {
+                //                case Employee -> userInterface = new Employee();
+                case Customer -> userInterface = new Customer();
             }
+            Client.userInterface.start(consoleInput, out, in);
         }
         catch (IOException e) {
             e.printStackTrace();

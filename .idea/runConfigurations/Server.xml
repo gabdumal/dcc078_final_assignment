@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.Server" />
+    <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.server.Server" />
     <module name="dcc078" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="assignments.restaurant.app.*" />
+        <option name="PATTERN" value="assignments.restaurant.app.client.Customer" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

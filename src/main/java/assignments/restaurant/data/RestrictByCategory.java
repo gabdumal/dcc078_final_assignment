@@ -6,9 +6,29 @@
 
 package assignments.restaurant.data;
 
+import assignments.restaurant.component.CategoryType;
+
 public enum RestrictByCategory {
     Appetizer,
     Beverage,
     Dessert,
-    MainCourse
+    MainCourse;
+
+    public static RestrictByCategory convertCategoryType(CategoryType categoryType) {
+        switch (categoryType) {
+            case Appetizer -> {
+                return RestrictByCategory.Appetizer;
+            }
+            case Beverage -> {
+                return RestrictByCategory.Beverage;
+            }
+            case Dessert -> {
+                return RestrictByCategory.Dessert;
+            }
+            case MainCourse -> {
+                return RestrictByCategory.MainCourse;
+            }
+        }
+        throw new IllegalArgumentException("Unknown category type: " + categoryType);
+    }
 }
