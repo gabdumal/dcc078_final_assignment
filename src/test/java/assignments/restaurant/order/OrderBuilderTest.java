@@ -8,6 +8,7 @@ package assignments.restaurant.order;
 
 import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.cuisine.CuisineType;
+import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.data.Query;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +17,36 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OrderBuilderTest {
 
-    private static final OrderBuilder orderBuilder = new OrderBuilder();
+    private static final MenuComponentRecord appetizerRecord           = Query.fetchMenuComponentById("pao_de_alho")
+                                                                              .getFirst();
+    private static final MenuComponentRecord appetizerRecordDecorator  = Query.fetchMenuComponentById("mucarela")
+                                                                              .getFirst();
+    private static final MenuComponentRecord beverageRecord            = Query.fetchMenuComponentById("caipirinha")
+                                                                              .getFirst();
+    private static final MenuComponentRecord beverageRecordDecorator   = Query.fetchMenuComponentById("mel").getFirst();
+    private static final String              customerName              = "Alice Andrade";
+    private static final MenuComponentRecord dessertRecord             = Query.fetchMenuComponentById("brigadeiro")
+                                                                              .getFirst();
+    private static final MenuComponentRecord dessertRecordDecorator    = Query.fetchMenuComponentById("doce_de_leite")
+                                                                              .getFirst();
+    private static final MenuComponentRecord mainCourseRecord          = Query.fetchMenuComponentById("feijoada")
+                                                                              .getFirst();
+    private static final MenuComponentRecord mainCourseRecordDecorator = Query.fetchMenuComponentById("farofa")
+                                                                              .getFirst();
+    private static final OrderBuilder        orderBuilder              = new OrderBuilder();
 
     @Test
     public void shouldDecorateAppetizer() {
-        var menuComponentRecord = Query.fetchMenuComponentById("pao_de_alho").getFirst();
-        orderBuilder.setAppetizer(menuComponentRecord);
-        var menuComponentRecordDecorator = Query.fetchMenuComponentById("mucarela").getFirst();
-        orderBuilder.decorateAppetizer(menuComponentRecordDecorator);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+        orderBuilder.setDessert(dessertRecord);
+
+        orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.Appetizer, order.getAppetizer().getCategory());
         assertEquals(CuisineType.Brazilian, order.getAppetizer().getCuisine());
         assertEquals("Pão de alho", order.getAppetizer().getName());
@@ -37,11 +59,16 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldDecorateBeverage() {
-        var menuComponentRecord = Query.fetchMenuComponentById("caipirinha").getFirst();
-        orderBuilder.setBeverage(menuComponentRecord);
-        var menuComponentRecordDecorator = Query.fetchMenuComponentById("mel").getFirst();
-        orderBuilder.decorateBeverage(menuComponentRecordDecorator);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setDessert(dessertRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.decorateBeverage(beverageRecordDecorator);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.Beverage, order.getBeverage().getCategory());
         assertEquals(CuisineType.Brazilian, order.getBeverage().getCuisine());
         assertEquals("Caipirinha", order.getBeverage().getName());
@@ -51,11 +78,16 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldDecorateDessert() {
-        var menuComponentRecord = Query.fetchMenuComponentById("brigadeiro").getFirst();
-        orderBuilder.setDessert(menuComponentRecord);
-        var menuComponentRecordDecorator = Query.fetchMenuComponentById("doce_de_leite").getFirst();
-        orderBuilder.decorateDessert(menuComponentRecordDecorator);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setDessert(dessertRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.decorateDessert(dessertRecordDecorator);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.Dessert, order.getDessert().getCategory());
         assertEquals(CuisineType.Brazilian, order.getDessert().getCuisine());
         assertEquals("Brigadeiro", order.getDessert().getName());
@@ -68,11 +100,16 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldDecorateMainCourse() {
-        var menuComponentRecord = Query.fetchMenuComponentById("feijoada").getFirst();
-        orderBuilder.setMainCourse(menuComponentRecord);
-        var menuComponentRecordDecorator = Query.fetchMenuComponentById("farofa").getFirst();
-        orderBuilder.decorateMainCourse(menuComponentRecordDecorator);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setDessert(dessertRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.MainCourse, order.getMainCourse().getCategory());
         assertEquals(CuisineType.Brazilian, order.getMainCourse().getCuisine());
         assertEquals("Feijoada", order.getMainCourse().getName());
@@ -85,49 +122,51 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldNotDecorateEmptyAppetizer() {
-        var menuComponentRecord = Query.fetchMenuComponentById("mucarela").getFirst();
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateAppetizer(menuComponentRecord)
+                () -> orderBuilder.decorateAppetizer(appetizerRecordDecorator)
                                     );
-        assertEquals("There is no appetizer to decorate!", exception.getMessage());
+        assertEquals("Não há entrada para acrescentar extras!", exception.getMessage());
     }
 
     @Test
     public void shouldNotDecorateEmptyBeverage() {
-        var menuComponentRecord = Query.fetchMenuComponentById("mel").getFirst();
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateBeverage(menuComponentRecord)
+                () -> orderBuilder.decorateBeverage(beverageRecordDecorator)
                                     );
-        assertEquals("There is no beverage to decorate!", exception.getMessage());
+        assertEquals("Não há bebida para acrescentar extras!", exception.getMessage());
     }
 
     @Test
     public void shouldNotDecorateEmptyDessert() {
-        var menuComponentRecord = Query.fetchMenuComponentById("doce_de_leite").getFirst();
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateDessert(menuComponentRecord)
+                () -> orderBuilder.decorateDessert(dessertRecordDecorator)
                                     );
-        assertEquals("There is no dessert to decorate!", exception.getMessage());
+        assertEquals("Não há sobremesa para acrescentar extras!", exception.getMessage());
     }
 
     @Test
     public void shouldNotDecorateEmptyMainCourse() {
-        var menuComponentRecord = Query.fetchMenuComponentById("feijoada").getFirst();
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateMainCourse(menuComponentRecord)
+                () -> orderBuilder.decorateMainCourse(mainCourseRecordDecorator)
                                     );
-        assertEquals("There is no main course to decorate!", exception.getMessage());
+        assertEquals("Não há prato principal para acrescentar extras!", exception.getMessage());
     }
 
     @Test
     public void shouldSetAppetizer() {
-        var menuComponentRecord = Query.fetchMenuComponentById("pao_de_alho").getFirst();
-        orderBuilder.setAppetizer(menuComponentRecord);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setDessert(dessertRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.setAppetizer(appetizerRecord);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.Appetizer, order.getAppetizer().getCategory());
         assertEquals(CuisineType.Brazilian, order.getAppetizer().getCuisine());
         assertEquals("Pão de alho", order.getAppetizer().getName());
@@ -137,9 +176,15 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldSetBeverage() {
-        var menuComponentRecord = Query.fetchMenuComponentById("caipirinha").getFirst();
-        orderBuilder.setBeverage(menuComponentRecord);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setDessert(dessertRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.setBeverage(beverageRecord);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.Beverage, order.getBeverage().getCategory());
         assertEquals(CuisineType.Brazilian, order.getBeverage().getCuisine());
         assertEquals("Caipirinha", order.getBeverage().getName());
@@ -149,16 +194,28 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldSetCustomerName() {
-        orderBuilder.setCustomerName("Alice Andrade");
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setDessert(dessertRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.setCustomerName(customerName);
+
         var order = orderBuilder.build();
         assertEquals("Alice Andrade", order.getCustomerName());
     }
 
     @Test
     public void shouldSetDessert() {
-        var menuComponentRecord = Query.fetchMenuComponentById("brigadeiro").getFirst();
-        orderBuilder.setDessert(menuComponentRecord);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setMainCourse(mainCourseRecord);
+
+        orderBuilder.setDessert(dessertRecord);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.Dessert, order.getDessert().getCategory());
         assertEquals(CuisineType.Brazilian, order.getDessert().getCuisine());
         assertEquals("Brigadeiro", order.getDessert().getName());
@@ -171,9 +228,15 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldSetMainCourse() {
-        var menuComponentRecord = Query.fetchMenuComponentById("feijoada").getFirst();
-        orderBuilder.setMainCourse(menuComponentRecord);
+        orderBuilder.setCustomerName(customerName);
+        orderBuilder.setAppetizer(appetizerRecord);
+        orderBuilder.setBeverage(beverageRecord);
+        orderBuilder.setDessert(dessertRecord);
+
+        orderBuilder.setMainCourse(mainCourseRecord);
+
         var order = orderBuilder.build();
+
         assertEquals(CategoryType.MainCourse, order.getMainCourse().getCategory());
         assertEquals(CuisineType.Brazilian, order.getMainCourse().getCuisine());
         assertEquals("Feijoada", order.getMainCourse().getName());

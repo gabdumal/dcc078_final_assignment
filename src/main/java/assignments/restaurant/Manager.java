@@ -47,6 +47,10 @@ public class Manager {
         return 5;
     }
 
+    public synchronized CopyOnWriteArrayList<Order> getOrders() {
+        return orders;
+    }
+
     public synchronized int getSocketPort() {
         return 29100;
     }

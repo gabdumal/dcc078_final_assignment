@@ -23,6 +23,34 @@ public class Customer
     private String       customerName;
     private OrderBuilder orderBuilder;
 
+    private static BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponent(
+            CategoryType categoryType
+                                                                                                ) {
+        BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod;
+        switch (categoryType) {
+            case Appetizer -> builderMethod = OrderBuilder::setAppetizer;
+            case Beverage -> builderMethod = OrderBuilder::setBeverage;
+            case Dessert -> builderMethod = OrderBuilder::setDessert;
+            case MainCourse -> builderMethod = OrderBuilder::setMainCourse;
+            default -> throw new IllegalStateException("Unexpected value: " + categoryType);
+        }
+        return builderMethod;
+    }
+
+    private static BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponentDecorator(
+            CategoryType categoryType
+                                                                                                         ) {
+        BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod;
+        switch (categoryType) {
+            case Appetizer -> builderMethod = OrderBuilder::decorateAppetizer;
+            case Beverage -> builderMethod = OrderBuilder::decorateBeverage;
+            case Dessert -> builderMethod = OrderBuilder::decorateDessert;
+            case MainCourse -> builderMethod = OrderBuilder::decorateMainCourse;
+            default -> throw new IllegalStateException("Unexpected value: " + categoryType);
+        }
+        return builderMethod;
+    }
+
     private static boolean isValidOption(String option, int size) {
         try {
             int parsedOption = Integer.parseInt(option);
@@ -77,7 +105,9 @@ public class Customer
 
             var pickedMenuComponentDecorator = menuComponentsDecoratorsRecords.get(
                     Integer.parseInt(menuComponentDecoratorOption) - 1);
-            this.orderBuilder.decorateAppetizer(pickedMenuComponentDecorator);
+            BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponentDecorator(
+                    categoryType);
+            builderMethod.accept(this.orderBuilder, pickedMenuComponentDecorator);
             System.out.println();
         }
     }
@@ -101,12 +131,6 @@ public class Customer
         }
     }
 
-    private void keepUpOrder(Order order)
-            throws IOException {
-        System.out.println("Acompanhe seu pedido:");
-        System.out.println(order);
-    }
-
     private void makeOrder()
             throws IOException {
         this.orderBuilder.setCustomerName(customerName);
@@ -127,8 +151,6 @@ public class Customer
 
         System.out.println("Seu pedido foi recebido com sucesso!");
         System.out.println();
-
-        this.keepUpOrder(order);
     }
 
     private String menuComponentValidationLoop(CopyOnWriteArrayList<MenuComponentRecord> menuComponentsRecords)
@@ -173,16 +195,9 @@ public class Customer
 
         String menuComponentOption = this.menuComponentValidationLoop(menuComponentsRecords);
 
-        var pickedOption = menuComponentsRecords.get(Integer.parseInt(menuComponentOption) - 1);
-        BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod;
-        switch (categoryType) {
-            case Appetizer -> builderMethod = OrderBuilder::setAppetizer;
-            case Beverage -> builderMethod = OrderBuilder::setBeverage;
-            case Dessert -> builderMethod = OrderBuilder::setDessert;
-            case MainCourse -> builderMethod = OrderBuilder::setMainCourse;
-            default -> throw new IllegalStateException("Unexpected value: " + categoryType);
-        }
-        builderMethod.accept(this.orderBuilder, pickedOption);
+        var pickedMenuComponentOption = menuComponentsRecords.get(Integer.parseInt(menuComponentOption) - 1);
+        BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponent(categoryType);
+        builderMethod.accept(this.orderBuilder, pickedMenuComponentOption);
         System.out.println();
     }
 
@@ -200,21 +215,3 @@ public class Customer
     }
 
 }
-
-/* Testing path
-Alice
-1
-1
-S
-1
-1
-S
-1
-1
-S
-1
-1
-S
-1
-
- */

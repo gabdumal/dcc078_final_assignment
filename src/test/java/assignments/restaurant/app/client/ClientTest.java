@@ -4,10 +4,8 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.app;
+package assignments.restaurant.app.client;
 
-import assignments.restaurant.app.client.Client;
-import assignments.restaurant.app.client.UserInterfaceType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,8 +15,9 @@ public class ClientTest {
 
     private static final String customerInterface       = "-c";
     private static final String employeeInterface       = "-e";
-    private static final String invalidArgumentsMessage = "You must provide a valid interface: " + employeeInterface +
-                                                          " (employer) or " + customerInterface + " (customer)!";
+    private static final String invalidArgumentsMessage = "Você deve fornecer uma interface de usuário válida: " +
+                                                          employeeInterface + " (funcionário) ou " + customerInterface +
+                                                          " (cliente)!";
 
     @Test
     public void shouldGetCustomerInterface() {

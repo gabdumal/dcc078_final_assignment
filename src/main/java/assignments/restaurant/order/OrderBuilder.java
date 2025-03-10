@@ -44,6 +44,22 @@ public class OrderBuilder {
      * @return The built Order.
      */
     public Order build() {
+        if (this.order.getCustomerName() == null) {
+            throw new IllegalStateException("O nome do cliente é obrigatório!");
+        }
+        if (this.order.getAppetizer() == null) {
+            throw new IllegalStateException("Um pedido deve ter uma entrada!");
+        }
+        if (this.order.getBeverage() == null) {
+            throw new IllegalStateException("Um pedido deve ter uma bebida!");
+        }
+        if (this.order.getDessert() == null) {
+            throw new IllegalStateException("Um pedido deve ter uma sobremesa!");
+        }
+        if (this.order.getMainCourse() == null) {
+            throw new IllegalStateException("Um pedido deve ter um prato principal!");
+        }
+
         var builtOrder = this.order;
         this.reset();
         return builtOrder;
@@ -79,25 +95,25 @@ public class OrderBuilder {
         switch (mainCourseDecoratorRecord.category()) {
             case Appetizer -> {
                 if (this.order.getAppetizer() == null) {
-                    throw new IllegalStateException("There is no appetizer to decorate!");
+                    throw new IllegalStateException("Não há entrada para acrescentar extras!");
                 }
                 OrderBuilder.validateAppetizerRecord(mainCourseDecoratorRecord);
             }
             case Beverage -> {
                 if (this.order.getBeverage() == null) {
-                    throw new IllegalStateException("There is no beverage to decorate!");
+                    throw new IllegalStateException("Não há bebida para acrescentar extras!");
                 }
                 OrderBuilder.validateBeverageRecord(mainCourseDecoratorRecord);
             }
             case Dessert -> {
                 if (this.order.getDessert() == null) {
-                    throw new IllegalStateException("There is no dessert to decorate!");
+                    throw new IllegalStateException("Não há sobremesa para acrescentar extras!");
                 }
                 OrderBuilder.validateDessertRecord(mainCourseDecoratorRecord);
             }
             case MainCourse -> {
                 if (this.order.getMainCourse() == null) {
-                    throw new IllegalStateException("There is no main course to decorate!");
+                    throw new IllegalStateException("Não há prato principal para acrescentar extras!");
                 }
                 OrderBuilder.validateMainCourseRecord(mainCourseDecoratorRecord);
             }
@@ -113,7 +129,7 @@ public class OrderBuilder {
     private static void validateAppetizerRecord(MenuComponentRecord appetizerDecoratorRecord) {
         OrderBuilder.validateMenuComponentRecord(appetizerDecoratorRecord);
         if (appetizerDecoratorRecord.category() != CategoryType.Appetizer) {
-            throw new IllegalArgumentException("The menu component must be an appetizer!");
+            throw new IllegalArgumentException("O componente de menu deve ser uma entrada!");
         }
     }
 
@@ -126,7 +142,7 @@ public class OrderBuilder {
     private static void validateBeverageRecord(MenuComponentRecord beverageRecord) {
         OrderBuilder.validateMenuComponentRecord(beverageRecord);
         if (beverageRecord.category() != CategoryType.Beverage) {
-            throw new IllegalArgumentException("The menu component must be a beverage!");
+            throw new IllegalArgumentException("O componente de menu deve ser uma bebida!");
         }
     }
 
@@ -139,7 +155,7 @@ public class OrderBuilder {
     private static void validateDessertRecord(MenuComponentRecord dessertRecord) {
         OrderBuilder.validateMenuComponentRecord(dessertRecord);
         if (dessertRecord.category() != CategoryType.Dessert) {
-            throw new IllegalArgumentException("The menu component must be a dessert!");
+            throw new IllegalArgumentException("O componente de menu deve ser uma sobremesa!");
         }
     }
 
@@ -152,7 +168,7 @@ public class OrderBuilder {
     private static void validateMainCourseRecord(MenuComponentRecord mainCourseRecord) {
         OrderBuilder.validateMenuComponentRecord(mainCourseRecord);
         if (mainCourseRecord.category() != CategoryType.MainCourse) {
-            throw new IllegalArgumentException("The menu component must be a main course!");
+            throw new IllegalArgumentException("O componente de menu deve ser um prato principal!");
         }
     }
 
@@ -164,10 +180,10 @@ public class OrderBuilder {
      */
     private static void validateMenuComponentRecord(MenuComponentRecord menuComponentRecord) {
         if (menuComponentRecord == null) {
-            throw new IllegalArgumentException("A menu component is required!");
+            throw new IllegalArgumentException("O componente de menu é obrigatório!");
         }
         if (menuComponentRecord.category() == null) {
-            throw new IllegalArgumentException("The menu component must have a category!");
+            throw new IllegalArgumentException("O componente de menu deve ter uma categoria!");
         }
     }
 
@@ -258,9 +274,6 @@ public class OrderBuilder {
      */
     public void setBeverage(MenuComponentRecord beverageRecord) {
         OrderBuilder.validateBeverageRecord(beverageRecord);
-        if (beverageRecord.category() != CategoryType.Beverage) {
-            throw new IllegalArgumentException("The menu component must be a beverage!");
-        }
 
         var component = ComponentFacade.createBeverage(
                 beverageRecord.cuisine(),
@@ -279,7 +292,7 @@ public class OrderBuilder {
      */
     public void setCustomerName(String customerName) {
         if (customerName == null || customerName.isBlank()) {
-            throw new IllegalArgumentException("Customer name is required!");
+            throw new IllegalArgumentException("O nome do cliente é obrigatório!");
         }
         this.order.setCustomerName(customerName);
     }
@@ -292,9 +305,6 @@ public class OrderBuilder {
      */
     public void setDessert(MenuComponentRecord dessertRecord) {
         OrderBuilder.validateDessertRecord(dessertRecord);
-        if (dessertRecord.category() != CategoryType.Dessert) {
-            throw new IllegalArgumentException("The menu component must be a dessert!");
-        }
 
         var component = ComponentFacade.createDessert(
                 dessertRecord.cuisine(),
@@ -313,9 +323,6 @@ public class OrderBuilder {
      */
     public void setMainCourse(MenuComponentRecord mainCourseRecord) {
         OrderBuilder.validateMainCourseRecord(mainCourseRecord);
-        if (mainCourseRecord.category() != CategoryType.MainCourse) {
-            throw new IllegalArgumentException("The menu component must be a main course!");
-        }
 
         var component = ComponentFacade.createMainCourse(
                 mainCourseRecord.cuisine(),
