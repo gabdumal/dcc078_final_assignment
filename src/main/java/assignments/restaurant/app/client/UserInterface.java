@@ -9,12 +9,26 @@ package assignments.restaurant.app.client;
 import java.io.BufferedReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 
 public abstract class UserInterface {
 
+    protected PrintStream        clientPrintStream;
     protected ObjectInputStream  receiveFromServer;
     protected BufferedReader     scanner;
     protected ObjectOutputStream sendToServer;
+
+    public UserInterface(
+            BufferedReader scanner,
+            ObjectInputStream receiveFromServer,
+            ObjectOutputStream sendToServer,
+            PrintStream clientPrintStream
+                        ) {
+        this.scanner = scanner;
+        this.receiveFromServer = receiveFromServer;
+        this.sendToServer = sendToServer;
+        this.clientPrintStream = clientPrintStream;
+    }
 
     protected static boolean isValidOption(String option, int size) {
         try {
@@ -27,14 +41,6 @@ public abstract class UserInterface {
     }
 
     protected abstract UserInterfaceType getUserInterfaceType();
-
-    public void start(BufferedReader scanner, ObjectInputStream receiveFromServer, ObjectOutputStream sendToServer) {
-        this.scanner = scanner;
-        this.receiveFromServer = receiveFromServer;
-        this.sendToServer = sendToServer;
-
-        this.run();
-    }
 
     protected abstract void run();
 

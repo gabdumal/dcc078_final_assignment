@@ -10,10 +10,7 @@ import assignments.restaurant.Manager;
 import assignments.restaurant.app.server.Server;
 import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.cuisine.CuisineType;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,11 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CustomerTest {
 
-    private static final String                customerName = "Alice Andrade";
-    private final static Manager               manager      = Manager.getInstance();
-    private static       ExecutorService       clientExecutor;
-    private static       ExecutorService       serverExecutor;
-    private final        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private static final String          customerName = "Alice Andrade";
+    private final static Manager         manager      = Manager.getInstance();
+    private static       ExecutorService clientExecutor;
+    private static       ExecutorService serverExecutor;
+    ByteArrayOutputStream customerByteArrayOutputStream;
+    ByteArrayOutputStream serverByteArrayOutputStream;
 
     @BeforeAll
     static void startServer() {
@@ -51,26 +49,48 @@ public class CustomerTest {
 
     @AfterAll
     static void stopServer() {
-        serverExecutor.shutdownNow();
-        clientExecutor.shutdownNow();
+        clientExecutor.shutdown();
+        serverExecutor.shutdown();
+    }
+
+    @AfterAll
+    static void tearDown() {
+        Client.setClientPrintStream(System.out);
+        Server.setServerPrintStream(System.out);
+    }
+
+    @AfterEach
+    void clearOutputStreams() {
+        customerByteArrayOutputStream.reset();
+        serverByteArrayOutputStream.reset();
+    }
+
+    @BeforeEach
+    void setOutputStreams() {
+        customerByteArrayOutputStream = new ByteArrayOutputStream();
+        Client.setClientPrintStream(new PrintStream(customerByteArrayOutputStream));
+        serverByteArrayOutputStream = new ByteArrayOutputStream();
+        Server.setServerPrintStream(new PrintStream(serverByteArrayOutputStream));
     }
 
     @BeforeEach
     void setUp() {
         clientExecutor = Executors.newFixedThreadPool(2);
-        System.setOut(new PrintStream(outputStream));
     }
 
     @Test
     void shouldCreateOrderOnServer()
             throws Exception {
-        String simulatedInput = "Alice Andrade\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" +
-                                "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "\n";
-        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
 
         Future<String> customerFuture = clientExecutor.submit(() -> {
             try {
+                String simulatedInput = "Alice Andrade\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" +
+                                        "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "\n";
+
+                System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
                 Client.main(new String[]{"-c"});
+                System.setIn(System.in);
+
                 return "A interface de usuário do cliente foi executada com sucesso.";
             }
             catch (Exception e) {
@@ -83,8 +103,6 @@ public class CustomerTest {
         // Wait for client execution
         String result = customerFuture.get(5, TimeUnit.MINUTES);
         assertEquals("A interface de usuário do cliente foi executada com sucesso.", result);
-
-        // Allow time for order processing on server
         Thread.sleep(2000);
 
         // Check if order was processed
@@ -126,6 +144,37 @@ public class CustomerTest {
                 order.getMainCourse().getDescription()
                     );
         assertEquals(35.0d, order.getMainCourse().getCost(), 0.001d);
+
+        String customerOutput = customerByteArrayOutputStream.toString();
+        assertEquals(
+                "Boas-vindas ao Restaurante!\n" + "Qual é seu nome?\n" + "\n" +
+                "Escolha a culinária para montar seu pedido:\n" + "1. Culinária brasileira\n" +
+                "2. Culinária italiana\n" + "\n" + "Entrada:\n" + "1. Pão de alho\n" + "     R$6.0\n" +
+                "     Pão francês assado ao molho de alho, azeite e ervas.\n" + "2. Coxinha\n" + "     R$5.0\n" +
+                "     Massa de batata recheada com frango desfiado.\n" + "3. Pastel\n" + "     R$4.0\n" +
+                "     Massa de pastel recheada com carne moída.\n" + "4. Caldo de feijão\n" + "     R$12.0\n" +
+                "     Caldo de feijão temperado com bacon e linguiça.\n" + "\n" +
+                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" + "1. Muçarela\n" +
+                "     R$2.0\n" + "     Fatias finas de queijo muçarela.\n" + "2. Maionese\n" + "     R$1.0\n" +
+                "     Maionese caseira com ervas.\n" + "\n" + "Prato principal:\n" + "1. Feijoada\n" + "     R$30.0\n" +
+                "     Feijoada completa com arroz, couve, farofa, laranja e torresmo.\n" + "\n" +
+                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" + "1. Farofa\n" +
+                "     R$5.0\n" + "     Farinha de mandioca torrada com bacon e ovos.\n" + "\n" + "Bebida:\n" +
+                "1. Caipirinha\n" + "     R$10.0\n" + "     Cachaça, limão, açúcar e gelo.\n" + "\n" +
+                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" + "1. Mel\n" +
+                "     R$3.0\n" + "     Mel puro.\n" + "\n" + "Sobremesa:\n" + "1. Brigadeiro\n" + "     R$5.0\n" +
+                "     Doce de chocolate com leite condensado e chocolate granulado.\n" + "\n" +
+                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" +
+                "1. Doce de leite\n" + "     R$4.0\n" + "     Doce de leite pastoso.\n" + "\n" +
+                "Seu pedido foi recebido com sucesso!\n" + "\n", customerOutput
+                    );
+
+        String serverOutput = serverByteArrayOutputStream.toString();
+        assertEquals(
+                "Um novo cliente se conectou.\n" +
+                "Pedido recebido: {Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
+                "Um cliente se desconectou.\n", serverOutput
+                    );
     }
 
 }

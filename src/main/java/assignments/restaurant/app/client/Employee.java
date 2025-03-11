@@ -13,11 +13,20 @@ import assignments.restaurant.component.Decorator;
 import assignments.restaurant.component.MenuComponent;
 import assignments.restaurant.order.Order;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Employee
         extends UserInterface {
+
+    public Employee(
+            BufferedReader scanner,
+            ObjectInputStream receiveFromServer,
+            ObjectOutputStream sendToServer,
+            PrintStream clientPrintStream
+                   ) {
+        super(scanner, receiveFromServer, sendToServer, clientPrintStream);
+    }
 
     @Override
     protected UserInterfaceType getUserInterfaceType() {
@@ -26,7 +35,7 @@ public class Employee
 
     @Override
     public void run() {
-        System.out.println("Boas-vindas ao Restaurante!");
+        clientPrintStream.println("Boas-vindas ao Restaurante!");
 
         try {
             this.pickOrder();
@@ -38,28 +47,9 @@ public class Employee
 
     private void pickOrder()
             throws IOException {
-        System.out.println("Pedidos:");
-        this.printOrders();
-    }
-
-    private void printOrders()
-            throws IOException {
+        clientPrintStream.println("Pedidos:");
         var orders = this.fetchOrders();
-
-        if (orders.isEmpty()) {
-            System.out.println("Nenhum pedido encontrado.");
-            return;
-        }
-
-        for (
-                int i = 0;
-                i < orders.size();
-                i++
-        ) {
-            var order = orders.get(i);
-            System.out.print((i + 1) + ". ");
-            Employee.printOrder(order);
-        }
+        this.printOrders(orders);
     }
 
     private CopyOnWriteArrayList<Order> fetchOrders()
@@ -84,23 +74,45 @@ public class Employee
         return new CopyOnWriteArrayList<>();
     }
 
-    private static void printOrder(Order order) {
-        System.out.println(order.getCustomerName());
-        Employee.printMenuComponent(order.getAppetizer());
+    protected void printOrders(CopyOnWriteArrayList<Order> orders) {
+        if (orders.isEmpty()) {
+            clientPrintStream.println("Nenhum pedido encontrado.");
+            return;
+        }
+
+        for (
+                int i = 0;
+                i < orders.size();
+                i++
+        ) {
+            var order = orders.get(i);
+            clientPrintStream.print((i + 1) + ". ");
+            this.printOrder(order);
+        }
     }
 
-    private static void printMenuComponent(MenuComponent menuComponent) {
-        System.out.print(menuComponent.getName());
-        System.out.print(" - R$");
-        System.out.print(menuComponent.getCost());
+    protected void printOrder(Order order) {
+        clientPrintStream.println(order.getCustomerName());
+        this.printMenuComponent(order.getAppetizer());
+        this.printMenuComponent(order.getMainCourse());
+        this.printMenuComponent(order.getBeverage());
+        this.printMenuComponent(order.getDessert());
+    }
+
+    protected void printMenuComponent(MenuComponent menuComponent) {
+        clientPrintStream.print("     " + menuComponent.getName());
+        clientPrintStream.print(" - R$");
+        clientPrintStream.print(menuComponent.getCost());
 
         if (menuComponent instanceof Decorator) {
-            System.out.print(" - Extras:");
+            clientPrintStream.print(" - Extras:");
         }
         while (menuComponent instanceof Decorator) {
-            System.out.print(" " + ((Decorator) menuComponent).getDecorationName() + ".");
+            clientPrintStream.print(" " + ((Decorator) menuComponent).getDecorationName() + ".");
             menuComponent = ((Decorator) menuComponent).getDecorated();
         }
+
+        clientPrintStream.println();
     }
 
 }

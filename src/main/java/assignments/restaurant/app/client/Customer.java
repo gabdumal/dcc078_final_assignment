@@ -13,7 +13,7 @@ import assignments.restaurant.data.*;
 import assignments.restaurant.order.Order;
 import assignments.restaurant.order.OrderBuilder;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
@@ -24,9 +24,51 @@ public class Customer
     private String       customerName;
     private OrderBuilder orderBuilder;
 
-    private static BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponent(
+    public Customer(
+            BufferedReader scanner,
+            ObjectInputStream receiveFromServer,
+            ObjectOutputStream sendToServer,
+            PrintStream clientPrintStream
+                   ) {
+        super(scanner, receiveFromServer, sendToServer, clientPrintStream);
+    }
+
+    private void decorateMenuComponent(
             CategoryType categoryType
-                                                                                                ) {
+                                      )
+            throws IOException {
+        clientPrintStream.println("Deseja adicionar algum acompanhamento? (S/N)");
+        var wishToDecorate = scanner.readLine();
+
+        while (!wishToDecorate.equalsIgnoreCase("S") && !wishToDecorate.equalsIgnoreCase("N")) {
+            clientPrintStream.println("Por favor, escolha uma opção válida.");
+            wishToDecorate = scanner.readLine();
+        }
+
+        if (wishToDecorate.equalsIgnoreCase("S")) {
+            clientPrintStream.println("Escolha um acompanhamento:");
+
+            var menuComponentsDecoratorsRecords = Query.fetchAllMenuComponents(
+                    RestrictByCuisine.convertCuisineType(this.cuisineType),
+                    RestrictByCategory.convertCategoryType(categoryType),
+                    RestrictByDecorator.IsDecorator
+                                                                              );
+            this.printMenu(menuComponentsDecoratorsRecords);
+
+            String menuComponentDecoratorOption = this.menuComponentValidationLoop(menuComponentsDecoratorsRecords);
+
+            var pickedMenuComponentDecorator = menuComponentsDecoratorsRecords.get(
+                    Integer.parseInt(menuComponentDecoratorOption) - 1);
+            BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponentDecorator(
+                    categoryType);
+            builderMethod.accept(this.orderBuilder, pickedMenuComponentDecorator);
+            clientPrintStream.println();
+        }
+    }
+
+    private BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponent(
+            CategoryType categoryType
+                                                                                         ) {
         BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod;
         switch (categoryType) {
             case Appetizer -> builderMethod = OrderBuilder::setAppetizer;
@@ -38,9 +80,9 @@ public class Customer
         return builderMethod;
     }
 
-    private static BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponentDecorator(
+    private BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponentDecorator(
             CategoryType categoryType
-                                                                                                         ) {
+                                                                                                  ) {
         BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod;
         switch (categoryType) {
             case Appetizer -> builderMethod = OrderBuilder::decorateAppetizer;
@@ -50,76 +92,6 @@ public class Customer
             default -> throw new IllegalStateException("Unexpected value: " + categoryType);
         }
         return builderMethod;
-    }
-
-    private static void printMenu(CopyOnWriteArrayList<MenuComponentRecord> menu) {
-        for (
-                int i = 0;
-                i < menu.size();
-                i++
-        ) {
-            var menuComponentRecord = menu.get(i);
-            System.out.print((i + 1) + ". ");
-            Customer.printMenuComponent(menuComponentRecord);
-        }
-    }
-
-    private static void printMenuComponent(MenuComponentRecord menuComponentRecord) {
-        System.out.println(menuComponentRecord.name());
-        System.out.println("     R$" + menuComponentRecord.cost());
-        System.out.println("     " + menuComponentRecord.description());
-    }
-
-    private void decorateMenuComponent(
-            CategoryType categoryType
-                                      )
-            throws IOException {
-        System.out.println("Deseja adicionar algum acompanhamento? (S/N)");
-        var wishToDecorate = scanner.readLine();
-
-        while (!wishToDecorate.equalsIgnoreCase("S") && !wishToDecorate.equalsIgnoreCase("N")) {
-            System.out.println("Por favor, escolha uma opção válida.");
-            wishToDecorate = scanner.readLine();
-        }
-
-        if (wishToDecorate.equalsIgnoreCase("S")) {
-            System.out.println("Escolha um acompanhamento:");
-
-            var menuComponentsDecoratorsRecords = Query.fetchAllMenuComponents(
-                    RestrictByCuisine.convertCuisineType(this.cuisineType),
-                    RestrictByCategory.convertCategoryType(categoryType),
-                    RestrictByDecorator.IsDecorator
-                                                                              );
-            Customer.printMenu(menuComponentsDecoratorsRecords);
-
-            String menuComponentDecoratorOption = this.menuComponentValidationLoop(menuComponentsDecoratorsRecords);
-
-            var pickedMenuComponentDecorator = menuComponentsDecoratorsRecords.get(
-                    Integer.parseInt(menuComponentDecoratorOption) - 1);
-            BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponentDecorator(
-                    categoryType);
-            builderMethod.accept(this.orderBuilder, pickedMenuComponentDecorator);
-            System.out.println();
-        }
-    }
-
-    @Override
-    protected UserInterfaceType getUserInterfaceType() {
-        return UserInterfaceType.Customer;
-    }
-
-    @Override
-    public void run() {
-        System.out.println("Boas-vindas ao Restaurante!");
-        this.orderBuilder = new OrderBuilder();
-
-        try {
-            this.setAccount();
-            this.makeOrder();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void makeOrder()
@@ -141,8 +113,8 @@ public class Customer
         sendToServer.writeObject(request);
         sendToServer.flush();
 
-        System.out.println("Seu pedido foi recebido com sucesso!");
-        System.out.println();
+        clientPrintStream.println("Seu pedido foi recebido com sucesso!");
+        clientPrintStream.println();
     }
 
     private String menuComponentValidationLoop(CopyOnWriteArrayList<MenuComponentRecord> menuComponentsRecords)
@@ -150,7 +122,7 @@ public class Customer
         String menuComponentOption = this.scanner.readLine();
         while (menuComponentOption == null || menuComponentOption.isBlank() ||
                !Customer.isValidOption(menuComponentOption, menuComponentsRecords.size())) {
-            System.out.println("Por favor, escolha uma opção válida.");
+            clientPrintStream.println("Por favor, escolha uma opção válida.");
             menuComponentOption = this.scanner.readLine();
         }
         return menuComponentOption;
@@ -158,52 +130,89 @@ public class Customer
 
     private void pickCuisine()
             throws IOException {
-        System.out.println("Escolha a culinária para montar seu pedido:");
-        System.out.println("1. " + CuisineType.Brazilian);
-        System.out.println("2. " + CuisineType.Italian);
+        clientPrintStream.println("Escolha a culinária para montar seu pedido:");
+        clientPrintStream.println("1. " + CuisineType.Brazilian);
+        clientPrintStream.println("2. " + CuisineType.Italian);
 
         String cuisineOption = scanner.readLine();
         while (!cuisineOption.equals("1") && !cuisineOption.equals("2")) {
-            System.out.println("Por favor, escolha uma opção válida.");
+            clientPrintStream.println("Por favor, escolha uma opção válida.");
             cuisineOption = scanner.readLine();
         }
 
         this.cuisineType = cuisineOption.equals("1") ? CuisineType.Brazilian : CuisineType.Italian;
-        System.out.println();
+        clientPrintStream.println();
     }
 
     private void pickMenuComponent(
             CategoryType categoryType
                                   )
             throws IOException {
-        System.out.println(categoryType.toString() + ":");
+        clientPrintStream.println(categoryType.toString() + ":");
 
         var menuComponentsRecords = Query.fetchAllMenuComponents(
                 RestrictByCuisine.convertCuisineType(this.cuisineType),
                 RestrictByCategory.convertCategoryType(categoryType),
                 RestrictByDecorator.IsNotDecorator
                                                                 );
-        Customer.printMenu(menuComponentsRecords);
+        this.printMenu(menuComponentsRecords);
 
         String menuComponentOption = this.menuComponentValidationLoop(menuComponentsRecords);
 
         var pickedMenuComponentOption = menuComponentsRecords.get(Integer.parseInt(menuComponentOption) - 1);
         BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponent(categoryType);
         builderMethod.accept(this.orderBuilder, pickedMenuComponentOption);
-        System.out.println();
+        clientPrintStream.println();
+    }
+
+    private void printMenu(CopyOnWriteArrayList<MenuComponentRecord> menu) {
+        for (
+                int i = 0;
+                i < menu.size();
+                i++
+        ) {
+            var menuComponentRecord = menu.get(i);
+            clientPrintStream.print((i + 1) + ". ");
+            this.printMenuComponent(menuComponentRecord);
+        }
+    }
+
+    private void printMenuComponent(MenuComponentRecord menuComponentRecord) {
+        clientPrintStream.println(menuComponentRecord.name());
+        clientPrintStream.println("     R$" + menuComponentRecord.cost());
+        clientPrintStream.println("     " + menuComponentRecord.description());
+    }
+
+    @Override
+    public void run() {
+        clientPrintStream.println("Boas-vindas ao Restaurante!");
+        this.orderBuilder = new OrderBuilder();
+
+        try {
+            this.setAccount();
+            this.makeOrder();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected UserInterfaceType getUserInterfaceType() {
+        return UserInterfaceType.Customer;
     }
 
     protected void setAccount()
             throws IOException {
-        System.out.println("Qual é seu nome?");
+        clientPrintStream.println("Qual é seu nome?");
 
         String customerName = scanner.readLine();
         while (customerName == null || customerName.isBlank()) {
-            System.out.println("Por favor, insira um nome válido.");
+            clientPrintStream.println("Por favor, insira um nome válido.");
             customerName = scanner.readLine();
         }
         this.customerName = customerName;
-        System.out.println();
+        clientPrintStream.println();
     }
 
 }

@@ -48,7 +48,7 @@ class ServerTest {
     private static       ExecutorService     clientExecutor;
     private static       OrderBuilder        orderBuilder              = new OrderBuilder();
     private static       ExecutorService     serverExecutor;
-    ByteArrayOutputStream serverByteArrayOutputStream = new ByteArrayOutputStream();
+    ByteArrayOutputStream serverByteArrayOutputStream;
 
     @BeforeAll
     public static void createBuilder() {
@@ -78,13 +78,11 @@ class ServerTest {
 
     @AfterAll
     static void stopServer() {
-        serverExecutor.shutdownNow();
-        clientExecutor.shutdownNow();
+        serverExecutor.shutdown();
     }
 
     @AfterAll
     static void tearDown() {
-        clientExecutor.shutdownNow();
         Server.setServerPrintStream(System.out);
     }
 
@@ -95,6 +93,7 @@ class ServerTest {
 
     @BeforeEach
     void setServerOutputStream() {
+        serverByteArrayOutputStream = new ByteArrayOutputStream();
         Server.setServerPrintStream(new PrintStream(serverByteArrayOutputStream));
     }
 
@@ -126,8 +125,6 @@ class ServerTest {
         // Wait for client execution
         String result = simulatedCustomerFuture.get(5, TimeUnit.MINUTES);
         assertEquals("Pedido enviado com sucesso.", result);
-
-        // Allow time for order processing on server
         Thread.sleep(2000);
 
         // Check if order was processed

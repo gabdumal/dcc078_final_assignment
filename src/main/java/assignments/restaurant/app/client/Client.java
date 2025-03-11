@@ -18,6 +18,7 @@ public class Client {
     private static final String        invalidArgumentsMessage =
             "Você deve fornecer uma interface de usuário válida: " + employeeInterface + " (funcionário) ou " +
             customerInterface + " (cliente)!";
+    private static       PrintStream   clientPrintStream       = System.out;
     private static       UserInterface userInterface;
 
     public static void main(String[] args) {
@@ -31,16 +32,15 @@ public class Client {
         ) {
             var userInterfaceType = processArguments(args);
             switch (userInterfaceType) {
-                case Customer -> userInterface = new Customer();
-                case Employee -> userInterface = new Employee();
+                case Customer -> {
+                    userInterface = new Customer(scanner, receiveFromServer, sendToServer, clientPrintStream);
+                    userInterface.run();
+                }
+                case Employee -> {
+                    userInterface = new Employee(scanner, receiveFromServer, sendToServer, clientPrintStream);
+                    userInterface.run();
+                }
                 default -> throw new IllegalArgumentException("Tipo de interface não suportado.");
-            }
-
-            if (userInterface != null) {
-                userInterface.start(scanner, receiveFromServer, sendToServer);
-            }
-            else {
-                System.err.println("Erro: Interface de usuário não inicializada corretamente.");
             }
         }
         catch (IOException e) {
@@ -58,6 +58,10 @@ public class Client {
             case "-c" -> UserInterfaceType.Customer;
             default -> throw new IllegalArgumentException(invalidArgumentsMessage);
         };
+    }
+
+    public static void setClientPrintStream(PrintStream printStream) {
+        Client.clientPrintStream = printStream;
     }
 
 }
