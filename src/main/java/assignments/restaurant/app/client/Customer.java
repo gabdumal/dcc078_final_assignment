@@ -6,6 +6,7 @@
 
 package assignments.restaurant.app.client;
 
+import assignments.restaurant.app.server.Request;
 import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.cuisine.CuisineType;
 import assignments.restaurant.data.*;
@@ -49,16 +50,6 @@ public class Customer
             default -> throw new IllegalStateException("Unexpected value: " + categoryType);
         }
         return builderMethod;
-    }
-
-    private static boolean isValidOption(String option, int size) {
-        try {
-            int parsedOption = Integer.parseInt(option);
-            return parsedOption >= 1 && parsedOption <= size;
-        }
-        catch (NumberFormatException e) {
-            return false;
-        }
     }
 
     private static void printMenu(CopyOnWriteArrayList<MenuComponentRecord> menu) {
@@ -146,7 +137,8 @@ public class Customer
         this.decorateMenuComponent(CategoryType.Dessert);
 
         Order order = this.orderBuilder.build();
-        sendToServer.writeObject(order);
+        Request request = Request.sendOrder(order);
+        sendToServer.writeObject(request);
         sendToServer.flush();
 
         System.out.println("Seu pedido foi recebido com sucesso!");

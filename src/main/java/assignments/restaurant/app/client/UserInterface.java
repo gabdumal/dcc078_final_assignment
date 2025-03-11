@@ -16,6 +16,16 @@ public abstract class UserInterface {
     protected BufferedReader     scanner;
     protected ObjectOutputStream sendToServer;
 
+    protected static boolean isValidOption(String option, int size) {
+        try {
+            int parsedOption = Integer.parseInt(option);
+            return parsedOption >= 1 && parsedOption <= size;
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     protected abstract UserInterfaceType getUserInterfaceType();
 
     public void start(BufferedReader scanner, ObjectInputStream receiveFromServer, ObjectOutputStream sendToServer) {

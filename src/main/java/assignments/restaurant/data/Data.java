@@ -104,6 +104,15 @@ public class Data {
                 "Fatias finas de queijo muçarela.",
                 2.0d
         ));
+        brazilianCuisineAppetizersDecorators.add(new MenuComponentRecord(
+                "maionese",
+                CategoryType.Appetizer,
+                CuisineType.Brazilian,
+                true,
+                "Maionese",
+                "Maionese caseira com ervas.",
+                1.0d
+        ));
     }
 
     private void populateBrazilianCuisineBeverages() {

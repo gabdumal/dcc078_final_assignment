@@ -124,4 +124,9 @@ public class Order
         this.mainCourse = mainCourse;
     }
 
+    public String toString() {
+        return "{" + "Cliente: \"" + customerName + "\", " + "Entrada: " + appetizer + ", " + "Prato principal: " +
+               mainCourse + ", " + "Bebida: " + beverage + ", " + "Sobremesa: " + dessert + "}";
+    }
+
 }

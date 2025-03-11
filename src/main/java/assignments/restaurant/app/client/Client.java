@@ -32,7 +32,7 @@ public class Client {
             var userInterfaceType = processArguments(args);
             switch (userInterfaceType) {
                 case Customer -> userInterface = new Customer();
-                // case Employee -> userInterface = new Employee();
+                case Employee -> userInterface = new Employee();
                 default -> throw new IllegalArgumentException("Tipo de interface não suportado.");
             }
 

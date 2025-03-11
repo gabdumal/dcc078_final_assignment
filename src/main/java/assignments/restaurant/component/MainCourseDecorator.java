@@ -7,7 +7,8 @@
 package assignments.restaurant.component;
 
 public abstract class MainCourseDecorator
-        extends MainCourse {
+        extends MainCourse
+        implements Decorator {
 
     protected MainCourse mainCourse;
 
@@ -28,6 +29,24 @@ public abstract class MainCourseDecorator
     @Override
     public String getName() {
         return this.mainCourse.getName();
+    }
+
+    @Override
+    public String toString() {
+        var decoratedEncoding = this.mainCourse.toString().substring(0, this.mainCourse.toString().length() - 1);
+        return decoratedEncoding + ", Extra: {" + "Nome: \"" + this.name + "\", " + "Descrição: \"" + this.description +
+               "\", " + "Custo: R$" + this.cost + ", " + "Categoria: \"" + this.getCategory() + "\", " + "Cozinha: \"" +
+               this.getCuisine() + "\"}}";
+    }
+
+    @Override
+    public MenuComponent getDecorated() {
+        return this.mainCourse;
+    }
+
+    @Override
+    public String getDecorationName() {
+        return this.name;
     }
 
 }

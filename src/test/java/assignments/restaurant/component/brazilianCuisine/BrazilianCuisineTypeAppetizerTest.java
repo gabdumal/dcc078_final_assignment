@@ -15,17 +15,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BrazilianCuisineTypeAppetizerTest {
 
     private final BrazilianCuisineFactory brazilianCuisineFactory = new BrazilianCuisineFactory();
-    private final Appetizer               paoDeAlho               = this.createAppetizer(
+    private final Appetizer               paoDeAlho = this.createAppetizer(
             "Pão de alho",
             "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
             6.0d
-                                                                                        );
-    private final Appetizer               paoDeAlhoComMucarela    = this.createAppetizerDecorator(
+                                                                          );
+    private final Appetizer               paoDeAlhoComMucarela = this.createAppetizerDecorator(
             this.paoDeAlho,
             "Muçarela",
             "Fatias finas de queijo muçarela.",
             2.0d
-                                                                                                 );
+                                                                                              );
+    private final Appetizer               getPaoDeAlhoComMucarelaEMaionese = this.createAppetizerDecorator(
+            this.paoDeAlhoComMucarela,
+            "Maionese",
+            "Maionese caseira com ervas.",
+            1.0d
+                                                                                                          );
 
     private Appetizer createAppetizer(String name, String description, double cost) {
         Appetizer appetizer = this.createAppetizer();
@@ -74,6 +80,30 @@ public class BrazilianCuisineTypeAppetizerTest {
         assertEquals(
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
                 "Fatias finas de queijo muçarela.", paoDeAlhoComMucarela.getDescription()
+                    );
+    }
+
+    @Test
+    public void shouldGetEncodingOfAppetizer() {
+        assertEquals(
+                "{Nome: \"Pão de alho\", Descrição: \"Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}",
+                paoDeAlho.toString()
+                    );
+    }
+
+    @Test
+    public void shouldGetEncodingOfDecoratedAppetizer() {
+        assertEquals(
+                "{Nome: \"Pão de alho\", Descrição: \"Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}",
+                paoDeAlhoComMucarela.toString()
+                    );
+    }
+
+    @Test
+    public void shouldGetEncodingOfDoublyDecoratedAppetizer() {
+        assertEquals(
+                "{Nome: \"Pão de alho\", Descrição: \"Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}, Extra: {Nome: \"Maionese\", Descrição: \"Maionese caseira com ervas.\", Custo: R$1.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}",
+                getPaoDeAlhoComMucarelaEMaionese.toString()
                     );
     }
 

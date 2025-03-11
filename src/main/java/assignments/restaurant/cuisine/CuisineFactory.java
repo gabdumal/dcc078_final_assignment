@@ -18,13 +18,6 @@ import assignments.restaurant.component.MainCourse;
  * It is a factory for creating various types of cuisine components.
  */
 
-/*
- * Design Pattern: Decorator
- *
- * This interface is part of the Decorator design pattern.
- * It provides methods for creating decorators for cuisine components.
- */
-
 /**
  * Factory for creating various types of cuisine components.
  */

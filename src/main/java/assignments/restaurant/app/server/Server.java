@@ -9,6 +9,7 @@ package assignments.restaurant.app.server;
 import assignments.restaurant.Manager;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -16,24 +17,30 @@ import java.util.concurrent.Executors;
 
 public class Server {
 
-    private static final Manager         manager    = Manager.getInstance();
-    private static final ExecutorService threadPool = Executors.newFixedThreadPool(manager.getMaximumOfClients());
+    private static final Manager         manager           = Manager.getInstance();
+    private static final ExecutorService threadPool        = Executors.newFixedThreadPool(manager.getMaximumOfClients());
+    private static       PrintStream     serverPrintStream = System.out;
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(manager.getSocketPort())) {
-            System.out.println("O servidor do Restaurante está rodando na porta " + manager.getSocketPort() + "...");
+            serverPrintStream.println(
+                    "O servidor do Restaurante está rodando na porta " + manager.getSocketPort() + "...");
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Um novo cliente se conectou.");
+                serverPrintStream.println("Um novo cliente se conectou.");
 
                 // ✅ Run the client handler in a separate thread
-                threadPool.execute(new ClientHandler(clientSocket));
+                threadPool.execute(new ClientHandler(clientSocket, serverPrintStream));
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setServerPrintStream(PrintStream printStream) {
+        Server.serverPrintStream = printStream;
     }
 
 }

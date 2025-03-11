@@ -7,7 +7,8 @@
 package assignments.restaurant.component;
 
 public abstract class AppetizerDecorator
-        extends Appetizer {
+        extends Appetizer
+        implements Decorator {
 
     protected Appetizer appetizer;
 
@@ -28,6 +29,24 @@ public abstract class AppetizerDecorator
     @Override
     public String getName() {
         return this.appetizer.getName();
+    }
+
+    @Override
+    public String toString() {
+        var decoratedEncoding = this.appetizer.toString().substring(0, this.appetizer.toString().length() - 1);
+        return decoratedEncoding + ", Extra: {" + "Nome: \"" + this.name + "\", " + "Descrição: \"" + this.description +
+               "\", " + "Custo: R$" + this.cost + ", " + "Categoria: \"" + this.getCategory() + "\", " + "Cozinha: \"" +
+               this.getCuisine() + "\"}}";
+    }
+
+    @Override
+    public MenuComponent getDecorated() {
+        return this.appetizer;
+    }
+
+    @Override
+    public String getDecorationName() {
+        return this.name;
     }
 
 }

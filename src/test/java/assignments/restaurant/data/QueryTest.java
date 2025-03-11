@@ -15,7 +15,7 @@ public class QueryTest {
     @Test
     public void shouldFetchAllAppetizers() {
         var menuComponents = Query.fetchAllMenuComponents(null, RestrictByCategory.Appetizer, null);
-        assertEquals(9, menuComponents.size());
+        assertEquals(10, menuComponents.size());
     }
 
     @Test
@@ -25,7 +25,7 @@ public class QueryTest {
                 RestrictByCategory.Appetizer,
                 null
                                                          );
-        assertEquals(5, menuComponents.size());
+        assertEquals(6, menuComponents.size());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class QueryTest {
     @Test
     public void shouldFetchAllDecoratorsMenuComponents() {
         var menuComponents = Query.fetchAllMenuComponents(null, null, RestrictByDecorator.IsDecorator);
-        assertEquals(8, menuComponents.size());
+        assertEquals(9, menuComponents.size());
     }
 
     @Test
@@ -85,13 +85,13 @@ public class QueryTest {
     @Test
     public void shouldFetchAllMenuComponents() {
         var menuComponents = Query.fetchAllMenuComponents(null, null, null);
-        assertEquals(21, menuComponents.size());
+        assertEquals(22, menuComponents.size());
     }
 
     @Test
     public void shouldFetchAllMenuComponentsRestrictedByBrazilianCuisine() {
         var menuComponents = Query.fetchAllMenuComponents(RestrictByCuisine.Brazilian, null, null);
-        assertEquals(11, menuComponents.size());
+        assertEquals(12, menuComponents.size());
     }
 
     @Test

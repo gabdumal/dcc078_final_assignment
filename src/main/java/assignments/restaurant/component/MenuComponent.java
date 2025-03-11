@@ -20,8 +20,6 @@ public abstract class MenuComponent
     protected            String description      = "";
     protected            String name             = "";
 
-    public abstract CategoryType getCategory();
-
     public double getCost() {
         return this.cost;
     }
@@ -29,8 +27,6 @@ public abstract class MenuComponent
     public void setCost(double cost) {
         this.cost = cost;
     }
-
-    public abstract CuisineType getCuisine();
 
     public String getDescription() {
         return this.description;
@@ -47,5 +43,16 @@ public abstract class MenuComponent
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "Nome: \"" + this.name + "\", " + "Descrição: \"" + this.description + "\", " + "Custo: R$" +
+               this.cost + ", " + "Categoria: \"" + this.getCategory() + "\", " + "Cozinha: \"" + this.getCuisine() +
+               "\"}";
+    }
+
+    public abstract CategoryType getCategory();
+
+    public abstract CuisineType getCuisine();
 
 }

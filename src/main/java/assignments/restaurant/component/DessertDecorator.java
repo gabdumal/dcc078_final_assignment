@@ -7,7 +7,8 @@
 package assignments.restaurant.component;
 
 public abstract class DessertDecorator
-        extends Dessert {
+        extends Dessert
+        implements Decorator {
 
     protected Dessert dessert;
 
@@ -28,6 +29,24 @@ public abstract class DessertDecorator
     @Override
     public String getName() {
         return this.dessert.getName();
+    }
+
+    @Override
+    public String toString() {
+        var decoratedEncoding = this.dessert.toString().substring(0, this.dessert.toString().length() - 1);
+        return decoratedEncoding + ", Extra: {" + "Nome: \"" + this.name + "\", " + "Descrição: \"" + this.description +
+               "\", " + "Custo: R$" + this.cost + ", " + "Categoria: \"" + this.getCategory() + "\", " + "Cozinha: \"" +
+               this.getCuisine() + "\"}}";
+    }
+
+    @Override
+    public MenuComponent getDecorated() {
+        return this.dessert;
+    }
+
+    @Override
+    public String getDecorationName() {
+        return this.name;
     }
 
 }
