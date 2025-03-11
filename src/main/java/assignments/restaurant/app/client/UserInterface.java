@@ -6,6 +6,11 @@
 
 package assignments.restaurant.app.client;
 
+import assignments.restaurant.component.Decorator;
+import assignments.restaurant.component.MenuComponent;
+import assignments.restaurant.data.MenuComponentRecord;
+import assignments.restaurant.order.Order;
+
 import java.io.BufferedReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -41,6 +46,38 @@ public abstract class UserInterface {
     }
 
     protected abstract UserInterfaceType getUserInterfaceType();
+
+    protected void printMenuComponent(MenuComponentRecord menuComponentRecord) {
+        this.clientPrintStream.println(menuComponentRecord.name());
+        this.clientPrintStream.println("     R$" + menuComponentRecord.cost());
+        this.clientPrintStream.println("     " + menuComponentRecord.description());
+    }
+
+    protected void printOrder(Order order) {
+        this.clientPrintStream.print(order.getState());
+        this.clientPrintStream.print(": ");
+        this.clientPrintStream.println(order.getCustomerName());
+        this.printMenuComponent(order.getAppetizer());
+        this.printMenuComponent(order.getMainCourse());
+        this.printMenuComponent(order.getBeverage());
+        this.printMenuComponent(order.getDessert());
+    }
+
+    protected void printMenuComponent(MenuComponent menuComponent) {
+        this.clientPrintStream.print("     " + menuComponent.getName());
+        this.clientPrintStream.print(" - R$");
+        this.clientPrintStream.print(menuComponent.getCost());
+
+        if (menuComponent instanceof Decorator) {
+            this.clientPrintStream.print(" - Extras:");
+        }
+        while (menuComponent instanceof Decorator) {
+            this.clientPrintStream.print(" " + ((Decorator) menuComponent).getDecorationName() + ".");
+            menuComponent = ((Decorator) menuComponent).getDecorated();
+        }
+
+        this.clientPrintStream.println();
+    }
 
     protected abstract void run();
 

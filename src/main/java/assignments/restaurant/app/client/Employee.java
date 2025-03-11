@@ -9,8 +9,6 @@ package assignments.restaurant.app.client;
 import assignments.restaurant.app.server.Request;
 import assignments.restaurant.app.server.Response;
 import assignments.restaurant.app.server.ResponseType;
-import assignments.restaurant.component.Decorator;
-import assignments.restaurant.component.MenuComponent;
 import assignments.restaurant.order.Order;
 
 import java.io.*;
@@ -103,32 +101,6 @@ public class Employee
             orderOption = this.scanner.readLine();
         }
         return orderOption;
-    }
-
-    protected void printOrder(Order order) {
-        this.clientPrintStream.print(order.getState());
-        this.clientPrintStream.print(": ");
-        this.clientPrintStream.println(order.getCustomerName());
-        this.printMenuComponent(order.getAppetizer());
-        this.printMenuComponent(order.getMainCourse());
-        this.printMenuComponent(order.getBeverage());
-        this.printMenuComponent(order.getDessert());
-    }
-
-    protected void printMenuComponent(MenuComponent menuComponent) {
-        this.clientPrintStream.print("     " + menuComponent.getName());
-        this.clientPrintStream.print(" - R$");
-        this.clientPrintStream.print(menuComponent.getCost());
-
-        if (menuComponent instanceof Decorator) {
-            this.clientPrintStream.print(" - Extras:");
-        }
-        while (menuComponent instanceof Decorator) {
-            this.clientPrintStream.print(" " + ((Decorator) menuComponent).getDecorationName() + ".");
-            menuComponent = ((Decorator) menuComponent).getDecorated();
-        }
-
-        this.clientPrintStream.println();
     }
 
 }

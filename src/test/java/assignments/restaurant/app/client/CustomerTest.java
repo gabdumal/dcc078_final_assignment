@@ -55,8 +55,8 @@ public class CustomerTest {
 
         Future<String> customerFuture = this.clientExecutor.submit(() -> {
             try {
-                String simulatedInput = "Alice Andrade\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" +
-                                        "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "\n";
+                String simulatedInput = "Alice Andrade\n" + "1\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" +
+                                        "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "\n";
                 System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
 
                 Client.main(new String[]{
@@ -122,7 +122,8 @@ public class CustomerTest {
 
         String customerOutput = this.customerByteArrayOutputStream.toString();
         assertEquals(
-                "Boas-vindas ao Restaurante!\n" + "Qual é seu nome?\n" + "\n" +
+                "Boas-vindas ao Restaurante!\n" + "Qual é seu nome?\n" + "\n" + "Escolha o tipo de pedido:\n" +
+                "1. Entrega\n" + "2. Retirada\n" + "3. Mesa\n" + "\n" +
                 "Escolha a culinária para montar seu pedido:\n" + "1. Culinária brasileira\n" +
                 "2. Culinária italiana\n" + "\n" + "Entrada:\n" + "1. Pão de alho\n" + "     R$6.0\n" +
                 "     Pão francês assado ao molho de alho, azeite e ervas.\n" + "2. Coxinha\n" + "     R$5.0\n" +
@@ -147,7 +148,7 @@ public class CustomerTest {
         String serverOutput = this.serverByteArrayOutputStream.toString();
         assertEquals(
                 "Um novo cliente se conectou.\n" +
-                "Pedido recebido: {Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n",
+                "Pedido recebido: {Status: \"Recebido\", Tipo: \"Entrega\", Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n",
                 serverOutput
                     );
     }
@@ -192,6 +193,7 @@ public class CustomerTest {
 
 /* Testing path
 Alice Andrade
+1
 1
 1
 S

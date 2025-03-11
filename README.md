@@ -6,7 +6,7 @@ Este repositório utiliza os seguintes padrões:
 
 - [X] Singleton
 - [X] Abstract Factory
-- [ ] Factory Method
+- [X] Factory Method
 - [X] Decorator
 - [x] State
 - [ ] Observer

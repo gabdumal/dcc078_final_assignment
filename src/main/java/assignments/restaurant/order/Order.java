@@ -10,6 +10,7 @@ import assignments.restaurant.component.Appetizer;
 import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
+import assignments.restaurant.order.category.OrderCategoryType;
 import assignments.restaurant.order.state.OrderContext;
 import assignments.restaurant.order.state.OrderStateType;
 
@@ -19,7 +20,7 @@ import java.io.Serializable;
 /**
  * Represents an order in the restaurant.
  */
-public class Order
+public abstract class Order
         implements Serializable {
 
     @Serial
@@ -136,6 +137,18 @@ public class Order
     }
 
     /**
+     * Returns a string representation of the order.
+     *
+     * @return A string representation of the order, including its status, customer name, appetizer, main course, beverage, and dessert.
+     */
+    @Override
+    public String toString() {
+        return "{" + "Status: \"" + this.getState() + "\", " + "Tipo: \"" + this.getCategory() + "\", " +
+               "Cliente: \"" + this.customerName + "\", " + "Entrada: " + this.appetizer + ", " + "Prato principal: " +
+               this.mainCourse + ", " + "Bebida: " + this.beverage + ", " + "Sobremesa: " + this.dessert + "}";
+    }
+
+    /**
      * Gets the current state of the order.
      *
      * @return The current state of the order as an OrderStateType.
@@ -145,14 +158,10 @@ public class Order
     }
 
     /**
-     * Returns a string representation of the order.
+     * Gets the category of the order, whether it is a dine-in, delivery, or takeout.
      *
-     * @return A string representation of the order, including its status, customer name, appetizer, main course, beverage, and dessert.
+     * @return The category of the order as an OrderCategoryType.
      */
-    public String toString() {
-        return "{" + "Status: \"" + this.context.getState() + "\", " + "Cliente: \"" + this.customerName + "\", " +
-               "Entrada: " + this.appetizer + ", " + "Prato principal: " + this.mainCourse + ", " + "Bebida: " +
-               this.beverage + ", " + "Sobremesa: " + this.dessert + "}";
-    }
+    public abstract OrderCategoryType getCategory();
 
 }

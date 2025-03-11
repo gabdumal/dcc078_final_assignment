@@ -10,6 +10,9 @@ import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.cuisine.CuisineType;
 import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.data.Query;
+import assignments.restaurant.order.category.OrderCategoryType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,19 +36,29 @@ public class OrderBuilderTest {
                                                                               .getFirst();
     private static final MenuComponentRecord mainCourseRecordDecorator = Query.fetchMenuComponentById("farofa")
                                                                               .getFirst();
-    private static final OrderBuilder        orderBuilder              = new OrderBuilder();
+    private              OrderBuilder        orderBuilder;
+
+    @BeforeEach
+    void createBuilder() {
+        this.orderBuilder = new OrderBuilder(OrderCategoryType.Delivery);
+    }
+
+    @AfterEach
+    void disposeBuilder() {
+        this.orderBuilder = null;
+    }
 
     @Test
     public void shouldDecorateAppetizer() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
-        orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setDessert(dessertRecord);
 
-        orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.Appetizer, order.getAppetizer().getCategory());
         assertEquals(CuisineType.Brazilian, order.getAppetizer().getCuisine());
@@ -59,15 +72,15 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldDecorateBeverage() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.decorateBeverage(beverageRecordDecorator);
+        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.Beverage, order.getBeverage().getCategory());
         assertEquals(CuisineType.Brazilian, order.getBeverage().getCuisine());
@@ -78,15 +91,15 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldDecorateDessert() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.decorateDessert(dessertRecordDecorator);
+        this.orderBuilder.decorateDessert(dessertRecordDecorator);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.Dessert, order.getDessert().getCategory());
         assertEquals(CuisineType.Brazilian, order.getDessert().getCuisine());
@@ -100,15 +113,15 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldDecorateMainCourse() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
+        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.MainCourse, order.getMainCourse().getCategory());
         assertEquals(CuisineType.Brazilian, order.getMainCourse().getCuisine());
@@ -124,7 +137,7 @@ public class OrderBuilderTest {
     public void shouldNotDecorateEmptyAppetizer() {
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateAppetizer(appetizerRecordDecorator)
+                () -> this.orderBuilder.decorateAppetizer(appetizerRecordDecorator)
                                     );
         assertEquals("Não há entrada para acrescentar extras!", exception.getMessage());
     }
@@ -133,7 +146,7 @@ public class OrderBuilderTest {
     public void shouldNotDecorateEmptyBeverage() {
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateBeverage(beverageRecordDecorator)
+                () -> this.orderBuilder.decorateBeverage(beverageRecordDecorator)
                                     );
         assertEquals("Não há bebida para acrescentar extras!", exception.getMessage());
     }
@@ -142,7 +155,7 @@ public class OrderBuilderTest {
     public void shouldNotDecorateEmptyDessert() {
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateDessert(dessertRecordDecorator)
+                () -> this.orderBuilder.decorateDessert(dessertRecordDecorator)
                                     );
         assertEquals("Não há sobremesa para acrescentar extras!", exception.getMessage());
     }
@@ -151,21 +164,21 @@ public class OrderBuilderTest {
     public void shouldNotDecorateEmptyMainCourse() {
         var exception = assertThrows(
                 IllegalStateException.class,
-                () -> orderBuilder.decorateMainCourse(mainCourseRecordDecorator)
+                () -> this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator)
                                     );
         assertEquals("Não há prato principal para acrescentar extras!", exception.getMessage());
     }
 
     @Test
     public void shouldSetAppetizer() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setAppetizer(appetizerRecord);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.Appetizer, order.getAppetizer().getCategory());
         assertEquals(CuisineType.Brazilian, order.getAppetizer().getCuisine());
@@ -176,14 +189,14 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldSetBeverage() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.Beverage, order.getBeverage().getCategory());
         assertEquals(CuisineType.Brazilian, order.getBeverage().getCuisine());
@@ -194,27 +207,27 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldSetCustomerName() {
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setCustomerName(customerName);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
         assertEquals("Alice Andrade", order.getCustomerName());
     }
 
     @Test
     public void shouldSetDessert() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setDessert(dessertRecord);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.Dessert, order.getDessert().getCategory());
         assertEquals(CuisineType.Brazilian, order.getDessert().getCuisine());
@@ -228,14 +241,14 @@ public class OrderBuilderTest {
 
     @Test
     public void shouldSetMainCourse() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
 
-        orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
 
-        var order = orderBuilder.build();
+        var order = this.orderBuilder.build();
 
         assertEquals(CategoryType.MainCourse, order.getMainCourse().getCategory());
         assertEquals(CuisineType.Brazilian, order.getMainCourse().getCuisine());

@@ -9,6 +9,8 @@ package assignments.restaurant.order;
 import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.component.ComponentFacade;
 import assignments.restaurant.data.MenuComponentRecord;
+import assignments.restaurant.order.category.OrderCategoryType;
+import assignments.restaurant.order.category.OrderFactory;
 
 /*
  * Design Pattern: Builder
@@ -22,12 +24,14 @@ import assignments.restaurant.data.MenuComponentRecord;
  */
 public class OrderBuilder {
 
-    private Order order;
+    private final OrderCategoryType categoryType;
+    private       Order             order;
 
     /**
      * Constructs a new OrderBuilder and initializes the order.
      */
-    public OrderBuilder() {
+    public OrderBuilder(OrderCategoryType categoryType) {
+        this.categoryType = categoryType;
         this.reset();
     }
 
@@ -35,7 +39,7 @@ public class OrderBuilder {
      * Resets the builder by creating a new Order instance.
      */
     public void reset() {
-        this.order = new Order();
+        this.order = OrderFactory.create(this.categoryType);
     }
 
     /**
@@ -245,6 +249,10 @@ public class OrderBuilder {
                 mainCourseDecoratorRecord.cost()
                                                                  );
         this.order.setMainCourse(decorator);
+    }
+
+    public OrderCategoryType getCategoryType() {
+        return this.categoryType;
     }
 
     /**
