@@ -13,7 +13,9 @@ import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.data.Query;
 import assignments.restaurant.order.Order;
 import assignments.restaurant.order.OrderBuilder;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -44,70 +46,40 @@ class ServerTest {
                                                                               .getFirst();
     private static final MenuComponentRecord mainCourseRecordDecorator = Query.fetchMenuComponentById("farofa")
                                                                               .getFirst();
-    private final static Manager             manager                   = Manager.getInstance();
-    private static       ExecutorService     clientExecutor;
-    private static       OrderBuilder        orderBuilder              = new OrderBuilder();
-    private static       ExecutorService     serverExecutor;
     ByteArrayOutputStream serverByteArrayOutputStream;
+    private ExecutorService clientExecutor;
+    private OrderBuilder    orderBuilder;
+    private Server          server;
+    private ExecutorService serverExecutor;
 
-    @BeforeAll
-    public static void createBuilder() {
-        orderBuilder = new OrderBuilder();
-    }
-
-    @AfterAll
-    public static void disposeBuilder() {
-        orderBuilder = null;
-    }
-
-    @BeforeAll
-    static void startServer() {
-        serverExecutor = Executors.newSingleThreadExecutor();
-        serverExecutor.submit(() -> {
-            Server.main(new String[]{});
-        });
-
-        // Wait for server to start
-        try {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @AfterAll
-    static void stopServer() {
-        serverExecutor.shutdown();
-    }
-
-    @AfterAll
-    static void tearDown() {
-        Server.setServerPrintStream(System.out);
+    @BeforeEach
+    void createBuilder() {
+        this.orderBuilder = new OrderBuilder();
     }
 
     @AfterEach
-    void clearServerOutputStream() {
-        serverByteArrayOutputStream.reset();
+    void disposeBuilder() {
+        this.orderBuilder = null;
+    }
+
+    @AfterEach
+    void resetOutputStreams() {
+        Server.setServerPrintStream(System.out);
+        this.serverByteArrayOutputStream = null;
     }
 
     @BeforeEach
-    void setServerOutputStream() {
-        serverByteArrayOutputStream = new ByteArrayOutputStream();
-        Server.setServerPrintStream(new PrintStream(serverByteArrayOutputStream));
-    }
-
-    @BeforeEach
-    void setUp() {
-        clientExecutor = Executors.newFixedThreadPool(2);
+    void setOutputStreams() {
+        this.serverByteArrayOutputStream = new ByteArrayOutputStream();
+        Server.setServerPrintStream(new PrintStream(this.serverByteArrayOutputStream));
     }
 
     @Test
     void shouldSendAnOrderThroughSocket()
             throws Exception {
-        Future<String> simulatedCustomerFuture = clientExecutor.submit(() -> {
+        Future<String> simulatedCustomerFuture = this.clientExecutor.submit(() -> {
             try (
-                    Socket socket = new Socket(manager.getHost(), manager.getSocketPort());
+                    Socket socket = new Socket(ServerTest.findDefaultHost(), ServerTest.findDefaultPort());
                     ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream())
             ) {
                 // Create and send an order to the server
@@ -120,7 +92,7 @@ class ServerTest {
             }
         });
 
-        var ordersSize = manager.getOrders().size();
+        var ordersSize = this.server.getOrders().size();
 
         // Wait for client execution
         String result = simulatedCustomerFuture.get(5, TimeUnit.MINUTES);
@@ -128,7 +100,7 @@ class ServerTest {
         Thread.sleep(2000);
 
         // Check if order was processed
-        var orders = manager.getOrders();
+        var orders = this.server.getOrders();
         assertEquals(ordersSize + 1, orders.size());
 
         var order = orders.getFirst();
@@ -169,7 +141,7 @@ class ServerTest {
 
         assertEquals("Pedido enviado com sucesso.", result);
 
-        String serverOutput = serverByteArrayOutputStream.toString();
+        String serverOutput = this.serverByteArrayOutputStream.toString();
         assertEquals(
                 "Um novo cliente se conectou.\n" +
                 "Pedido recebido: {Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
@@ -177,17 +149,51 @@ class ServerTest {
                     );
     }
 
+    private static String findDefaultHost() {
+        return Manager.getInstance().getHost();
+    }
+
+    private static int findDefaultPort() {
+        return Manager.getInstance().getDefaultSocketPort() + 100;
+    }
+
     private Order createOrder() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.decorateAppetizer(appetizerRecordDecorator);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.decorateBeverage(beverageRecordDecorator);
-        orderBuilder.setMainCourse(mainCourseRecord);
-        orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.decorateDessert(dessertRecordDecorator);
-        return orderBuilder.build();
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.decorateDessert(dessertRecordDecorator);
+        return this.orderBuilder.build();
+    }
+
+    @BeforeEach
+    void startServer() {
+        this.serverExecutor = Executors.newSingleThreadExecutor();
+        this.clientExecutor = Executors.newFixedThreadPool(2);
+
+        this.serverExecutor.submit(() -> {
+            this.server = new Server();
+            this.server.run(ServerTest.findDefaultPort());
+        });
+
+        // Wait for server to start
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @AfterEach
+    void stopServer() {
+        this.serverExecutor.shutdownNow();
+        this.serverExecutor = null;
+        this.server = null;
     }
 
 }

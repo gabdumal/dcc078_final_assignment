@@ -10,6 +10,7 @@ import assignments.restaurant.component.Appetizer;
 import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
+import assignments.restaurant.order.state.OrderContext;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -32,6 +33,7 @@ public class Order
      * Protected constructor to prevent direct instantiation except for the builder.
      */
     protected Order() {
+        OrderContext context = new OrderContext();
     }
 
     /**
@@ -40,7 +42,7 @@ public class Order
      * @return The appetizer.
      */
     public Appetizer getAppetizer() {
-        return appetizer;
+        return this.appetizer;
     }
 
     /**
@@ -58,7 +60,7 @@ public class Order
      * @return The beverage.
      */
     public Beverage getBeverage() {
-        return beverage;
+        return this.beverage;
     }
 
     /**
@@ -76,7 +78,7 @@ public class Order
      * @return The customer name.
      */
     public String getCustomerName() {
-        return customerName;
+        return this.customerName;
     }
 
     /**
@@ -94,7 +96,7 @@ public class Order
      * @return The dessert.
      */
     public Dessert getDessert() {
-        return dessert;
+        return this.dessert;
     }
 
     /**
@@ -112,7 +114,7 @@ public class Order
      * @return The main course.
      */
     public MainCourse getMainCourse() {
-        return mainCourse;
+        return this.mainCourse;
     }
 
     /**
@@ -125,8 +127,9 @@ public class Order
     }
 
     public String toString() {
-        return "{" + "Cliente: \"" + customerName + "\", " + "Entrada: " + appetizer + ", " + "Prato principal: " +
-               mainCourse + ", " + "Bebida: " + beverage + ", " + "Sobremesa: " + dessert + "}";
+        return "{" + "Cliente: \"" + this.customerName + "\", " + "Entrada: " + this.appetizer + ", " +
+               "Prato principal: " + this.mainCourse + ", " + "Bebida: " + this.beverage + ", " + "Sobremesa: " +
+               this.dessert + "}";
     }
 
 }

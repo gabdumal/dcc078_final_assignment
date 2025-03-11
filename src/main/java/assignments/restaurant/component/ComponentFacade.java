@@ -128,10 +128,10 @@ public class ComponentFacade {
      * @throws IllegalArgumentException if the cuisineType is invalid.
      */
     protected static CuisineFactory getCuisineFactory(CuisineType cuisineType) {
-        if (cuisineType == CuisineType.Brazilian) {
+        if (CuisineType.Brazilian == cuisineType) {
             return brazilianCuisineFactory;
         }
-        else if (cuisineType == CuisineType.Italian) {
+        else if (CuisineType.Italian == cuisineType) {
             return italianCuisineFactory;
         }
         else {

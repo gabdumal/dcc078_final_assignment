@@ -6,60 +6,71 @@
 
 package assignments.restaurant.app.server;
 
-import assignments.restaurant.Manager;
+import assignments.restaurant.order.Order;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ClientHandler
         implements Runnable {
 
-    private final PrintStream        serverPrintStream;
-    private final Socket             socket;
-    private       ObjectInputStream  receiveFromClient;
-    private       ObjectOutputStream sendToClient;
+    private final Consumer<Order>                       addOrder;
+    private final Supplier<CopyOnWriteArrayList<Order>> getOrders;
+    private final PrintStream                           serverPrintStream;
+    private final Socket                                socket;
+    private       ObjectInputStream                     receiveFromClient;
 
-    public ClientHandler(Socket socket, PrintStream serverPrintStream) {
+    public ClientHandler(
+            Socket socket,
+            PrintStream serverPrintStream,
+            Consumer<Order> addOrder,
+            Supplier<CopyOnWriteArrayList<Order>> getOrders
+                        ) {
         this.socket = socket;
         this.serverPrintStream = serverPrintStream;
+        this.addOrder = addOrder;
+        this.getOrders = getOrders;
     }
 
     @Override
     public void run() {
         try {
-            this.sendToClient = new ObjectOutputStream(socket.getOutputStream());
-            this.receiveFromClient = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream sendToClient = new ObjectOutputStream(this.socket.getOutputStream());
+            this.receiveFromClient = new ObjectInputStream(this.socket.getInputStream());
 
             while (true) {
-                Object receivedObject = receiveFromClient.readObject();
+                Object receivedObject = this.receiveFromClient.readObject();
 
                 if (receivedObject instanceof Request request) {
                     switch (request.getRequestType()) {
                         case RetrieveOrders -> {
-                            var orders = Manager.getInstance().getOrders();
+                            var orders = this.getOrders();
                             Response response = Response.sendOrders(orders);
                             sendToClient.writeObject(response);
                             sendToClient.flush();
                         }
                         case SendOrder -> {
                             var order = request.getOrder();
-                            serverPrintStream.println("Pedido recebido: " + order);
-                            Manager.getInstance().addOrder(order);
+                            this.serverPrintStream.println("Pedido recebido: " + order);
+                            this.addOrder(order);
                             Response response = Response.confirmReceivedOrder();
                             sendToClient.writeObject(response);
                             sendToClient.flush();
                         }
                         default -> {
-                            serverPrintStream.println("Requisição desconhecida recebida: " + request);
+                            this.serverPrintStream.println("Requisição desconhecida recebida: " + request);
                             break;
                         }
                     }
                 }
                 else {
-                    serverPrintStream.println("Objeto desconhecido recebido: " + receivedObject);
+                    this.serverPrintStream.println("Objeto desconhecido recebido: " + receivedObject);
                     break;
                 }
             }
@@ -69,14 +80,22 @@ public class ClientHandler
         }
         finally {
             try {
-                receiveFromClient.close();
-                socket.close();
-                serverPrintStream.println("Um cliente se desconectou.");
+                this.receiveFromClient.close();
+                this.socket.close();
+                this.serverPrintStream.println("Um cliente se desconectou.");
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private CopyOnWriteArrayList<Order> getOrders() {
+        return this.getOrders.get();
+    }
+
+    private void addOrder(Order order) {
+        this.addOrder.accept(order);
     }
 
 }

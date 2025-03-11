@@ -4,7 +4,7 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.Italian;
+package assignments.restaurant.cuisine;
 
 import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.component.MenuComponent;
@@ -12,8 +12,6 @@ import assignments.restaurant.component.italianCuisine.ItalianCuisineAppetizer;
 import assignments.restaurant.component.italianCuisine.ItalianCuisineBeverage;
 import assignments.restaurant.component.italianCuisine.ItalianCuisineDessert;
 import assignments.restaurant.component.italianCuisine.ItalianCuisineMainCourse;
-import assignments.restaurant.cuisine.CuisineType;
-import assignments.restaurant.cuisine.ItalianCuisineFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

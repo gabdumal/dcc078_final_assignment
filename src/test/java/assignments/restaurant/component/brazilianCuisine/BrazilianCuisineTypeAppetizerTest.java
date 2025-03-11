@@ -71,7 +71,7 @@ public class BrazilianCuisineTypeAppetizerTest {
     public void shouldGetDescriptionOfAppetizer() {
         assertEquals(
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.",
-                paoDeAlho.getDescription()
+                this.paoDeAlho.getDescription()
                     );
     }
 
@@ -79,7 +79,7 @@ public class BrazilianCuisineTypeAppetizerTest {
     public void shouldGetDescriptionOfDecoratedAppetizer() {
         assertEquals(
                 "Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno." + " " +
-                "Fatias finas de queijo muçarela.", paoDeAlhoComMucarela.getDescription()
+                "Fatias finas de queijo muçarela.", this.paoDeAlhoComMucarela.getDescription()
                     );
     }
 
@@ -87,7 +87,7 @@ public class BrazilianCuisineTypeAppetizerTest {
     public void shouldGetEncodingOfAppetizer() {
         assertEquals(
                 "{Nome: \"Pão de alho\", Descrição: \"Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}",
-                paoDeAlho.toString()
+                this.paoDeAlho.toString()
                     );
     }
 
@@ -95,7 +95,7 @@ public class BrazilianCuisineTypeAppetizerTest {
     public void shouldGetEncodingOfDecoratedAppetizer() {
         assertEquals(
                 "{Nome: \"Pão de alho\", Descrição: \"Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}",
-                paoDeAlhoComMucarela.toString()
+                this.paoDeAlhoComMucarela.toString()
                     );
     }
 
@@ -103,18 +103,18 @@ public class BrazilianCuisineTypeAppetizerTest {
     public void shouldGetEncodingOfDoublyDecoratedAppetizer() {
         assertEquals(
                 "{Nome: \"Pão de alho\", Descrição: \"Pão francês cortado em rodelas, recheado com pasta de alho e ervas e levado ao forno.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}, Extra: {Nome: \"Maionese\", Descrição: \"Maionese caseira com ervas.\", Custo: R$1.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}",
-                getPaoDeAlhoComMucarelaEMaionese.toString()
+                this.getPaoDeAlhoComMucarelaEMaionese.toString()
                     );
     }
 
     @Test
     public void shouldGetNameOfAppetizer() {
-        assertEquals("Pão de alho", paoDeAlho.getName());
+        assertEquals("Pão de alho", this.paoDeAlho.getName());
     }
 
     @Test
     public void shouldGetNameOfDecoratedAppetizer() {
-        assertEquals("Pão de alho", paoDeAlhoComMucarela.getName());
+        assertEquals("Pão de alho", this.paoDeAlhoComMucarela.getName());
     }
 
 }

@@ -18,7 +18,7 @@ public class Response
     @Serial
     private static final long                        serialVersionUID = 1L;
     private final        CopyOnWriteArrayList<Order> orders;
-    private final ResponseType responseType;
+    private final        ResponseType                responseType;
 
     private Response(ResponseType responseType, CopyOnWriteArrayList<Order> orders) {
         this.responseType = responseType;
@@ -34,11 +34,11 @@ public class Response
     }
 
     public CopyOnWriteArrayList<Order> getOrders() {
-        return orders;
+        return this.orders;
     }
 
     public ResponseType getResponseType() {
-        return responseType;
+        return this.responseType;
     }
 
 }

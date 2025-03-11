@@ -37,16 +37,16 @@ public class Customer
             CategoryType categoryType
                                       )
             throws IOException {
-        clientPrintStream.println("Deseja adicionar algum acompanhamento? (S/N)");
-        var wishToDecorate = scanner.readLine();
+        this.clientPrintStream.println("Deseja adicionar algum acompanhamento? (S/N)");
+        var wishToDecorate = this.scanner.readLine();
 
         while (!wishToDecorate.equalsIgnoreCase("S") && !wishToDecorate.equalsIgnoreCase("N")) {
-            clientPrintStream.println("Por favor, escolha uma opção válida.");
-            wishToDecorate = scanner.readLine();
+            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
+            wishToDecorate = this.scanner.readLine();
         }
 
         if (wishToDecorate.equalsIgnoreCase("S")) {
-            clientPrintStream.println("Escolha um acompanhamento:");
+            this.clientPrintStream.println("Escolha um acompanhamento:");
 
             var menuComponentsDecoratorsRecords = Query.fetchAllMenuComponents(
                     RestrictByCuisine.convertCuisineType(this.cuisineType),
@@ -59,10 +59,10 @@ public class Customer
 
             var pickedMenuComponentDecorator = menuComponentsDecoratorsRecords.get(
                     Integer.parseInt(menuComponentDecoratorOption) - 1);
-            BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponentDecorator(
+            BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = this.getOrderBuilderForMenuComponentDecorator(
                     categoryType);
             builderMethod.accept(this.orderBuilder, pickedMenuComponentDecorator);
-            clientPrintStream.println();
+            this.clientPrintStream.println();
         }
     }
 
@@ -94,9 +94,28 @@ public class Customer
         return builderMethod;
     }
 
+    @Override
+    protected UserInterfaceType getUserInterfaceType() {
+        return UserInterfaceType.Customer;
+    }
+
+    @Override
+    public void run() {
+        this.clientPrintStream.println("Boas-vindas ao Restaurante!");
+        this.orderBuilder = new OrderBuilder();
+
+        try {
+            this.setAccount();
+            this.makeOrder();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void makeOrder()
             throws IOException {
-        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setCustomerName(this.customerName);
         this.pickCuisine();
 
         this.pickMenuComponent(CategoryType.Appetizer);
@@ -110,19 +129,19 @@ public class Customer
 
         Order order = this.orderBuilder.build();
         Request request = Request.sendOrder(order);
-        sendToServer.writeObject(request);
-        sendToServer.flush();
+        this.sendToServer.writeObject(request);
+        this.sendToServer.flush();
 
-        clientPrintStream.println("Seu pedido foi recebido com sucesso!");
-        clientPrintStream.println();
+        this.clientPrintStream.println("Seu pedido foi recebido com sucesso!");
+        this.clientPrintStream.println();
     }
 
     private String menuComponentValidationLoop(CopyOnWriteArrayList<MenuComponentRecord> menuComponentsRecords)
             throws IOException {
         String menuComponentOption = this.scanner.readLine();
-        while (menuComponentOption == null || menuComponentOption.isBlank() ||
+        while (null == menuComponentOption || menuComponentOption.isBlank() ||
                !Customer.isValidOption(menuComponentOption, menuComponentsRecords.size())) {
-            clientPrintStream.println("Por favor, escolha uma opção válida.");
+            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
             menuComponentOption = this.scanner.readLine();
         }
         return menuComponentOption;
@@ -130,25 +149,25 @@ public class Customer
 
     private void pickCuisine()
             throws IOException {
-        clientPrintStream.println("Escolha a culinária para montar seu pedido:");
-        clientPrintStream.println("1. " + CuisineType.Brazilian);
-        clientPrintStream.println("2. " + CuisineType.Italian);
+        this.clientPrintStream.println("Escolha a culinária para montar seu pedido:");
+        this.clientPrintStream.println("1. " + CuisineType.Brazilian);
+        this.clientPrintStream.println("2. " + CuisineType.Italian);
 
-        String cuisineOption = scanner.readLine();
+        String cuisineOption = this.scanner.readLine();
         while (!cuisineOption.equals("1") && !cuisineOption.equals("2")) {
-            clientPrintStream.println("Por favor, escolha uma opção válida.");
-            cuisineOption = scanner.readLine();
+            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
+            cuisineOption = this.scanner.readLine();
         }
 
         this.cuisineType = cuisineOption.equals("1") ? CuisineType.Brazilian : CuisineType.Italian;
-        clientPrintStream.println();
+        this.clientPrintStream.println();
     }
 
     private void pickMenuComponent(
             CategoryType categoryType
                                   )
             throws IOException {
-        clientPrintStream.println(categoryType.toString() + ":");
+        this.clientPrintStream.println(categoryType.toString() + ":");
 
         var menuComponentsRecords = Query.fetchAllMenuComponents(
                 RestrictByCuisine.convertCuisineType(this.cuisineType),
@@ -158,11 +177,12 @@ public class Customer
         this.printMenu(menuComponentsRecords);
 
         String menuComponentOption = this.menuComponentValidationLoop(menuComponentsRecords);
-
         var pickedMenuComponentOption = menuComponentsRecords.get(Integer.parseInt(menuComponentOption) - 1);
-        BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = getOrderBuilderForMenuComponent(categoryType);
+
+        BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = this.getOrderBuilderForMenuComponent(categoryType);
         builderMethod.accept(this.orderBuilder, pickedMenuComponentOption);
-        clientPrintStream.println();
+
+        this.clientPrintStream.println();
     }
 
     private void printMenu(CopyOnWriteArrayList<MenuComponentRecord> menu) {
@@ -172,47 +192,28 @@ public class Customer
                 i++
         ) {
             var menuComponentRecord = menu.get(i);
-            clientPrintStream.print((i + 1) + ". ");
+            this.clientPrintStream.print((i + 1) + ". ");
             this.printMenuComponent(menuComponentRecord);
         }
     }
 
     private void printMenuComponent(MenuComponentRecord menuComponentRecord) {
-        clientPrintStream.println(menuComponentRecord.name());
-        clientPrintStream.println("     R$" + menuComponentRecord.cost());
-        clientPrintStream.println("     " + menuComponentRecord.description());
-    }
-
-    @Override
-    public void run() {
-        clientPrintStream.println("Boas-vindas ao Restaurante!");
-        this.orderBuilder = new OrderBuilder();
-
-        try {
-            this.setAccount();
-            this.makeOrder();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected UserInterfaceType getUserInterfaceType() {
-        return UserInterfaceType.Customer;
+        this.clientPrintStream.println(menuComponentRecord.name());
+        this.clientPrintStream.println("     R$" + menuComponentRecord.cost());
+        this.clientPrintStream.println("     " + menuComponentRecord.description());
     }
 
     protected void setAccount()
             throws IOException {
-        clientPrintStream.println("Qual é seu nome?");
+        this.clientPrintStream.println("Qual é seu nome?");
 
-        String customerName = scanner.readLine();
-        while (customerName == null || customerName.isBlank()) {
-            clientPrintStream.println("Por favor, insira um nome válido.");
-            customerName = scanner.readLine();
+        String customerName = this.scanner.readLine();
+        while (null == customerName || customerName.isBlank()) {
+            this.clientPrintStream.println("Por favor, insira um nome válido.");
+            customerName = this.scanner.readLine();
         }
         this.customerName = customerName;
-        clientPrintStream.println();
+        this.clientPrintStream.println();
     }
 
 }

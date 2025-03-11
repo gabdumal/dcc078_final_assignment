@@ -16,8 +16,11 @@ import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.data.Query;
 import assignments.restaurant.order.Order;
 import assignments.restaurant.order.OrderBuilder;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
@@ -45,77 +48,46 @@ public class EmployeeTest {
                                                                                 .getFirst();
     private static final MenuComponentRecord   mainCourseRecordDecorator = Query.fetchMenuComponentById("farofa")
                                                                                 .getFirst();
-    private final static Manager               manager                   = Manager.getInstance();
-    private static       ExecutorService       clientExecutor;
-    private static       OrderBuilder          orderBuilder              = new OrderBuilder();
-    private static       ExecutorService       serverExecutor;
+    private              ExecutorService       clientExecutor;
     private              ByteArrayOutputStream employeeByteArrayOutputStream;
+    private              OrderBuilder          orderBuilder;
+    private              Server                server;
     private              ByteArrayOutputStream serverByteArrayOutputStream;
+    private              ExecutorService       serverExecutor;
 
-    @BeforeAll
-    public static void createBuilder() {
-        orderBuilder = new OrderBuilder();
-    }
-
-    @AfterAll
-    public static void disposeBuilder() {
-        orderBuilder = null;
-    }
-
-    @BeforeAll
-    static void startServer() {
-        serverExecutor = Executors.newSingleThreadExecutor();
-        serverExecutor.submit(() -> {
-            Server.main(new String[]{});
-        });
-
-        // Wait for server to start
-        try {
-            Thread.sleep(1000);
-        }
-        catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @AfterAll
-    static void stopServer() {
-        clientExecutor.shutdown();
-        serverExecutor.shutdown();
-    }
-
-    @AfterAll
-    static void tearDown() {
-        Client.setClientPrintStream(System.out);
-        Server.setServerPrintStream(System.out);
+    @BeforeEach
+    void createBuilder() {
+        this.orderBuilder = new OrderBuilder();
     }
 
     @AfterEach
-    void clearOutputStreams() {
-        employeeByteArrayOutputStream.reset();
-        serverByteArrayOutputStream.reset();
+    void disposeBuilder() {
+        this.orderBuilder = null;
+    }
+
+    @AfterEach
+    void resetOutputStreams() {
+        Client.setClientPrintStream(System.out);
+        this.employeeByteArrayOutputStream = null;
+        Server.setServerPrintStream(System.out);
+        this.serverByteArrayOutputStream = null;
     }
 
     @BeforeEach
     void setOutputStreams() {
-        employeeByteArrayOutputStream = new ByteArrayOutputStream();
-        Client.setClientPrintStream(new PrintStream(employeeByteArrayOutputStream));
-        serverByteArrayOutputStream = new ByteArrayOutputStream();
-        Server.setServerPrintStream(new PrintStream(serverByteArrayOutputStream));
-    }
-
-    @BeforeEach
-    void setUp() {
-        clientExecutor = Executors.newFixedThreadPool(2);
+        this.employeeByteArrayOutputStream = new ByteArrayOutputStream();
+        Client.setClientPrintStream(new PrintStream(this.employeeByteArrayOutputStream));
+        this.serverByteArrayOutputStream = new ByteArrayOutputStream();
+        Server.setServerPrintStream(new PrintStream(this.serverByteArrayOutputStream));
     }
 
     @Test
     void shouldFetchOrdersFromServer()
             throws Exception {
 
-        Future<String> simulatedCustomerFuture = clientExecutor.submit(() -> {
+        Future<String> simulatedCustomerFuture = this.clientExecutor.submit(() -> {
             try (
-                    Socket socket = new Socket(manager.getHost(), manager.getSocketPort());
+                    Socket socket = new Socket(EmployeeTest.findDefaultHost(), EmployeeTest.findDefaultPort());
                     ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream())
             ) {
                 // Create and send an order to the server
@@ -132,9 +104,18 @@ public class EmployeeTest {
         assertEquals("Pedido enviado com sucesso.", result);
         Thread.sleep(2000);
 
-        Future<String> employeeFuture = clientExecutor.submit(() -> {
+        Future<String> employeeFuture = this.clientExecutor.submit(() -> {
             try {
-                Client.main(new String[]{"-e"});
+                String simulatedInput = "1\n";
+                System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+                Client.main(new String[]{
+                        EmployeeTest.findDefaultHost(),
+                        String.valueOf(EmployeeTest.findDefaultPort()),
+                        "-e"
+                });
+                System.setIn(System.in);
+
                 return "A interface de usuário do funcionário foi executada com sucesso.";
             }
             catch (Exception e) {
@@ -147,45 +128,47 @@ public class EmployeeTest {
         assertEquals("A interface de usuário do funcionário foi executada com sucesso.", result);
         Thread.sleep(2000);
 
-        String employeeOutput = employeeByteArrayOutputStream.toString();
+        String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
-                "Boas-vindas ao Restaurante!\n" + "Pedidos:\n" + "1. Alice Andrade\n" +
-                "     Pão de alho - R$8.0 - Extras: Muçarela.\n" + "     Feijoada - R$35.0 - Extras: Farofa.\n" +
-                "     Caipirinha - R$13.0 - Extras: Mel.\n" + "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" +
-                "2. Alice Andrade\n" + "     Pão de alho - R$8.0 - Extras: Muçarela.\n" +
-                "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
-                "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" + "3. Alice Andrade\n" +
-                "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
+                "Boas-vindas ao Restaurante!\n" + "Digite o número do pedido que deseja avançar:\n" +
+                "1. Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
                 "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n", employeeOutput
                     );
 
-        String serverOutput = serverByteArrayOutputStream.toString();
+        String serverOutput = this.serverByteArrayOutputStream.toString();
         assertEquals(
                 "Um novo cliente se conectou.\n" +
                 "Pedido recebido: {Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}, Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
-                "Um cliente se desconectou.\n" + "Um novo cliente se conectou.\n" + "Um cliente se desconectou.\n",
-                serverOutput
+                "Um cliente se desconectou.\n" + "Um novo cliente se conectou.\n", serverOutput
                     );
     }
 
+    private static String findDefaultHost() {
+        return Manager.getInstance().getHost();
+    }
+
+    private static int findDefaultPort() {
+        return Manager.getInstance().getDefaultSocketPort() + 300;
+    }
+
     private Order createOrder() {
-        orderBuilder.setCustomerName(customerName);
-        orderBuilder.setAppetizer(appetizerRecord);
-        orderBuilder.decorateAppetizer(appetizerRecordDecorator);
-        orderBuilder.decorateAppetizer(appetizerRecordDecorator);
-        orderBuilder.setBeverage(beverageRecord);
-        orderBuilder.decorateBeverage(beverageRecordDecorator);
-        orderBuilder.setMainCourse(mainCourseRecord);
-        orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
-        orderBuilder.setDessert(dessertRecord);
-        orderBuilder.decorateDessert(dessertRecordDecorator);
-        return orderBuilder.build();
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.decorateDessert(dessertRecordDecorator);
+        return this.orderBuilder.build();
     }
 
     @Test
     public void shouldPrintAppetizer() {
-        Employee employee = new Employee(null, null, null, new PrintStream(employeeByteArrayOutputStream));
+        Employee employee = new Employee(null, null, null, new PrintStream(this.employeeByteArrayOutputStream));
         MenuComponent component = ComponentFacade.createAppetizer(
                 appetizerRecord.cuisine(),
                 appetizerRecord.name(),
@@ -193,13 +176,13 @@ public class EmployeeTest {
                 appetizerRecord.cost()
                                                                  );
         employee.printMenuComponent(component);
-        String employeeOutput = employeeByteArrayOutputStream.toString();
+        String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals("     Pão de alho - R$6.0\n", employeeOutput);
     }
 
     @Test
     public void shouldPrintDecoratedAppetizer() {
-        Employee employee = new Employee(null, null, null, new PrintStream(employeeByteArrayOutputStream));
+        Employee employee = new Employee(null, null, null, new PrintStream(this.employeeByteArrayOutputStream));
 
         Appetizer appetizer = ComponentFacade.createAppetizer(
                 appetizerRecord.cuisine(),
@@ -216,16 +199,16 @@ public class EmployeeTest {
                                                                                );
 
         employee.printMenuComponent(decoratedAppetizer);
-        String employeeOutput = employeeByteArrayOutputStream.toString();
+        String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals("     Pão de alho - R$8.0 - Extras: Muçarela.\n", employeeOutput);
     }
 
     @Test
     public void shouldPrintOrder() {
-        Employee employee = new Employee(null, null, null, new PrintStream(employeeByteArrayOutputStream));
+        Employee employee = new Employee(null, null, null, new PrintStream(this.employeeByteArrayOutputStream));
         var order = this.createOrder();
         employee.printOrder(order);
-        String employeeOutput = employeeByteArrayOutputStream.toString();
+        String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
                 "Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
@@ -235,7 +218,7 @@ public class EmployeeTest {
 
     @Test
     public void shouldPrintOrders() {
-        Employee employee = new Employee(null, null, null, new PrintStream(employeeByteArrayOutputStream));
+        Employee employee = new Employee(null, null, null, new PrintStream(this.employeeByteArrayOutputStream));
 
         var firstOrder = this.createOrder();
         var secondOrder = this.createOrder();
@@ -245,7 +228,7 @@ public class EmployeeTest {
         orders.add(secondOrder);
 
         employee.printOrders(orders);
-        String employeeOutput = employeeByteArrayOutputStream.toString();
+        String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
                 "1. Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
@@ -256,8 +239,37 @@ public class EmployeeTest {
                     );
     }
 
+    @BeforeEach
+    void startServer() {
+        this.serverExecutor = Executors.newSingleThreadExecutor();
+        this.clientExecutor = Executors.newFixedThreadPool(2);
+
+        this.serverExecutor.submit(() -> {
+            this.server = new Server();
+            this.server.run(EmployeeTest.findDefaultPort());
+        });
+
+        // Wait for server to start
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @AfterEach
+    void stopServer() {
+        this.clientExecutor.shutdownNow();
+        this.serverExecutor.shutdownNow();
+        this.clientExecutor = null;
+        this.serverExecutor = null;
+        this.server = null;
+    }
+
 }
 
 /* Testing path
+1
 
  */

@@ -2,7 +2,7 @@
   <configuration default="false" name="Client -c" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.client.Client" />
     <module name="dcc078" />
-    <option name="PROGRAM_PARAMETERS" value="-c" />
+    <option name="PROGRAM_PARAMETERS" value="localhost 29100 -c" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="assignments.restaurant.app.client.Customer" />

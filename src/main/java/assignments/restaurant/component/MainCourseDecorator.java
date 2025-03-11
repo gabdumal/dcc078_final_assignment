@@ -10,7 +10,7 @@ public abstract class MainCourseDecorator
         extends MainCourse
         implements Decorator {
 
-    protected MainCourse mainCourse;
+    protected final MainCourse mainCourse;
 
     public MainCourseDecorator(MainCourse mainCourse) {
         this.mainCourse = mainCourse;

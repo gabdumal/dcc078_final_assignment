@@ -15,9 +15,9 @@ public class Request
         implements Serializable {
 
     @Serial
-    private static final long  serialVersionUID = 1L;
-    private final        Order order;
-    private final RequestType requestType;
+    private static final long        serialVersionUID = 1L;
+    private final        Order       order;
+    private final        RequestType requestType;
 
     private Request(RequestType requestType, Order order) {
         this.requestType = requestType;
@@ -37,7 +37,7 @@ public class Request
     }
 
     public RequestType getRequestType() {
-        return requestType;
+        return this.requestType;
     }
 
 }

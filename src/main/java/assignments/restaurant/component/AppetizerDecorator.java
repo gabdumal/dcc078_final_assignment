@@ -10,7 +10,7 @@ public abstract class AppetizerDecorator
         extends Appetizer
         implements Decorator {
 
-    protected Appetizer appetizer;
+    protected final Appetizer appetizer;
 
     public AppetizerDecorator(Appetizer appetizer) {
         this.appetizer = appetizer;

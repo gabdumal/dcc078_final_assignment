@@ -2,6 +2,7 @@
   <configuration default="false" name="Server" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="assignments.restaurant.app.server.Server" />
     <module name="dcc078" />
+    <option name="PROGRAM_PARAMETERS" value="29100" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="assignments.restaurant.app.client.Customer" />

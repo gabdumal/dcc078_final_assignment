@@ -52,7 +52,7 @@ public class Query {
                                                                                   ) {
         var lists = new CopyOnWriteArrayList<CopyOnWriteArrayList<MenuComponentRecord>>();
 
-        if (restrictById != null && !restrictById.isBlank()) {
+        if (null != restrictById && !restrictById.isBlank()) {
             lists = restrictById(restrictById);
         }
 

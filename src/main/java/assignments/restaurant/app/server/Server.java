@@ -7,40 +7,94 @@
 package assignments.restaurant.app.server;
 
 import assignments.restaurant.Manager;
+import assignments.restaurant.order.Order;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
 
-    private static final Manager         manager           = Manager.getInstance();
-    private static final ExecutorService threadPool        = Executors.newFixedThreadPool(manager.getMaximumOfClients());
-    private static       PrintStream     serverPrintStream = System.out;
+    private static PrintStream serverPrintStream      = System.out;
+    private final  CopyOnWriteArrayList<Order> orders = new CopyOnWriteArrayList<>();
+    private final  ExecutorService threadPool;
+
+    public Server() {
+        this.threadPool = Executors.newFixedThreadPool(Manager.getInstance().getMaximumOfClients());
+    }
 
     public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(manager.getSocketPort())) {
-            serverPrintStream.println(
-                    "O servidor do Restaurante está rodando na porta " + manager.getSocketPort() + "...");
+        var arguments = processArguments(args);
+        new Server().run(arguments.getPort());
+    }
 
+    protected static ServerArguments processArguments(String[] args) {
+        if (1 != args.length) {
+            throw new IllegalArgumentException("Você deve fornecer uma porta!");
+        }
+
+        int port = ServerArguments.findPort(args[0]);
+
+        return new ServerArguments(port);
+    }
+
+    public static void setServerPrintStream(PrintStream printStream) {
+        Server.serverPrintStream = printStream;
+    }
+
+    public synchronized void addOrder(Order order) {
+        this.orders.add(order);
+    }
+
+    public synchronized CopyOnWriteArrayList<Order> getOrders() {
+        return this.orders;
+    }
+
+    public synchronized CopyOnWriteArrayList<Order> getOrders(CopyOnWriteArrayList<Order> orders) {
+        return this.orders;
+    }
+
+    public int run(int port) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+            this.runSocket(serverSocket);
+        }
+        catch (IOException e) {
+            if (e.getMessage().contains("Address already in use")) {
+                serverPrintStream.println("A porta " + port + " já está em uso. Tentando outra porta...");
+                return this.run(port + 1);
+            }
+            else {
+                e.printStackTrace();
+            }
+        }
+        return port;
+    }
+
+    protected void runSocket(ServerSocket serverSocket) {
+        try {
+            serverPrintStream.println(
+                    "O servidor do Restaurante está rodando na porta " + serverSocket.getLocalPort() + "...");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 serverPrintStream.println("Um novo cliente se conectou.");
 
-                // ✅ Run the client handler in a separate thread
-                threadPool.execute(new ClientHandler(clientSocket, serverPrintStream));
+                // Run the client handler in a separate thread
+                this.threadPool.execute(new ClientHandler(
+                        clientSocket,
+                                                          serverPrintStream,
+                                                          this::addOrder,
+                                                          this::getOrders
+                ));
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void setServerPrintStream(PrintStream printStream) {
-        Server.serverPrintStream = printStream;
     }
 
 }

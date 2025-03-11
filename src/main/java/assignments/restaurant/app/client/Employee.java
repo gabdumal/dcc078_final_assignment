@@ -35,34 +35,38 @@ public class Employee
 
     @Override
     public void run() {
-        clientPrintStream.println("Boas-vindas ao Restaurante!");
+        this.clientPrintStream.println("Boas-vindas ao Restaurante!");
 
         try {
-            this.pickOrder();
+            this.advanceOrder();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void pickOrder()
+    private void advanceOrder()
             throws IOException {
-        clientPrintStream.println("Pedidos:");
+        this.clientPrintStream.println("Digite o número do pedido que deseja avançar:");
+
         var orders = this.fetchOrders();
         this.printOrders(orders);
+
+        String orderOption = this.orderValidationLoop(orders);
+        Order pickedOrder = orders.get(Integer.parseInt(orderOption) - 1);
     }
 
     private CopyOnWriteArrayList<Order> fetchOrders()
             throws IOException {
 
         Request request = Request.retrieveOrders();
-        sendToServer.writeObject(request);
-        sendToServer.flush();
+        this.sendToServer.writeObject(request);
+        this.sendToServer.flush();
 
         try {
-            Object receivedObject = receiveFromServer.readObject();
+            Object receivedObject = this.receiveFromServer.readObject();
             if (receivedObject instanceof Response response) {
-                if (response.getResponseType() == ResponseType.SendOrders) {
+                if (ResponseType.SendOrders == response.getResponseType()) {
                     return response.getOrders();
                 }
             }
@@ -76,7 +80,7 @@ public class Employee
 
     protected void printOrders(CopyOnWriteArrayList<Order> orders) {
         if (orders.isEmpty()) {
-            clientPrintStream.println("Nenhum pedido encontrado.");
+            this.clientPrintStream.println("Nenhum pedido encontrado.");
             return;
         }
 
@@ -86,13 +90,23 @@ public class Employee
                 i++
         ) {
             var order = orders.get(i);
-            clientPrintStream.print((i + 1) + ". ");
+            this.clientPrintStream.print((i + 1) + ". ");
             this.printOrder(order);
         }
     }
 
+    private String orderValidationLoop(CopyOnWriteArrayList<Order> orders)
+            throws IOException {
+        String orderOption = this.scanner.readLine();
+        while (null == orderOption || orderOption.isBlank() || !Employee.isValidOption(orderOption, orders.size())) {
+            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
+            orderOption = this.scanner.readLine();
+        }
+        return orderOption;
+    }
+
     protected void printOrder(Order order) {
-        clientPrintStream.println(order.getCustomerName());
+        this.clientPrintStream.println(order.getCustomerName());
         this.printMenuComponent(order.getAppetizer());
         this.printMenuComponent(order.getMainCourse());
         this.printMenuComponent(order.getBeverage());
@@ -100,19 +114,19 @@ public class Employee
     }
 
     protected void printMenuComponent(MenuComponent menuComponent) {
-        clientPrintStream.print("     " + menuComponent.getName());
-        clientPrintStream.print(" - R$");
-        clientPrintStream.print(menuComponent.getCost());
+        this.clientPrintStream.print("     " + menuComponent.getName());
+        this.clientPrintStream.print(" - R$");
+        this.clientPrintStream.print(menuComponent.getCost());
 
         if (menuComponent instanceof Decorator) {
-            clientPrintStream.print(" - Extras:");
+            this.clientPrintStream.print(" - Extras:");
         }
         while (menuComponent instanceof Decorator) {
-            clientPrintStream.print(" " + ((Decorator) menuComponent).getDecorationName() + ".");
+            this.clientPrintStream.print(" " + ((Decorator) menuComponent).getDecorationName() + ".");
             menuComponent = ((Decorator) menuComponent).getDecorated();
         }
 
-        clientPrintStream.println();
+        this.clientPrintStream.println();
     }
 
 }

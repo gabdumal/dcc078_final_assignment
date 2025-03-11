@@ -6,58 +6,91 @@
 
 package assignments.restaurant.app.client;
 
-import assignments.restaurant.Manager;
-
 import java.io.*;
 import java.net.Socket;
 
 public class Client {
 
-    private static final String        customerInterface       = "-c";
-    private static final String        employeeInterface       = "-e";
-    private static final String        invalidArgumentsMessage =
-            "Você deve fornecer uma interface de usuário válida: " + employeeInterface + " (funcionário) ou " +
-            customerInterface + " (cliente)!";
-    private static       PrintStream   clientPrintStream       = System.out;
-    private static       UserInterface userInterface;
+    private static final String      customerInterface = "-c";
+    private static final String      employeeInterface = "-e";
+    private static final String      invalidArgumentsMessage = "Você deve fornecer uma interface de usuário válida: " +
+                                                               employeeInterface + " (funcionário) ou " +
+                                                               customerInterface + " (cliente)!";
+    private static       PrintStream clientPrintStream = System.out;
+
+    protected Client() {
+    }
 
     public static void main(String[] args) {
-        Manager manager = Manager.getInstance();
+        var arguments = processArguments(args);
+        new Client().run(arguments.getHost(), arguments.getPort(), arguments.getUserInterface());
+    }
 
-        try (
-                Socket socket = new Socket(manager.getHost(), manager.getSocketPort());
-                ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream receiveFromServer = new ObjectInputStream(socket.getInputStream());
-                BufferedReader scanner = new BufferedReader(new InputStreamReader(System.in))
-        ) {
-            var userInterfaceType = processArguments(args);
-            switch (userInterfaceType) {
-                case Customer -> {
-                    userInterface = new Customer(scanner, receiveFromServer, sendToServer, clientPrintStream);
-                    userInterface.run();
-                }
-                case Employee -> {
-                    userInterface = new Employee(scanner, receiveFromServer, sendToServer, clientPrintStream);
-                    userInterface.run();
-                }
-                default -> throw new IllegalArgumentException("Tipo de interface não suportado.");
-            }
+    protected static ClientArguments processArguments(String[] args) {
+        if (3 != args.length) {
+            throw new IllegalArgumentException("Você deve fornecer um host, uma porta e uma interface de usuário!");
+        }
+
+        String host = getHost(args[0]);
+        int port = ClientArguments.findPort(args[1]);
+
+        UserInterfaceType userInterfaceType = switch (args[2]) {
+            case "-e" -> UserInterfaceType.Employee;
+            case "-c" -> UserInterfaceType.Customer;
+            default -> throw new IllegalArgumentException(invalidArgumentsMessage);
+        };
+
+        return new ClientArguments(host, port, userInterfaceType);
+    }
+
+    protected void run(String host, int port, UserInterfaceType userInterfaceType) {
+        try {
+            Socket socket = new Socket(host, port);
+
+            ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream receiveFromServer = new ObjectInputStream(socket.getInputStream());
+            BufferedReader scanner = new BufferedReader(new InputStreamReader(System.in));
+
+            UserInterface userInterface = getUserInterface(
+                    userInterfaceType,
+                    scanner,
+                    receiveFromServer,
+                    sendToServer,
+                    clientPrintStream
+                                                          );
+
+            userInterface.run();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    protected static UserInterfaceType processArguments(String[] args) {
-        if (args.length != 1) {
-            throw new IllegalArgumentException(invalidArgumentsMessage);
+    private static String getHost(String host) {
+        if (null == host || host.isEmpty()) {
+            throw new IllegalArgumentException("O host não pode ser nulo ou vazio!");
         }
+        return host;
+    }
 
-        return switch (args[0]) {
-            case "-e" -> UserInterfaceType.Employee;
-            case "-c" -> UserInterfaceType.Customer;
-            default -> throw new IllegalArgumentException(invalidArgumentsMessage);
-        };
+    protected static UserInterface getUserInterface(
+            UserInterfaceType userInterfaceType,
+            BufferedReader scanner,
+            ObjectInputStream receiveFromServer,
+            ObjectOutputStream sendToServer,
+            PrintStream clientPrintStream
+                                                   ) {
+        UserInterface userInterface;
+        switch (userInterfaceType) {
+            case Customer -> {
+                userInterface = new Customer(scanner, receiveFromServer, sendToServer, clientPrintStream);
+            }
+            case Employee -> {
+                userInterface = new Employee(scanner, receiveFromServer, sendToServer, clientPrintStream);
+            }
+            default -> throw new IllegalArgumentException("Tipo de interface não suportado.");
+        }
+        return userInterface;
     }
 
     public static void setClientPrintStream(PrintStream printStream) {

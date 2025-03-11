@@ -6,6 +6,7 @@
 
 package assignments.restaurant.app.client;
 
+import assignments.restaurant.Manager;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,47 +21,73 @@ public class ClientTest {
                                                           " (cliente)!";
 
     @Test
-    public void shouldGetCustomerInterface() {
-        var arguments = new String[]{
-                customerInterface
+    public void shouldGetCustomerUserInterface() {
+        String[] arguments = getDefaultArguments();
+        arguments[2] = customerInterface;
+        var clientArguments = Client.processArguments(arguments);
+        assertEquals(UserInterfaceType.Customer, clientArguments.getUserInterface());
+    }
+
+    private static String[] getDefaultArguments() {
+        return new String[]{
+                ClientTest.findDefaultHost(),
+                String.valueOf(ClientTest.findDefaultPort()),
+                null
         };
-        var userInterfaceType = Client.processArguments(arguments);
-        assertEquals(UserInterfaceType.Customer, userInterfaceType);
+    }
+
+    private static String findDefaultHost() {
+        return Manager.getInstance().getHost();
+    }
+
+    private static int findDefaultPort() {
+        return Manager.getInstance().getDefaultSocketPort() + 200;
     }
 
     @Test
-    public void shouldGetEmployeeInterface() {
-        var arguments = new String[]{
-                employeeInterface
-        };
-        var userInterfaceType = Client.processArguments(arguments);
-        assertEquals(UserInterfaceType.Employee, userInterfaceType);
+    public void shouldGetEmployeeUserInterface() {
+        String[] arguments = getDefaultArguments();
+        arguments[2] = employeeInterface;
+        var clientArguments = Client.processArguments(arguments);
+        assertEquals(UserInterfaceType.Employee, clientArguments.getUserInterface());
     }
 
     @Test
-    public void shouldThrowExceptionWhenProcessingInvalidArgument() {
-        var arguments = new String[]{
-                "-i",
-                };
+    public void shouldThrowExceptionWhenProcessingInvalidUserInterface() {
+        String[] arguments = getDefaultArguments();
+        arguments[2] = "-i";
         var exception = assertThrows(IllegalArgumentException.class, () -> Client.processArguments(arguments));
         assertEquals(invalidArgumentsMessage, exception.getMessage());
     }
 
     @Test
-    public void shouldThrowExceptionWhenProcessingNoArguments() {
-        var arguments = new String[]{};
+    public void shouldThrowExceptionWhenProcessingLessThanRequiredArguments() {
+        String[] arguments = {
+                ClientTest.findDefaultHost(),
+                String.valueOf(ClientTest.findDefaultPort())
+        };
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> Client.processArguments(arguments));
+        assertEquals("Você deve fornecer um host, uma porta e uma interface de usuário!", exception.getMessage());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenProcessingNoUserInterface() {
+        String[] arguments = getDefaultArguments();
+        arguments[2] = "";
         var exception = assertThrows(IllegalArgumentException.class, () -> Client.processArguments(arguments));
         assertEquals(invalidArgumentsMessage, exception.getMessage());
     }
 
     @Test
-    public void shouldThrowExceptionWhenProcessingTwoArguments() {
-        var arguments = new String[]{
-                "-r",
-                "-c"
-        };
+    public void shouldThrowExceptionWhenProcessingTooMuchArguments() {
+        String[] defaultArguments = getDefaultArguments();
+        String[] arguments = new String[defaultArguments.length + 1];
+        System.arraycopy(defaultArguments, 0, arguments, 0, defaultArguments.length);
+        arguments[defaultArguments.length] = "-x";
+
         var exception = assertThrows(IllegalArgumentException.class, () -> Client.processArguments(arguments));
-        assertEquals(invalidArgumentsMessage, exception.getMessage());
+        assertEquals("Você deve fornecer um host, uma porta e uma interface de usuário!", exception.getMessage());
     }
 
 }

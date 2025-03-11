@@ -13,10 +13,10 @@ import java.io.PrintStream;
 
 public abstract class UserInterface {
 
-    protected PrintStream        clientPrintStream;
-    protected ObjectInputStream  receiveFromServer;
-    protected BufferedReader     scanner;
-    protected ObjectOutputStream sendToServer;
+    protected final PrintStream        clientPrintStream;
+    protected final ObjectInputStream  receiveFromServer;
+    protected final BufferedReader     scanner;
+    protected final ObjectOutputStream sendToServer;
 
     public UserInterface(
             BufferedReader scanner,
@@ -33,7 +33,7 @@ public abstract class UserInterface {
     protected static boolean isValidOption(String option, int size) {
         try {
             int parsedOption = Integer.parseInt(option);
-            return parsedOption >= 1 && parsedOption <= size;
+            return 1 <= parsedOption && parsedOption <= size;
         }
         catch (NumberFormatException e) {
             return false;

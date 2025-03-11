@@ -10,7 +10,7 @@ public abstract class BeverageDecorator
         extends Beverage
         implements Decorator {
 
-    protected Beverage beverage;
+    protected final Beverage beverage;
 
     public BeverageDecorator(Beverage beverage) {
         this.beverage = beverage;
