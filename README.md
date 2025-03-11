@@ -8,7 +8,7 @@ Este repositório utiliza os seguintes padrões:
 - [X] Abstract Factory
 - [ ] Factory Method
 - [X] Decorator
-- [ ] State
+- [x] State
 - [ ] Observer
 - [ ] Strategy
 - [ ] Template Method

@@ -106,6 +106,8 @@ public class Employee
     }
 
     protected void printOrder(Order order) {
+        this.clientPrintStream.print(order.getState());
+        this.clientPrintStream.print(": ");
         this.clientPrintStream.println(order.getCustomerName());
         this.printMenuComponent(order.getAppetizer());
         this.printMenuComponent(order.getMainCourse());

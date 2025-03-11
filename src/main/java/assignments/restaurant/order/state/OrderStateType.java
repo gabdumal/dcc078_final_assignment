@@ -6,20 +6,18 @@
 
 package assignments.restaurant.order.state;
 
-import java.io.Serializable;
+public enum OrderStateType {
+    New,
+    Preparing,
+    Delivering,
+    Finished;
 
-/*
- * Design Pattern: State
- *
- * This class is part of the State design pattern.
- * It represents the state of an order.
- */
-
-public interface OrderState
-        extends Serializable {
-
-    void advance(OrderContext context);
-
-    OrderStateType getType();
-
+    public String toString() {
+        return switch (this) {
+            case New -> "Recebido";
+            case Preparing -> "Preparando";
+            case Delivering -> "Entregando";
+            case Finished -> "Finalizado";
+        };
+    }
 }

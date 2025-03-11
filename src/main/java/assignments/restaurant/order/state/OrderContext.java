@@ -24,6 +24,10 @@ public class OrderContext
         this.state.advance(this);
     }
 
+    public OrderStateType getState() {
+        return this.state.getType();
+    }
+
     public void setState(OrderState state) {
         this.state = state;
     }

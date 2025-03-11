@@ -131,7 +131,7 @@ public class EmployeeTest {
         String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
                 "Boas-vindas ao Restaurante!\n" + "Digite o número do pedido que deseja avançar:\n" +
-                "1. Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
+                "1. Recebido: Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
                 "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n", employeeOutput
                     );
@@ -139,7 +139,7 @@ public class EmployeeTest {
         String serverOutput = this.serverByteArrayOutputStream.toString();
         assertEquals(
                 "Um novo cliente se conectou.\n" +
-                "Pedido recebido: {Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}, Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
+                "Pedido recebido: {Status: \"Recebido\", Cliente: \"Alice Andrade\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}, Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
                 "Um cliente se desconectou.\n" + "Um novo cliente se conectou.\n", serverOutput
                     );
     }
@@ -210,7 +210,7 @@ public class EmployeeTest {
         employee.printOrder(order);
         String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
-                "Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
+                "Recebido: Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
                 "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n", employeeOutput
                     );
@@ -221,6 +221,7 @@ public class EmployeeTest {
         Employee employee = new Employee(null, null, null, new PrintStream(this.employeeByteArrayOutputStream));
 
         var firstOrder = this.createOrder();
+        firstOrder.advance();
         var secondOrder = this.createOrder();
 
         CopyOnWriteArrayList<Order> orders = new CopyOnWriteArrayList<>();
@@ -230,9 +231,9 @@ public class EmployeeTest {
         employee.printOrders(orders);
         String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
-                "1. Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
+                "1. Preparando: Alice Andrade\n" + "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
-                "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" + "2. Alice Andrade\n" +
+                "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" + "2. Recebido: Alice Andrade\n" +
                 "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
                 "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n", employeeOutput

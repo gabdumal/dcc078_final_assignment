@@ -19,4 +19,9 @@ public class NewOrder
         context.setState(new PreparingOrder());
     }
 
+    @Override
+    public OrderStateType getType() {
+        return OrderStateType.New;
+    }
+
 }

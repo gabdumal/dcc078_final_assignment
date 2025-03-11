@@ -11,6 +11,7 @@ import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
 import assignments.restaurant.order.state.OrderContext;
+import assignments.restaurant.order.state.OrderStateType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -22,18 +23,26 @@ public class Order
         implements Serializable {
 
     @Serial
-    private static final long       serialVersionUID = 1L;
-    private              Appetizer  appetizer;
-    private              Beverage   beverage;
-    private              String     customerName;
-    private              Dessert    dessert;
-    private              MainCourse mainCourse;
+    private static final long         serialVersionUID = 1L;
+    private final        OrderContext context;
+    private              Appetizer    appetizer;
+    private              Beverage     beverage;
+    private              String       customerName;
+    private              Dessert      dessert;
+    private              MainCourse   mainCourse;
 
     /**
      * Protected constructor to prevent direct instantiation except for the builder.
      */
     protected Order() {
-        OrderContext context = new OrderContext();
+        this.context = new OrderContext();
+    }
+
+    /**
+     * Advances the state of the order to the next state.
+     */
+    public void advance() {
+        this.context.advance();
     }
 
     /**
@@ -126,10 +135,24 @@ public class Order
         this.mainCourse = mainCourse;
     }
 
+    /**
+     * Gets the current state of the order.
+     *
+     * @return The current state of the order as an OrderStateType.
+     */
+    public OrderStateType getState() {
+        return this.context.getState();
+    }
+
+    /**
+     * Returns a string representation of the order.
+     *
+     * @return A string representation of the order, including its status, customer name, appetizer, main course, beverage, and dessert.
+     */
     public String toString() {
-        return "{" + "Cliente: \"" + this.customerName + "\", " + "Entrada: " + this.appetizer + ", " +
-               "Prato principal: " + this.mainCourse + ", " + "Bebida: " + this.beverage + ", " + "Sobremesa: " +
-               this.dessert + "}";
+        return "{" + "Status: \"" + this.context.getState() + "\", " + "Cliente: \"" + this.customerName + "\", " +
+               "Entrada: " + this.appetizer + ", " + "Prato principal: " + this.mainCourse + ", " + "Bebida: " +
+               this.beverage + ", " + "Sobremesa: " + this.dessert + "}";
     }
 
 }

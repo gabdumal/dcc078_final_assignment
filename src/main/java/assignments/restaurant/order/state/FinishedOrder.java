@@ -19,4 +19,9 @@ public class FinishedOrder
         throw new IllegalStateException("Não é possível avançar o estado de um pedido que já foi finalizado.");
     }
 
+    @Override
+    public OrderStateType getType() {
+        return OrderStateType.Finished;
+    }
+
 }
