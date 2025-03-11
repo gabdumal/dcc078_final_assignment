@@ -4,22 +4,17 @@
  * Licensed under the GNU Affero General Public License, Version 3.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.gnu.org/licenses/agpl-3.0.txt>.
  */
 
-package assignments.restaurant.order.state;
+package assignments.restaurant.order.payment;
 
 import java.io.Serializable;
 
-/*
- * Design Pattern: State
- *
- * This class is part of the State design pattern.
- * It represents the state of an order.
- */
-
-public interface OrderState
+public interface PaymentStrategy
         extends Serializable {
 
-    void advance(OrderContext context);
+    default String pay(double amount) {
+        return "Pagamento de R$" + amount + " realizado com sucesso via " + this.getPaymentType() + ".";
+    }
 
-    OrderStateType getType();
+    PaymentType getPaymentType();
 
 }

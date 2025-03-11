@@ -6,19 +6,22 @@
 
 package assignments.restaurant.order.state;
 
-public enum OrderStateType {
-    New,
-    Preparing,
-    Delivering,
-    Finished;
+import java.io.Serial;
+
+public class Delivering
+        implements State {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Override
-    public String toString() {
-        return switch (this) {
-            case New -> "Recebido";
-            case Preparing -> "Preparando";
-            case Delivering -> "Entregando";
-            case Finished -> "Finalizado";
-        };
+    public void advance(OrderStateContext context) {
+        context.setState(new Finished());
     }
+
+    @Override
+    public StateType getType() {
+        return StateType.Delivering;
+    }
+
 }

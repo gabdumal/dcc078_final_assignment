@@ -10,7 +10,7 @@ Este repositório utiliza os seguintes padrões:
 - [X] Decorator
 - [x] State
 - [ ] Observer
-- [ ] Strategy
+- [X] Strategy
 - [ ] Template Method
 - [X] Facade
 - [X] Builder

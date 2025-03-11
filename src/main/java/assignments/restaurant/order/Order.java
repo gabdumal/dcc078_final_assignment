@@ -11,8 +11,11 @@ import assignments.restaurant.component.Beverage;
 import assignments.restaurant.component.Dessert;
 import assignments.restaurant.component.MainCourse;
 import assignments.restaurant.order.category.OrderCategoryType;
-import assignments.restaurant.order.state.OrderContext;
-import assignments.restaurant.order.state.OrderStateType;
+import assignments.restaurant.order.payment.OrderPaymentContext;
+import assignments.restaurant.order.payment.PaymentStrategy;
+import assignments.restaurant.order.payment.PaymentType;
+import assignments.restaurant.order.state.OrderStateContext;
+import assignments.restaurant.order.state.StateType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -24,26 +27,28 @@ public abstract class Order
         implements Serializable {
 
     @Serial
-    private static final long         serialVersionUID = 1L;
-    private final        OrderContext context;
-    private              Appetizer    appetizer;
-    private              Beverage     beverage;
-    private              String       customerName;
-    private              Dessert      dessert;
-    private              MainCourse   mainCourse;
+    private static final long                serialVersionUID = 1L;
+    private final        OrderPaymentContext paymentContext;
+    private final        OrderStateContext   stateContext;
+    private              Appetizer           appetizer;
+    private              Beverage            beverage;
+    private              String              customerName;
+    private              Dessert             dessert;
+    private              MainCourse          mainCourse;
 
     /**
      * Protected constructor to prevent direct instantiation except for the builder.
      */
     protected Order() {
-        this.context = new OrderContext();
+        this.paymentContext = new OrderPaymentContext();
+        this.stateContext = new OrderStateContext();
     }
 
     /**
      * Advances the state of the order to the next state.
      */
     public void advance() {
-        this.context.advance();
+        this.stateContext.advance();
     }
 
     /**
@@ -137,24 +142,52 @@ public abstract class Order
     }
 
     /**
+     * Processes the payment for the order.
+     *
+     * @return A string indicating the result of the payment process.
+     */
+    public String pay() {
+        return this.paymentContext.pay(this.getTotalCost());
+    }
+
+    /**
+     * Calculates the total cost of the order.
+     *
+     * @return The total cost of the order, which is the sum of the costs of the appetizer, main course, beverage, and dessert.
+     */
+    public double getTotalCost() {
+        return this.appetizer.getCost() + this.mainCourse.getCost() + this.beverage.getCost() + this.dessert.getCost();
+    }
+
+    /**
+     * Sets the payment strategy for the order.
+     *
+     * @param paymentStrategy The payment strategy to set.
+     */
+    protected void setPaymentStrategy(PaymentStrategy paymentStrategy) {
+        this.paymentContext.setPaymentStrategy(paymentStrategy);
+    }
+
+    /**
      * Returns a string representation of the order.
      *
      * @return A string representation of the order, including its status, customer name, appetizer, main course, beverage, and dessert.
      */
     @Override
     public String toString() {
-        return "{" + "Status: \"" + this.getState() + "\", " + "Tipo: \"" + this.getCategory() + "\", " +
-               "Cliente: \"" + this.customerName + "\", " + "Entrada: " + this.appetizer + ", " + "Prato principal: " +
+        return "{" + "Status: \"" + this.getStateType() + "\", " + "Tipo: \"" + this.getCategory() + "\", " +
+               "Cliente: \"" + this.customerName + "\", " + "Custo: " + this.getTotalCost() + ", " + "Pagamento: \"" +
+               this.getPaymentType() + "\", " + "Entrada: " + this.appetizer + ", " + "Prato principal: " +
                this.mainCourse + ", " + "Bebida: " + this.beverage + ", " + "Sobremesa: " + this.dessert + "}";
     }
 
     /**
      * Gets the current state of the order.
      *
-     * @return The current state of the order as an OrderStateType.
+     * @return The current state of the order as an StateType.
      */
-    public OrderStateType getState() {
-        return this.context.getState();
+    public StateType getStateType() {
+        return this.stateContext.getStateType();
     }
 
     /**
@@ -163,5 +196,14 @@ public abstract class Order
      * @return The category of the order as an OrderCategoryType.
      */
     public abstract OrderCategoryType getCategory();
+
+    /**
+     * Gets the current payment strategy of the order.
+     *
+     * @return The current payment strategy of the order as an PaymentType.
+     */
+    public PaymentType getPaymentType() {
+        return this.paymentContext.getPaymentType();
+    }
 
 }

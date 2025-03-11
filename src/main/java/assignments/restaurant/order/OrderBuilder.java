@@ -11,6 +11,7 @@ import assignments.restaurant.component.ComponentFacade;
 import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.order.category.OrderCategoryType;
 import assignments.restaurant.order.category.OrderFactory;
+import assignments.restaurant.order.payment.PaymentStrategy;
 
 /*
  * Design Pattern: Builder
@@ -50,6 +51,9 @@ public class OrderBuilder {
     public Order build() {
         if (null == this.order.getCustomerName()) {
             throw new IllegalStateException("O nome do cliente é obrigatório!");
+        }
+        if (null == this.order.getPaymentType()) {
+            throw new IllegalStateException("Um pedido deve ter um método de pagamento registrado!");
         }
         if (null == this.order.getAppetizer()) {
             throw new IllegalStateException("Um pedido deve ter uma entrada!");
@@ -339,6 +343,15 @@ public class OrderBuilder {
                 mainCourseRecord.cost()
                                                         );
         this.order.setMainCourse(component);
+    }
+
+    /**
+     * Sets the payment strategy for the order.
+     *
+     * @param paymentStrategy The payment strategy to set.
+     */
+    public void setPaymentStrategy(PaymentStrategy paymentStrategy) {
+        this.order.setPaymentStrategy(paymentStrategy);
     }
 
 }

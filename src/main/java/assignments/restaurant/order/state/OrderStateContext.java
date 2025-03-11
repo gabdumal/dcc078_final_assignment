@@ -9,26 +9,26 @@ package assignments.restaurant.order.state;
 import java.io.Serial;
 import java.io.Serializable;
 
-public class OrderContext
+public class OrderStateContext
         implements Serializable {
 
     @Serial
-    private static final long       serialVersionUID = 1L;
-    private              OrderState state;
+    private static final long  serialVersionUID = 1L;
+    private              State state;
 
-    public OrderContext() {
-        this.state = new NewOrder();
+    public OrderStateContext() {
+        this.state = new New();
     }
 
     public void advance() {
         this.state.advance(this);
     }
 
-    public OrderStateType getState() {
+    public StateType getStateType() {
         return this.state.getType();
     }
 
-    public void setState(OrderState state) {
+    public void setState(State state) {
         this.state = state;
     }
 

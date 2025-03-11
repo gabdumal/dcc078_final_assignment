@@ -54,9 +54,14 @@ public abstract class UserInterface {
     }
 
     protected void printOrder(Order order) {
-        this.clientPrintStream.print(order.getState());
+        this.clientPrintStream.print(order.getStateType());
         this.clientPrintStream.print(": ");
-        this.clientPrintStream.println(order.getCustomerName());
+        this.clientPrintStream.print(order.getCustomerName());
+        this.clientPrintStream.print(" - R$");
+        this.clientPrintStream.print(order.getTotalCost());
+        this.clientPrintStream.print(" via ");
+        this.clientPrintStream.println(order.getPaymentType());
+
         this.printMenuComponent(order.getAppetizer());
         this.printMenuComponent(order.getMainCourse());
         this.printMenuComponent(order.getBeverage());

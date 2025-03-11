@@ -8,20 +8,20 @@ package assignments.restaurant.order.state;
 
 import java.io.Serial;
 
-public class NewOrder
-        implements OrderState {
+public class Preparing
+        implements State {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void advance(OrderContext context) {
-        context.setState(new PreparingOrder());
+    public void advance(OrderStateContext context) {
+        context.setState(new Delivering());
     }
 
     @Override
-    public OrderStateType getType() {
-        return OrderStateType.New;
+    public StateType getType() {
+        return StateType.Preparing;
     }
 
 }

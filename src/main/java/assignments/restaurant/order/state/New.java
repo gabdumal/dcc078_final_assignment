@@ -8,20 +8,20 @@ package assignments.restaurant.order.state;
 
 import java.io.Serial;
 
-public class FinishedOrder
-        implements OrderState {
+public class New
+        implements State {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void advance(OrderContext context) {
-        throw new IllegalStateException("Não é possível avançar o estado de um pedido que já foi finalizado.");
+    public void advance(OrderStateContext context) {
+        context.setState(new Preparing());
     }
 
     @Override
-    public OrderStateType getType() {
-        return OrderStateType.Finished;
+    public StateType getType() {
+        return StateType.New;
     }
 
 }

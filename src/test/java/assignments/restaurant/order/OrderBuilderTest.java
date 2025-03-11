@@ -11,6 +11,7 @@ import assignments.restaurant.cuisine.CuisineType;
 import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.data.Query;
 import assignments.restaurant.order.category.OrderCategoryType;
+import assignments.restaurant.order.payment.CreditCard;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
         this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
 
@@ -77,6 +79,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setDessert(dessertRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.decorateBeverage(beverageRecordDecorator);
 
@@ -96,6 +99,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setDessert(dessertRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.decorateDessert(dessertRecordDecorator);
 
@@ -118,6 +122,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setDessert(dessertRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
 
@@ -175,6 +180,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setDessert(dessertRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.setAppetizer(appetizerRecord);
 
@@ -193,6 +199,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setAppetizer(appetizerRecord);
         this.orderBuilder.setDessert(dessertRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.setBeverage(beverageRecord);
 
@@ -211,6 +218,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setDessert(dessertRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.setCustomerName(customerName);
 
@@ -224,6 +232,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setAppetizer(appetizerRecord);
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.setDessert(dessertRecord);
 
@@ -245,6 +254,7 @@ public class OrderBuilderTest {
         this.orderBuilder.setAppetizer(appetizerRecord);
         this.orderBuilder.setBeverage(beverageRecord);
         this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
 
         this.orderBuilder.setMainCourse(mainCourseRecord);
 

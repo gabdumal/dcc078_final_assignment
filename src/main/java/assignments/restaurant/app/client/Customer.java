@@ -13,6 +13,10 @@ import assignments.restaurant.data.*;
 import assignments.restaurant.order.Order;
 import assignments.restaurant.order.OrderBuilder;
 import assignments.restaurant.order.category.OrderCategoryType;
+import assignments.restaurant.order.payment.Cash;
+import assignments.restaurant.order.payment.CreditCard;
+import assignments.restaurant.order.payment.PaymentType;
+import assignments.restaurant.order.payment.Pix;
 
 import java.io.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -81,6 +85,8 @@ public class Customer
         this.decorateMenuComponent(CategoryType.Beverage);
         this.pickMenuComponent(CategoryType.Dessert);
         this.decorateMenuComponent(CategoryType.Dessert);
+
+        this.pickPaymentStrategy();
 
         Order order = this.orderBuilder.build();
         Request request = Request.sendOrder(order);
@@ -191,6 +197,30 @@ public class Customer
         }
     }
 
+    private void pickPaymentStrategy()
+            throws IOException {
+        this.clientPrintStream.println("Escolha o método de pagamento:");
+        this.clientPrintStream.println("1. " + PaymentType.CreditCard);
+        this.clientPrintStream.println("2. " + PaymentType.Pix);
+        this.clientPrintStream.println("3. " + PaymentType.Cash);
+
+        String paymentOption = this.scanner.readLine();
+        while (!paymentOption.equals("1") && !paymentOption.equals("2") && !paymentOption.equals("3")) {
+            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
+            paymentOption = this.scanner.readLine();
+        }
+
+        var paymentStrategy = switch (paymentOption) {
+            case "1" -> this.typeCreditCardNumber();
+            case "2" -> new Pix();
+            case "3" -> new Cash();
+            default -> throw new IllegalStateException("Unexpected value: " + paymentOption);
+        };
+        this.orderBuilder.setPaymentStrategy(paymentStrategy);
+
+        this.clientPrintStream.println();
+    }
+
     private void printMenu(CopyOnWriteArrayList<MenuComponentRecord> menu) {
         for (
                 int i = 0;
@@ -240,6 +270,17 @@ public class Customer
             default -> throw new IllegalStateException("Unexpected value: " + categoryType);
         }
         return builderMethod;
+    }
+
+    private CreditCard typeCreditCardNumber()
+            throws IOException {
+        this.clientPrintStream.println("Digite o número do cartão de crédito:");
+        String creditCardNumber = this.scanner.readLine().replaceAll("\\s+", "");
+        while (16 != creditCardNumber.length() || !creditCardNumber.matches("[0-9]+")) {
+            this.clientPrintStream.println("Digite um número de cartão de crédito válido.");
+            creditCardNumber = this.scanner.readLine().replaceAll("\\s+", "");
+        }
+        return new CreditCard(creditCardNumber);
     }
 
 }
