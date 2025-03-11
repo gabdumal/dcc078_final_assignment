@@ -25,8 +25,8 @@ import java.util.function.BiConsumer;
 public class Customer
         extends UserInterface {
 
-    private CuisineType  cuisineType;
-    private String       customerName;
+    private CuisineType cuisineType;
+    private String customerName;
     private OrderBuilder orderBuilder;
 
     public Customer(
@@ -44,49 +44,61 @@ public class Customer
     }
 
     @Override
-    public void run() {
-        this.clientPrintStream.println("Boas-vindas ao Restaurante!");
-
-        try {
-            this.setAccount();
-            this.makeOrder();
-            this.keepUpOrder();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void greet() {
+        this.clientPrintStream.println("Boas-vindas à interface de pedidos do Restaurante!");
     }
 
-    protected void setAccount()
+    @Override
+    protected void authenticate()
             throws IOException {
-        this.clientPrintStream.println("Qual é seu nome?");
+        this.customerName = this.readString(
+                "Qual é seu nome?",
+                "Por favor, insira um nome válido.",
+                String::strip,
+                s -> null != s && !s.isBlank()
+                                           );
+    }
 
-        String customerName = this.scanner.readLine();
-        while (null == customerName || customerName.isBlank()) {
-            this.clientPrintStream.println("Por favor, insira um nome válido.");
-            customerName = this.scanner.readLine();
-        }
-        this.customerName = customerName;
-        this.clientPrintStream.println();
+    @Override
+    protected void interact()
+            throws IOException {
+        this.makeOrder();
+        this.keepUpOrder();
+    }
+
+    @Override
+    protected void finish() {
+        this.clientPrintStream.println("Foi um prazer atendê-lo! Até a próxima.");
     }
 
     private void makeOrder()
             throws IOException {
         this.pickOrderCategory();
+        this.clientPrintStream.println();
 
         this.orderBuilder.setCustomerName(this.customerName);
         this.pickCuisine();
+        this.clientPrintStream.println();
 
         this.pickMenuComponent(CategoryType.Appetizer);
+        this.clientPrintStream.println();
         this.decorateMenuComponent(CategoryType.Appetizer);
+        this.clientPrintStream.println();
         this.pickMenuComponent(CategoryType.MainCourse);
+        this.clientPrintStream.println();
         this.decorateMenuComponent(CategoryType.MainCourse);
+        this.clientPrintStream.println();
         this.pickMenuComponent(CategoryType.Beverage);
+        this.clientPrintStream.println();
         this.decorateMenuComponent(CategoryType.Beverage);
+        this.clientPrintStream.println();
         this.pickMenuComponent(CategoryType.Dessert);
+        this.clientPrintStream.println();
         this.decorateMenuComponent(CategoryType.Dessert);
+        this.clientPrintStream.println();
 
         this.pickPaymentStrategy();
+        this.clientPrintStream.println();
 
         Order order = this.orderBuilder.build();
         Request request = Request.sendOrder(order);
@@ -94,7 +106,6 @@ public class Customer
         this.sendToServer.flush();
 
         this.clientPrintStream.println("Seu pedido foi recebido com sucesso!");
-        this.clientPrintStream.println();
     }
 
     private void keepUpOrder() {
@@ -103,17 +114,17 @@ public class Customer
 
     private void pickOrderCategory()
             throws IOException {
-        this.clientPrintStream.println("Escolha o tipo de pedido:");
+        this.clientPrintStream.println("Tipos de pedido:");
         this.clientPrintStream.println("1. " + OrderCategoryType.Delivery);
         this.clientPrintStream.println("2. " + OrderCategoryType.Takeaway);
         this.clientPrintStream.println("3. " + OrderCategoryType.DineIn);
 
-        String orderCategoryOption = this.scanner.readLine();
-        while (!orderCategoryOption.equals("1") && !orderCategoryOption.equals("2") &&
-               !orderCategoryOption.equals("3")) {
-            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
-            orderCategoryOption = this.scanner.readLine();
-        }
+        var orderCategoryOption = this.readString(
+                "Digite o número do tipo de pedido que deseja:",
+                "Por favor, escolha uma opção válida.",
+                String::strip,
+                s -> null != s && !s.isBlank() && Customer.isValidOption(s, 3)
+                                                 );
 
         var orderCategoryType = switch (orderCategoryOption) {
             case "1" -> OrderCategoryType.Delivery;
@@ -123,23 +134,22 @@ public class Customer
         };
 
         this.orderBuilder = new OrderBuilder(orderCategoryType);
-        this.clientPrintStream.println();
     }
 
     private void pickCuisine()
             throws IOException {
-        this.clientPrintStream.println("Escolha a culinária para montar seu pedido:");
+        this.clientPrintStream.println("Culinárias:");
         this.clientPrintStream.println("1. " + CuisineType.Brazilian);
         this.clientPrintStream.println("2. " + CuisineType.Italian);
 
-        String cuisineOption = this.scanner.readLine();
-        while (!cuisineOption.equals("1") && !cuisineOption.equals("2")) {
-            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
-            cuisineOption = this.scanner.readLine();
-        }
+        var cuisineOption = this.readString(
+                "Escolha a culinária que deseja pedir:",
+                "Por favor, escolha uma opção válida.",
+                String::strip,
+                s -> null != s && !s.isBlank() && Customer.isValidOption(s, 2)
+                                           );
 
         this.cuisineType = cuisineOption.equals("1") ? CuisineType.Brazilian : CuisineType.Italian;
-        this.clientPrintStream.println();
     }
 
     private void pickMenuComponent(
@@ -155,29 +165,27 @@ public class Customer
                                                                 );
         this.printMenu(menuComponentsRecords);
 
-        String menuComponentOption = this.menuComponentValidationLoop(menuComponentsRecords);
+        var menuComponentOption = this.menuComponentValidationLoop(menuComponentsRecords);
         var pickedMenuComponentOption = menuComponentsRecords.get(Integer.parseInt(menuComponentOption) - 1);
 
         BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = this.getOrderBuilderForMenuComponent(categoryType);
         builderMethod.accept(this.orderBuilder, pickedMenuComponentOption);
-
-        this.clientPrintStream.println();
     }
 
     private void decorateMenuComponent(
             CategoryType categoryType
                                       )
             throws IOException {
-        this.clientPrintStream.println("Deseja adicionar algum acompanhamento? (S/N)");
-        var wishToDecorate = this.scanner.readLine();
-
-        while (!wishToDecorate.equalsIgnoreCase("S") && !wishToDecorate.equalsIgnoreCase("N")) {
-            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
-            wishToDecorate = this.scanner.readLine();
-        }
+        var wishToDecorate = this.readString(
+                "Deseja adicionar algum acompanhamento? (S/N)",
+                "Por favor, escolha uma opção válida.",
+                String::strip,
+                s -> s.equalsIgnoreCase("S") || s.equalsIgnoreCase("N")
+                                            );
+        this.clientPrintStream.println();
 
         if (wishToDecorate.equalsIgnoreCase("S")) {
-            this.clientPrintStream.println("Escolha um acompanhamento:");
+            this.clientPrintStream.println("Acompanhamentos:");
 
             var menuComponentsDecoratorsRecords = Query.fetchAllMenuComponents(
                     RestrictByCuisine.convertCuisineType(this.cuisineType),
@@ -186,29 +194,29 @@ public class Customer
                                                                               );
             this.printMenu(menuComponentsDecoratorsRecords);
 
-            String menuComponentDecoratorOption = this.menuComponentValidationLoop(menuComponentsDecoratorsRecords);
+            var menuComponentDecoratorOption = this.menuComponentValidationLoop(menuComponentsDecoratorsRecords);
 
             var pickedMenuComponentDecorator = menuComponentsDecoratorsRecords.get(
                     Integer.parseInt(menuComponentDecoratorOption) - 1);
             BiConsumer<OrderBuilder, MenuComponentRecord> builderMethod = this.getOrderBuilderForMenuComponentDecorator(
                     categoryType);
             builderMethod.accept(this.orderBuilder, pickedMenuComponentDecorator);
-            this.clientPrintStream.println();
         }
     }
 
     private void pickPaymentStrategy()
             throws IOException {
-        this.clientPrintStream.println("Escolha o método de pagamento:");
+        this.clientPrintStream.println("Métodos de pagamento:");
         this.clientPrintStream.println("1. " + PaymentType.CreditCard);
         this.clientPrintStream.println("2. " + PaymentType.Pix);
         this.clientPrintStream.println("3. " + PaymentType.Cash);
 
-        String paymentOption = this.scanner.readLine();
-        while (!paymentOption.equals("1") && !paymentOption.equals("2") && !paymentOption.equals("3")) {
-            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
-            paymentOption = this.scanner.readLine();
-        }
+        var paymentOption = this.readString(
+                "Escolha um método de pagamento:",
+                "Por favor, escolha uma opção válida.",
+                String::strip,
+                s -> null != s && !s.isBlank() && Customer.isValidOption(s, 3)
+                                           );
 
         var paymentStrategy = switch (paymentOption) {
             case "1" -> this.typeCreditCardNumber();
@@ -217,8 +225,6 @@ public class Customer
             default -> throw new IllegalStateException("Unexpected value: " + paymentOption);
         };
         this.orderBuilder.setPaymentStrategy(paymentStrategy);
-
-        this.clientPrintStream.println();
     }
 
     private void printMenu(CopyOnWriteArrayList<MenuComponentRecord> menu) {
@@ -235,13 +241,12 @@ public class Customer
 
     private String menuComponentValidationLoop(CopyOnWriteArrayList<MenuComponentRecord> menuComponentsRecords)
             throws IOException {
-        String menuComponentOption = this.scanner.readLine();
-        while (null == menuComponentOption || menuComponentOption.isBlank() ||
-               !Customer.isValidOption(menuComponentOption, menuComponentsRecords.size())) {
-            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
-            menuComponentOption = this.scanner.readLine();
-        }
-        return menuComponentOption;
+        return this.readString(
+                "Digite o número do item que deseja:",
+                "Por favor, escolha uma opção válida.",
+                String::strip,
+                s -> null != s && !s.isBlank() && Customer.isValidOption(s, menuComponentsRecords.size())
+                              );
     }
 
     private BiConsumer<OrderBuilder, MenuComponentRecord> getOrderBuilderForMenuComponent(
@@ -274,12 +279,12 @@ public class Customer
 
     private CreditCard typeCreditCardNumber()
             throws IOException {
-        this.clientPrintStream.println("Digite o número do cartão de crédito:");
-        String creditCardNumber = this.scanner.readLine().replaceAll("\\s+", "");
-        while (16 != creditCardNumber.length() || !creditCardNumber.matches("[0-9]+")) {
-            this.clientPrintStream.println("Digite um número de cartão de crédito válido.");
-            creditCardNumber = this.scanner.readLine().replaceAll("\\s+", "");
-        }
+        var creditCardNumber = this.readString(
+                "Digite o número do cartão de crédito:",
+                "Digite um número de cartão de crédito válido.",
+                s -> s.replaceAll("\\s+", ""),
+                s -> 16 == s.length() && s.matches("[0-9]+")
+                                              );
         return new CreditCard(creditCardNumber);
     }
 

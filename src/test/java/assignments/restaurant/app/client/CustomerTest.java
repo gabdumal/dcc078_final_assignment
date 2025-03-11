@@ -123,29 +123,34 @@ public class CustomerTest {
 
         String customerOutput = this.customerByteArrayOutputStream.toString();
         assertEquals(
-                "Boas-vindas ao Restaurante!\n" + "Qual é seu nome?\n" + "\n" + "Escolha o tipo de pedido:\n" +
-                "1. Entrega\n" + "2. Retirada\n" + "3. Mesa\n" + "\n" +
-                "Escolha a culinária para montar seu pedido:\n" + "1. Culinária brasileira\n" +
-                "2. Culinária italiana\n" + "\n" + "Entrada:\n" + "1. Pão de alho\n" + "     R$6.0\n" +
+                "Boas-vindas à interface de pedidos do Restaurante!\n" + "\n" + "Qual é seu nome?\n" + "\n" +
+                "Tipos de pedido:\n" + "1. Entrega\n" + "2. Retirada\n" + "3. Mesa\n" +
+                "Digite o número do tipo de pedido que deseja:\n" + "\n" + "Culinárias:\n" +
+                "1. Culinária brasileira\n" + "2. Culinária italiana\n" + "Escolha a culinária que deseja pedir:\n" +
+                "\n" + "Entrada:\n" + "1. Pão de alho\n" + "     R$6.0\n" +
                 "     Pão francês assado ao molho de alho, azeite e ervas.\n" + "2. Coxinha\n" + "     R$5.0\n" +
                 "     Massa de batata recheada com frango desfiado.\n" + "3. Pastel\n" + "     R$4.0\n" +
                 "     Massa de pastel recheada com carne moída.\n" + "4. Caldo de feijão\n" + "     R$12.0\n" +
-                "     Caldo de feijão temperado com bacon e linguiça.\n" + "\n" +
-                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" + "1. Muçarela\n" +
-                "     R$2.0\n" + "     Fatias finas de queijo muçarela.\n" + "2. Maionese\n" + "     R$1.0\n" +
-                "     Maionese caseira com ervas.\n" + "\n" + "Prato principal:\n" + "1. Feijoada\n" + "     R$30.0\n" +
-                "     Feijoada completa com arroz, couve, farofa, laranja e torresmo.\n" + "\n" +
-                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" + "1. Farofa\n" +
-                "     R$5.0\n" + "     Farinha de mandioca torrada com bacon e ovos.\n" + "\n" + "Bebida:\n" +
-                "1. Caipirinha\n" + "     R$10.0\n" + "     Cachaça, limão, açúcar e gelo.\n" + "\n" +
-                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" + "1. Mel\n" +
-                "     R$3.0\n" + "     Mel puro.\n" + "\n" + "Sobremesa:\n" + "1. Brigadeiro\n" + "     R$5.0\n" +
-                "     Doce de chocolate com leite condensado e chocolate granulado.\n" + "\n" +
-                "Deseja adicionar algum acompanhamento? (S/N)\n" + "Escolha um acompanhamento:\n" +
-                "1. Doce de leite\n" + "     R$4.0\n" + "     Doce de leite pastoso.\n" + "\n" +
-                "Escolha o método de pagamento:\n" + "1. Cartão de Crédito\n" + "2. Pix\n" + "3. Dinheiro\n" +
-                "Digite o número do cartão de crédito:\n" + "\n" + "Seu pedido foi recebido com sucesso!\n" + "\n",
-                customerOutput
+                "     Caldo de feijão temperado com bacon e linguiça.\n" + "Digite o número do item que deseja:\n" +
+                "\n" + "Deseja adicionar algum acompanhamento? (S/N)\n" + "\n" + "Acompanhamentos:\n" +
+                "1. Muçarela\n" + "     R$2.0\n" + "     Fatias finas de queijo muçarela.\n" + "2. Maionese\n" +
+                "     R$1.0\n" + "     Maionese caseira com ervas.\n" + "Digite o número do item que deseja:\n" + "\n" +
+                "Prato principal:\n" + "1. Feijoada\n" + "     R$30.0\n" +
+                "     Feijoada completa com arroz, couve, farofa, laranja e torresmo.\n" +
+                "Digite o número do item que deseja:\n" + "\n" + "Deseja adicionar algum acompanhamento? (S/N)\n" +
+                "\n" + "Acompanhamentos:\n" + "1. Farofa\n" + "     R$5.0\n" +
+                "     Farinha de mandioca torrada com bacon e ovos.\n" + "Digite o número do item que deseja:\n" +
+                "\n" + "Bebida:\n" + "1. Caipirinha\n" + "     R$10.0\n" + "     Cachaça, limão, açúcar e gelo.\n" +
+                "Digite o número do item que deseja:\n" + "\n" + "Deseja adicionar algum acompanhamento? (S/N)\n" +
+                "\n" + "Acompanhamentos:\n" + "1. Mel\n" + "     R$3.0\n" + "     Mel puro.\n" +
+                "Digite o número do item que deseja:\n" + "\n" + "Sobremesa:\n" + "1. Brigadeiro\n" + "     R$5.0\n" +
+                "     Doce de chocolate com leite condensado e chocolate granulado.\n" +
+                "Digite o número do item que deseja:\n" + "\n" + "Deseja adicionar algum acompanhamento? (S/N)\n" +
+                "\n" + "Acompanhamentos:\n" + "1. Doce de leite\n" + "     R$4.0\n" + "     Doce de leite pastoso.\n" +
+                "Digite o número do item que deseja:\n" + "\n" + "Métodos de pagamento:\n" + "1. Cartão de Crédito\n" +
+                "2. Pix\n" + "3. Dinheiro\n" + "Escolha um método de pagamento:\n" +
+                "Digite o número do cartão de crédito:\n" + "\n" + "Seu pedido foi recebido com sucesso!\n" + "\n" +
+                "Foi um prazer atendê-lo! Até a próxima.\n" + "\n", customerOutput
                     );
 
         String serverOutput = this.serverByteArrayOutputStream.toString();

@@ -17,6 +17,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Employee
         extends UserInterface {
 
+    private String employeeName;
+
     public Employee(
             BufferedReader scanner,
             ObjectInputStream receiveFromServer,
@@ -32,25 +34,38 @@ public class Employee
     }
 
     @Override
-    public void run() {
-        this.clientPrintStream.println("Boas-vindas ao Restaurante!");
+    protected void greet() {
+        this.clientPrintStream.println("Boas-vindas à interface de gerenciamento do Restaurante!");
+    }
 
-        try {
-            this.advanceOrder();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected void authenticate()
+            throws IOException {
+        this.employeeName = this.readString(
+                "Qual é seu nome?",
+                "Por favor, insira um nome válido.",
+                String::strip,
+                s -> null != s && !s.isBlank()
+                                           );
+    }
+
+    @Override
+    protected void interact()
+            throws IOException {
+        this.advanceOrder();
+    }
+
+    @Override
+    protected void finish() {
+        this.clientPrintStream.println("Agradecemos por usar a interface de gerenciamento do Restaurante!");
     }
 
     private void advanceOrder()
             throws IOException {
-        this.clientPrintStream.println("Digite o número do pedido que deseja avançar:");
-
         var orders = this.fetchOrders();
         this.printOrders(orders);
 
-        String orderOption = this.orderValidationLoop(orders);
+        var orderOption = this.orderValidationLoop(orders);
         Order pickedOrder = orders.get(Integer.parseInt(orderOption) - 1);
     }
 
@@ -77,6 +92,8 @@ public class Employee
     }
 
     protected void printOrders(CopyOnWriteArrayList<Order> orders) {
+        this.clientPrintStream.println("Pedidos:");
+
         if (orders.isEmpty()) {
             this.clientPrintStream.println("Nenhum pedido encontrado.");
             return;
@@ -95,12 +112,12 @@ public class Employee
 
     private String orderValidationLoop(CopyOnWriteArrayList<Order> orders)
             throws IOException {
-        String orderOption = this.scanner.readLine();
-        while (null == orderOption || orderOption.isBlank() || !Employee.isValidOption(orderOption, orders.size())) {
-            this.clientPrintStream.println("Por favor, escolha uma opção válida.");
-            orderOption = this.scanner.readLine();
-        }
-        return orderOption;
+        return this.readString(
+                "Escolha o pedido que deseja avançar:",
+                "Por favor, escolha um pedido válido:",
+                String::strip,
+                s -> null != s && !s.isBlank() && Employee.isValidOption(s, orders.size())
+                              );
     }
 
 }

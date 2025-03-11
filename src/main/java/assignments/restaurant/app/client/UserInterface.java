@@ -11,11 +11,16 @@ import assignments.restaurant.component.MenuComponent;
 import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.order.Order;
 
-import java.io.BufferedReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+/*
+ * Design Pattern: Template Method
+ *
+ * This class is part of the Template Method design pattern.
+ * It defines the template method run() and the abstract methods greet(), authenticate(), interact(), and finish() to manage the user interfaces.
+ */
 public abstract class UserInterface {
 
     protected final PrintStream        clientPrintStream;
@@ -84,6 +89,48 @@ public abstract class UserInterface {
         this.clientPrintStream.println();
     }
 
-    protected abstract void run();
+    protected String readString(
+            String askMessage,
+            String afterErrorMessage,
+            Function<String, String> process,
+            Predicate<String> validate
+                               )
+            throws IOException {
+        this.clientPrintStream.println(askMessage);
+        String typedText = process.apply(this.scanner.readLine());
+        while (!validate.test(typedText)) {
+            this.clientPrintStream.println(afterErrorMessage);
+            typedText = process.apply(this.scanner.readLine());
+        }
+        return typedText;
+    }
+
+    protected void run() {
+        try {
+            this.greet();
+            this.clientPrintStream.println();
+            this.authenticate();
+            this.clientPrintStream.println();
+            this.interact();
+            this.clientPrintStream.println();
+            this.finish();
+            this.clientPrintStream.println();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected abstract void greet()
+            throws IOException;
+
+    protected abstract void authenticate()
+            throws IOException;
+
+    protected abstract void interact()
+            throws IOException;
+
+    protected abstract void finish()
+            throws IOException;
 
 }

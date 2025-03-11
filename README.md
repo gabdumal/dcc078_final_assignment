@@ -11,7 +11,7 @@ Este repositório utiliza os seguintes padrões:
 - [x] State
 - [ ] Observer
 - [X] Strategy
-- [ ] Template Method
+- [X] Template Method
 - [X] Facade
 - [X] Builder
 
