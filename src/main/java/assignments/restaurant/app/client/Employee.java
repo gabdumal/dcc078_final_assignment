@@ -12,7 +12,7 @@ import assignments.restaurant.app.server.ResponseType;
 import assignments.restaurant.order.Order;
 
 import java.io.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Employee
         extends UserInterface {
@@ -65,11 +65,17 @@ public class Employee
         var orders = this.fetchOrders();
         this.printOrders(orders);
 
-        var orderOption = this.orderValidationLoop(orders);
-        Order pickedOrder = orders.get(Integer.parseInt(orderOption) - 1);
+        var keys = orders.keySet().toArray(new Integer[0]);
+        var orderOption = this.readString(
+                "Escolha o pedido que deseja avançar:",
+                "Por favor, escolha um pedido válido:",
+                String::strip,
+                s -> null != s && !s.isBlank() && Employee.isValidOption(s, keys)
+                                         );
+        Order pickedOrder = orders.get(Integer.parseInt(orderOption));
     }
 
-    private CopyOnWriteArrayList<Order> fetchOrders()
+    private ConcurrentHashMap<Integer, Order> fetchOrders()
             throws IOException {
 
         Request request = Request.retrieveOrders();
@@ -88,10 +94,10 @@ public class Employee
             e.printStackTrace();
         }
 
-        return new CopyOnWriteArrayList<>();
+        return new ConcurrentHashMap<>();
     }
 
-    protected void printOrders(CopyOnWriteArrayList<Order> orders) {
+    protected void printOrders(ConcurrentHashMap<Integer, Order> orders) {
         this.clientPrintStream.println("Pedidos:");
 
         if (orders.isEmpty()) {
@@ -99,25 +105,12 @@ public class Employee
             return;
         }
 
-        for (
-                int i = 0;
-                i < orders.size();
-                i++
-        ) {
-            var order = orders.get(i);
-            this.clientPrintStream.print((i + 1) + ". ");
+        for (var entry : orders.entrySet()) {
+            int orderId = entry.getKey();
+            Order order = entry.getValue();
+            this.clientPrintStream.print(orderId + ". ");
             this.printOrder(order);
         }
-    }
-
-    private String orderValidationLoop(CopyOnWriteArrayList<Order> orders)
-            throws IOException {
-        return this.readString(
-                "Escolha o pedido que deseja avançar:",
-                "Por favor, escolha um pedido válido:",
-                String::strip,
-                s -> null != s && !s.isBlank() && Employee.isValidOption(s, orders.size())
-                              );
     }
 
 }

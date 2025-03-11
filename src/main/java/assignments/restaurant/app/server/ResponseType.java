@@ -8,5 +8,6 @@ package assignments.restaurant.app.server;
 
 public enum ResponseType {
     ConfirmReceivedOrder,
+    ConfirmAdvancedOrder,
     SendOrders
 }

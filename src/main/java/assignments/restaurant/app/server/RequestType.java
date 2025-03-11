@@ -8,5 +8,6 @@ package assignments.restaurant.app.server;
 
 public enum RequestType {
     RetrieveOrders,
-    SendOrder
+    SendOrder,
+    AdvanceOrder,
 }

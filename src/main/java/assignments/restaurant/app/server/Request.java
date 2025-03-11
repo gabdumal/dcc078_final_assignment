@@ -16,16 +16,30 @@ public class Request
 
     @Serial
     private static final long        serialVersionUID = 1L;
-    private final        Order       order;
     private final        RequestType requestType;
+    private              Order       order;
+    private              int         orderId;
+
+    private Request(RequestType requestType) {
+        this.requestType = requestType;
+    }
 
     private Request(RequestType requestType, Order order) {
         this.requestType = requestType;
         this.order = order;
     }
 
+    private Request(RequestType requestType, int orderId) {
+        this.requestType = requestType;
+        this.orderId = orderId;
+    }
+
+    public static Request advanceOrder(int orderId) {
+        return new Request(RequestType.AdvanceOrder, orderId);
+    }
+
     public static Request retrieveOrders() {
-        return new Request(RequestType.RetrieveOrders, null);
+        return new Request(RequestType.RetrieveOrders);
     }
 
     public static Request sendOrder(Order order) {
@@ -34,6 +48,10 @@ public class Request
 
     public Order getOrder() {
         return this.order;
+    }
+
+    public int getOrderId() {
+        return this.orderId;
     }
 
     public RequestType getRequestType() {

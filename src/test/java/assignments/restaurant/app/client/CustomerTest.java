@@ -85,7 +85,7 @@ public class CustomerTest {
         var orders = this.server.getOrders();
         assertEquals(ordersSize + 1, orders.size());
 
-        var order = orders.getFirst();
+        var order = orders.get(1);
         assertEquals(customerName, order.getCustomerName());
 
         assertEquals(CategoryType.Appetizer, order.getAppetizer().getCategory());

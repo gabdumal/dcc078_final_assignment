@@ -1,4 +1,4 @@
-# DCC078 Aspectos Avançados em Engenharia de Software - Trabalho final
+# DCC078 Aspectos Avançados em Engenharia de Software - Trabalho Final
 
 Atividade realizada para a disciplina **DCC078** Aspectos Avançados em Engenharia de Software.
 

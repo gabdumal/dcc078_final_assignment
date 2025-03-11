@@ -13,29 +13,33 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ClientHandler
         implements Runnable {
 
-    private final Consumer<Order>                       addOrder;
-    private final Supplier<CopyOnWriteArrayList<Order>> getOrders;
-    private final PrintStream                           serverPrintStream;
-    private final Socket                                socket;
-    private       ObjectInputStream                     receiveFromClient;
+    private final Consumer<Order>                                      addOrder;
+    private final Function<Integer, ConcurrentHashMap<Integer, Order>> advanceOrder;
+    private final Supplier<ConcurrentHashMap<Integer, Order>>          getOrders;
+    private final PrintStream                                          serverPrintStream;
+    private final Socket                                               socket;
+    private       ObjectInputStream                                    receiveFromClient;
 
     public ClientHandler(
             Socket socket,
             PrintStream serverPrintStream,
             Consumer<Order> addOrder,
-            Supplier<CopyOnWriteArrayList<Order>> getOrders
+            Supplier<ConcurrentHashMap<Integer, Order>> getOrders,
+            Function<Integer, ConcurrentHashMap<Integer, Order>> advanceOrder
                         ) {
         this.socket = socket;
         this.serverPrintStream = serverPrintStream;
         this.addOrder = addOrder;
         this.getOrders = getOrders;
+        this.advanceOrder = advanceOrder;
     }
 
     @Override
@@ -60,6 +64,14 @@ public class ClientHandler
                             this.serverPrintStream.println("Pedido recebido: " + order);
                             this.addOrder(order);
                             Response response = Response.confirmReceivedOrder();
+                            sendToClient.writeObject(response);
+                            sendToClient.flush();
+                        }
+                        case AdvanceOrder -> {
+                            var orderId = request.getOrderId();
+                            this.serverPrintStream.println("Pedido avançado: " + orderId);
+                            var orders = this.advanceOrder.apply(orderId);
+                            Response response = Response.confirmAdvancedOrder(orders);
                             sendToClient.writeObject(response);
                             sendToClient.flush();
                         }
@@ -90,7 +102,7 @@ public class ClientHandler
         }
     }
 
-    private CopyOnWriteArrayList<Order> getOrders() {
+    private ConcurrentHashMap<Integer, Order> getOrders() {
         return this.getOrders.get();
     }
 

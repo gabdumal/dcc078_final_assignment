@@ -10,30 +10,38 @@ import assignments.restaurant.order.Order;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Response
         implements Serializable {
 
     @Serial
-    private static final long                        serialVersionUID = 1L;
-    private final        CopyOnWriteArrayList<Order> orders;
-    private final        ResponseType                responseType;
+    private static final long                              serialVersionUID = 1L;
+    private final        ResponseType                      responseType;
+    private              ConcurrentHashMap<Integer, Order> orders;
 
-    private Response(ResponseType responseType, CopyOnWriteArrayList<Order> orders) {
+    private Response(ResponseType responseType, ConcurrentHashMap<Integer, Order> orders) {
         this.responseType = responseType;
         this.orders = orders;
     }
 
-    public static Response confirmReceivedOrder() {
-        return new Response(ResponseType.ConfirmReceivedOrder, null);
+    private Response(ResponseType responseType) {
+        this.responseType = responseType;
     }
 
-    public static Response sendOrders(CopyOnWriteArrayList<Order> orders) {
+    public static Response confirmAdvancedOrder(ConcurrentHashMap<Integer, Order> orders) {
+        return new Response(ResponseType.ConfirmAdvancedOrder, orders);
+    }
+
+    public static Response confirmReceivedOrder() {
+        return new Response(ResponseType.ConfirmReceivedOrder);
+    }
+
+    public static Response sendOrders(ConcurrentHashMap<Integer, Order> orders) {
         return new Response(ResponseType.SendOrders, orders);
     }
 
-    public CopyOnWriteArrayList<Order> getOrders() {
+    public ConcurrentHashMap<Integer, Order> getOrders() {
         return this.orders;
     }
 

@@ -13,18 +13,19 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
 
-    private static PrintStream serverPrintStream      = System.out;
-    private final  CopyOnWriteArrayList<Order> orders = new CopyOnWriteArrayList<>();
+    private static PrintStream     serverPrintStream = System.out;
+    private final  ServerContext   serverContext;
     private final  ExecutorService threadPool;
 
     public Server() {
         this.threadPool = Executors.newFixedThreadPool(Manager.getInstance().getMaximumOfClients());
+        this.serverContext = new ServerContext();
     }
 
     public static void main(String[] args) {
@@ -47,15 +48,15 @@ public class Server {
     }
 
     public synchronized void addOrder(Order order) {
-        this.orders.add(order);
+        this.serverContext.addOrder(order);
     }
 
-    public synchronized CopyOnWriteArrayList<Order> getOrders() {
-        return this.orders;
+    public synchronized ConcurrentHashMap<Integer, Order> advanceOrder(int orderId) {
+        return this.serverContext.advanceOrder(orderId);
     }
 
-    public synchronized CopyOnWriteArrayList<Order> getOrders(CopyOnWriteArrayList<Order> orders) {
-        return this.orders;
+    public synchronized ConcurrentHashMap<Integer, Order> getOrders() {
+        return this.serverContext.getOrders();
     }
 
     public int run(int port) {
@@ -88,7 +89,8 @@ public class Server {
                         clientSocket,
                                                           serverPrintStream,
                                                           this::addOrder,
-                                                          this::getOrders
+                                                          this::getOrders,
+                                                          this::advanceOrder
                 ));
             }
         }

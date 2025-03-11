@@ -12,6 +12,7 @@ import assignments.restaurant.data.MenuComponentRecord;
 import assignments.restaurant.order.Order;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -44,6 +45,16 @@ public abstract class UserInterface {
         try {
             int parsedOption = Integer.parseInt(option);
             return 1 <= parsedOption && parsedOption <= size;
+        }
+        catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    protected static boolean isValidOption(String option, Integer[] validOptions) {
+        try {
+            int parsedOption = Integer.parseInt(option);
+            return Arrays.stream(validOptions).anyMatch(v -> v == parsedOption);
         }
         catch (NumberFormatException e) {
             return false;

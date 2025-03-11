@@ -230,9 +230,9 @@ public class EmployeeTest {
         firstOrder.advance();
         var secondOrder = this.createOrder();
 
-        CopyOnWriteArrayList<Order> orders = new CopyOnWriteArrayList<>();
-        orders.add(firstOrder);
-        orders.add(secondOrder);
+        ConcurrentHashMap<Integer, Order> orders = new ConcurrentHashMap<>();
+        orders.put(0, firstOrder);
+        orders.put(1, secondOrder);
 
         employee.printOrders(orders);
         String employeeOutput = this.employeeByteArrayOutputStream.toString();
