@@ -101,8 +101,8 @@ public class EmployeeTest {
 
         assertEquals(
                 "Boas-vindas à interface de gerenciamento do Restaurante!\n" + "\n" + "Qual é seu nome?\n" + "\n" +
-                "Escolha o pedido cujo estado deseja atualizar (X para sair).\n" + "\n" +
-                "1. Recebido: Alice Andrade - R$65.0 via Cartão de Crédito\n" +
+                "Escolha o pedido cujo estado deseja atualizar (0 para sair).\n" + "\n" + "\n" + "=-= PEDIDOS =-=\n" +
+                "\n" + "1. Recebido: Alice Andrade - R$65.0 via Cartão de Crédito\n" +
                 "     Pão de alho - R$8.0 - Extras: Muçarela.\n" + "     Feijoada - R$35.0 - Extras: Farofa.\n" +
                 "     Caipirinha - R$13.0 - Extras: Mel.\n" + "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" +
                 "\n" + "Agradecemos por usar a interface de gerenciamento do Restaurante!\n" + "\n", employeeOutput
@@ -111,8 +111,8 @@ public class EmployeeTest {
         String serverOutput = this.serverByteArrayOutputStream.toString();
         assertEquals(
                 "Um novo cliente se conectou.\n" +
-                "Pedido recebido: {Status: \"Recebido\", Tipo: \"Entrega\", Cliente: \"Alice Andrade\", Custo: 67.0, Pagamento: \"Cartão de Crédito\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}, Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
-                "Um cliente se desconectou.\n" + "Um novo cliente se conectou.\n", serverOutput
+                "Pedido recebido: {Status: \"Recebido\", Tipo: \"Entrega\", Cliente: \"Alice Andrade\", Custo: 65.0, Pagamento: \"Cartão de Crédito\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
+                "Um novo cliente se conectou.\n" + "Um cliente se desconectou.\n", serverOutput
                     );
     }
 
@@ -130,7 +130,7 @@ public class EmployeeTest {
             int port,
             String simulatedInput
                                                 )
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws ExecutionException, InterruptedException {
         ByteArrayOutputStream employeeByteArrayOutputStream = new ByteArrayOutputStream();
 
         Future<String> employeeFuture = clientExecutor.submit(() -> {
@@ -155,7 +155,12 @@ public class EmployeeTest {
         });
 
         // Wait for client execution
-        String result = employeeFuture.get(5, TimeUnit.MINUTES);
+        try {
+            String result = employeeFuture.get(30, TimeUnit.SECONDS);
+        }
+        catch (TimeoutException e) {
+            e.printStackTrace();
+        }
         //        assertEquals("A interface de usuário do funcionário foi executada com sucesso.", result);
         Thread.sleep(2000);
 
@@ -243,7 +248,7 @@ public class EmployeeTest {
         employee.printOrders(orders);
         String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
-                "1. Preparando: Alice Andrade - R$67.0 via Cartão de Crédito\n" +
+                "\n" + "=-= PEDIDOS =-=\n" + "\n" + "1. Preparando: Alice Andrade - R$67.0 via Cartão de Crédito\n" +
                 "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
                 "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" +

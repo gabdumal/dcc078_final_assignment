@@ -15,6 +15,13 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 
+/*
+ * Design Pattern: Observer
+ *
+ * This class is part of the Observer design pattern.
+ * It keeps track of the server context, in order to update the orders list on the listening clients.
+ */
+
 public class ResponseSender
         implements Observer {
 

@@ -9,7 +9,7 @@ Este repositório utiliza os seguintes padrões:
 - [X] Factory Method
 - [X] Decorator
 - [x] State
-- [ ] Observer
+- [X] Observer
 - [X] Strategy
 - [X] Template Method
 - [X] Facade

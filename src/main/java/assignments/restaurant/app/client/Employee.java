@@ -17,13 +17,13 @@ import java.util.concurrent.*;
 public class Employee
         extends UserInterface {
 
-    private final ExecutorService executor;
-    private final Thread interactiveThread;
-    private final Thread listenerThread;
-    private       boolean askedForFinish = false;
-    private       String employeeName;
-    private       ConcurrentHashMap<Integer, Order> orders;
-    private       boolean running        = true;
+    private final    ExecutorService                   executor;
+    private final    Thread                            interactiveThread;
+    private final    Thread                            listenerThread;
+    private volatile boolean                           askedForFinish = false;
+    private          String                            employeeName;
+    private volatile ConcurrentHashMap<Integer, Order> orders;
+    private volatile boolean                           running        = true;
 
     public Employee(
             BufferedReader scanner,
@@ -84,7 +84,9 @@ public class Employee
                 this.printOrders(this.orders);
             }
             if (ResponseType.confirmFinishedConnection == response.getResponseType()) {
+                System.err.println("O servidor confirmou o encerramento da conexão.");
                 this.running = false;
+                System.err.println("Definiu a flag de execução como falsa.");
             }
         }
         try {
@@ -116,6 +118,7 @@ public class Employee
         int orderId = this.pickOrder(keys);
 
         if (0 == orderId) {
+            System.err.println("Recebeu 0 como opção.");
             this.finishConnection();
             return;
         }
@@ -156,9 +159,11 @@ public class Employee
     private void finishConnection()
             throws IOException {
         this.askedForFinish = true;
+        System.err.println("Definiu a flag de pedido de finalização como verdadeira.");
         Request request = Request.finishConnection();
         this.sendToServer.writeObject(request);
         this.sendToServer.flush();
+        System.err.println("Enviou pedido de finalização para o servidor.");
     }
 
     private void advanceOrder(int orderId)
@@ -202,6 +207,7 @@ public class Employee
 
         while (true) {
             if (!this.running) {
+                System.err.println("A flag de execução foi desativada.");
                 this.executor.shutdown();
                 this.executor.close();
                 return;
@@ -212,10 +218,10 @@ public class Employee
     @Override
     protected void finish() {
         try {
+            System.err.println("Tentará dar join nas threads.");
             this.listenerThread.join();
             this.interactiveThread.join();
             this.clientPrintStream.println("Agradecemos por usar a interface de gerenciamento do Restaurante!");
-            //            System.out.println("Finish!");
         }
         catch (InterruptedException e) {
             e.printStackTrace();
