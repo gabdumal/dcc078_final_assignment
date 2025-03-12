@@ -1,9 +1,0 @@
-@startuml
-'https://plantuml.com/class-diagram
-
-left to right direction
-hide empty members
-
-}
-
-@enduml
