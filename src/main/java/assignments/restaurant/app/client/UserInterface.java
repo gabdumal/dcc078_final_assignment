@@ -107,10 +107,14 @@ public abstract class UserInterface {
             Predicate<String> validate
                                )
             throws IOException {
-        this.clientPrintStream.println(askMessage);
+        if (null != askMessage) {
+            this.clientPrintStream.println(askMessage);
+        }
         String typedText = process.apply(this.scanner.readLine());
         while (!validate.test(typedText)) {
-            this.clientPrintStream.println(afterErrorMessage);
+            if (null != afterErrorMessage) {
+                this.clientPrintStream.println(afterErrorMessage);
+            }
             typedText = process.apply(this.scanner.readLine());
         }
         return typedText;

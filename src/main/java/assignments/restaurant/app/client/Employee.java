@@ -17,7 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Employee
         extends UserInterface {
 
-    private String employeeName;
+    protected static int                               betweenLoopsDelay = 0;
+    private          String                            employeeName;
+    private          ConcurrentHashMap<Integer, Order> orders;
+    private volatile boolean                           running           = true;
 
     public Employee(
             BufferedReader scanner,
@@ -26,6 +29,7 @@ public class Employee
             PrintStream clientPrintStream
                    ) {
         super(scanner, receiveFromServer, sendToServer, clientPrintStream);
+        this.orders = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -52,54 +56,85 @@ public class Employee
     @Override
     protected void interact()
             throws IOException {
-        this.advanceOrder();
+        Thread listenerThread = new Thread(this::listenForUpdates);
+        listenerThread.start();
+
+        this.retrieveOrders();
+
+        this.clientPrintStream.println("Escolha o pedido cujo estado deseja atualizar (X para sair).");
+        this.clientPrintStream.println();
+
+        while (this.running) {
+            try {
+                this.interactionLoop();
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
     protected void finish() {
         this.clientPrintStream.println("Agradecemos por usar a interface de gerenciamento do Restaurante!");
+        this.running = false;
     }
 
-    private void advanceOrder()
-            throws IOException {
-        var orders = this.fetchOrders();
-        this.printOrders(orders);
-
-        var keys = orders.keySet().toArray(new Integer[0]);
-        var orderOption = this.readString(
-                "Escolha o pedido que deseja avançar:",
-                "Por favor, escolha um pedido válido:",
-                String::strip,
-                s -> null != s && !s.isBlank() && Employee.isValidOption(s, keys)
-                                         );
-        Order pickedOrder = orders.get(Integer.parseInt(orderOption));
+    private void listenForUpdates() {
+        while (this.running) {
+            try {
+                Object receivedObject = this.receiveFromServer.readObject();
+                if (receivedObject instanceof Response response &&
+                    ResponseType.SendOrders == response.getResponseType()) {
+                    var orders = response.getOrders();
+                    this.orders = new ConcurrentHashMap<>(orders);
+                    this.printOrders(this.orders);
+                }
+            }
+            catch (IOException |
+                   ClassNotFoundException e) {
+                if (this.running) {
+                    e.printStackTrace();
+                }
+                this.running = false;
+            }
+        }
     }
 
-    private ConcurrentHashMap<Integer, Order> fetchOrders()
+    private void retrieveOrders()
             throws IOException {
-
         Request request = Request.retrieveOrders();
         this.sendToServer.writeObject(request);
         this.sendToServer.flush();
+    }
 
-        try {
-            Object receivedObject = this.receiveFromServer.readObject();
-            if (receivedObject instanceof Response response) {
-                if (ResponseType.SendOrders == response.getResponseType()) {
-                    return response.getOrders();
-                }
+    private void interactionLoop()
+            throws IOException, InterruptedException {
+        var orders = new ConcurrentHashMap<>(this.orders);
+        if (orders.isEmpty()) {
+            try {
+                Thread.sleep(1000);  // Wait for updates
             }
-        }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return;
         }
 
-        return new ConcurrentHashMap<>();
+        var keys = orders.keySet().toArray(new Integer[0]);
+        int orderId = this.pickOrder(keys);
+
+        if (0 == orderId) {
+            this.running = false;
+            return;
+        }
+
+        this.advanceOrder(orderId);
+
+        Thread.sleep(betweenLoopsDelay);
     }
 
     protected void printOrders(ConcurrentHashMap<Integer, Order> orders) {
-        this.clientPrintStream.println("Pedidos:");
-
         if (orders.isEmpty()) {
             this.clientPrintStream.println("Nenhum pedido encontrado.");
             return;
@@ -111,6 +146,25 @@ public class Employee
             this.clientPrintStream.print(orderId + ". ");
             this.printOrder(order);
         }
+    }
+
+    private Integer pickOrder(Integer[] orderIds)
+            throws IOException {
+        var orderOption = this.readString(
+                null,
+                null,
+                String::strip,
+                s -> null != s && !s.isBlank() &&
+                     (Employee.isValidOption(s, orderIds) || "0".equals(s))
+                                         );
+        return Integer.parseInt(orderOption);
+    }
+
+    private void advanceOrder(int orderId)
+            throws IOException {
+        Request request = Request.advanceOrder(orderId);
+        this.sendToServer.writeObject(request);
+        this.sendToServer.flush();
     }
 
 }

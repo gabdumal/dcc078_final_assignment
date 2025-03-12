@@ -16,8 +16,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OrderBuilderTest {
 
@@ -47,6 +49,85 @@ public class OrderBuilderTest {
     @AfterEach
     void disposeBuilder() {
         this.orderBuilder = null;
+    }
+
+    @Test
+    public void orderShouldBeSerializable() {
+        var order = this.buildDefaultOrder();
+        testOrderSerialization(order);
+    }
+
+    private Order buildDefaultOrder() {
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
+        return this.orderBuilder.build();
+    }
+
+    public static void testOrderSerialization(Order order) {
+        try {
+            // Serialize the order object to a byte array
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(order);
+            objectOutputStream.flush();
+            byte[] serializedOrder = byteArrayOutputStream.toByteArray();
+
+            // Deserialize the byte array back to an order object
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(serializedOrder);
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            Order deserializedOrder = (Order) objectInputStream.readObject();
+
+            // Verify that the deserialized object is not null and is an instance of Order
+            assertNotNull(deserializedOrder);
+            assertInstanceOf(Order.class, deserializedOrder);
+        }
+        catch (IOException |
+               ClassNotFoundException e) {
+            fail("Serialization or deserialization failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void ordersShouldBeSerializable() {
+        var firstOrder = this.buildDefaultOrder();
+        var secondOrder = this.buildDefaultOrder();
+
+        ConcurrentHashMap<Integer, Order> orders = new ConcurrentHashMap<>();
+        orders.put(0, firstOrder);
+        orders.put(1, secondOrder);
+
+        testOrdersSerialization(orders);
+
+        firstOrder.advance();
+        testOrdersSerialization(orders);
+    }
+
+    public static void testOrdersSerialization(ConcurrentHashMap<Integer, Order> orders) {
+        try {
+            // Serialize the orders object to a byte array
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(orders);
+            objectOutputStream.flush();
+            byte[] serializedOrders = byteArrayOutputStream.toByteArray();
+
+            // Deserialize the byte array back to an orders object
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(serializedOrders);
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            ConcurrentHashMap<Integer, Order> deserializedOrders = (ConcurrentHashMap<Integer, Order>) objectInputStream.readObject();
+
+            // Verify that the deserialized object is not null and is an instance of Order
+            assertNotNull(deserializedOrders);
+            assertInstanceOf(ConcurrentHashMap.class, deserializedOrders);
+        }
+        catch (IOException |
+               ClassNotFoundException e) {
+            fail("Serialization or deserialization failed: " + e.getMessage());
+        }
     }
 
     @Test

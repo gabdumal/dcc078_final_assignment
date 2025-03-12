@@ -16,21 +16,25 @@ public class Request
 
     @Serial
     private static final long        serialVersionUID = 1L;
+    private final        Order       order;
+    private final        int         orderId;
     private final        RequestType requestType;
-    private              Order       order;
-    private              int         orderId;
 
     private Request(RequestType requestType) {
         this.requestType = requestType;
+        this.order = null;
+        this.orderId = 0;
     }
 
     private Request(RequestType requestType, Order order) {
         this.requestType = requestType;
         this.order = order;
+        this.orderId = 0;
     }
 
     private Request(RequestType requestType, int orderId) {
         this.requestType = requestType;
+        this.order = null;
         this.orderId = orderId;
     }
 

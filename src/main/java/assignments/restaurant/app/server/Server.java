@@ -47,15 +47,15 @@ public class Server {
         Server.serverPrintStream = printStream;
     }
 
-    public synchronized void addOrder(Order order) {
+    public void addOrder(Order order) {
         this.serverContext.addOrder(order);
     }
 
-    public synchronized ConcurrentHashMap<Integer, Order> advanceOrder(int orderId) {
-        return this.serverContext.advanceOrder(orderId);
+    public void advanceOrder(int orderId) {
+        this.serverContext.advanceOrder(orderId);
     }
 
-    public synchronized ConcurrentHashMap<Integer, Order> getOrders() {
+    public ConcurrentHashMap<Integer, Order> getOrders() {
         return this.serverContext.getOrders();
     }
 

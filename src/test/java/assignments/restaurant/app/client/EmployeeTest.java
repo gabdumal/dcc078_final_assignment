@@ -7,7 +7,6 @@
 package assignments.restaurant.app.client;
 
 import assignments.restaurant.Manager;
-import assignments.restaurant.app.server.Request;
 import assignments.restaurant.app.server.Server;
 import assignments.restaurant.component.Appetizer;
 import assignments.restaurant.component.ComponentFacade;
@@ -24,9 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintStream;
-import java.net.Socket;
 import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,50 +84,21 @@ public class EmployeeTest {
     void shouldFetchOrdersFromServer()
             throws Exception {
 
-        Future<String> simulatedCustomerFuture = this.clientExecutor.submit(() -> {
-            try (
-                    Socket socket = new Socket(EmployeeTest.findDefaultHost(), EmployeeTest.findDefaultPort());
-                    ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream())
-            ) {
-                // Create and send an order to the server
-                Order order = this.createOrder();
-                Request request = Request.sendOrder(order);
-                sendToServer.writeObject(request);
-                sendToServer.flush();
+        var customerOutput = CustomerTest.simulateCustomerActions(
+                this.clientExecutor,
+                EmployeeTest.findDefaultHost(),
+                EmployeeTest.findDefaultPort(),
+                "Alice Andrade\n" + "1\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" +
+                "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "1234 5678 1234 5678\n" + "\n"
+                                                                 );
 
-                return "Pedido enviado com sucesso.";
-            }
-        });
+        var employeeOutput = EmployeeTest.simulateEmployeeActions(
+                this.clientExecutor,
+                EmployeeTest.findDefaultHost(),
+                EmployeeTest.findDefaultPort(),
+                "Bruno Barros\n" + "1\n" + "\n" + "0\n"
+                                                                 );
 
-        String result = simulatedCustomerFuture.get(5, TimeUnit.MINUTES);
-        assertEquals("Pedido enviado com sucesso.", result);
-        Thread.sleep(2000);
-
-        Future<String> employeeFuture = this.clientExecutor.submit(() -> {
-            try {
-                String simulatedInput = "Bruno Barros\n" + "1\n";
-                System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
-
-                Client.main(new String[]{
-                        EmployeeTest.findDefaultHost(),
-                        String.valueOf(EmployeeTest.findDefaultPort()),
-                        "-e"
-                });
-                System.setIn(System.in);
-
-                return "A interface de usuário do funcionário foi executada com sucesso.";
-            }
-            catch (Exception e) {
-                return "A execução da interface de usuário do funcionário falhou: " + e.getMessage();
-            }
-        });
-
-        // Wait for customer execution
-        result = employeeFuture.get(5, TimeUnit.MINUTES);
-        assertEquals("A interface de usuário do funcionário foi executada com sucesso.", result);
-        Thread.sleep(2000);
-
-        String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
                 "Boas-vindas à interface de gerenciamento do Restaurante!\n" + "\n" + "Qual é seu nome?\n" + "\n" +
                 "Pedidos:\n" + "1. Recebido: Alice Andrade - R$67.0 via Cartão de Crédito\n" +
@@ -156,19 +124,44 @@ public class EmployeeTest {
         return Manager.getInstance().getDefaultSocketPort() + 300;
     }
 
-    private Order createOrder() {
-        this.orderBuilder.setCustomerName(customerName);
-        this.orderBuilder.setAppetizer(appetizerRecord);
-        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
-        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
-        this.orderBuilder.setBeverage(beverageRecord);
-        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
-        this.orderBuilder.setMainCourse(mainCourseRecord);
-        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
-        this.orderBuilder.setDessert(dessertRecord);
-        this.orderBuilder.decorateDessert(dessertRecordDecorator);
-        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
-        return this.orderBuilder.build();
+    public static String simulateEmployeeActions(
+            ExecutorService clientExecutor,
+            String host,
+            int port,
+            String simulatedInput
+                                                )
+            throws ExecutionException, InterruptedException, TimeoutException {
+        ByteArrayOutputStream employeeByteArrayOutputStream = new ByteArrayOutputStream();
+
+        Future<String> employeeFuture = clientExecutor.submit(() -> {
+            try {
+                Client.setClientPrintStream(new PrintStream(employeeByteArrayOutputStream));
+                System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+                Employee.betweenLoopsDelay = 10000;
+
+                Client.main(new String[]{
+                        host,
+                        String.valueOf(port),
+                        "-e"
+                });
+
+                Employee.betweenLoopsDelay = 0;
+                Client.setClientPrintStream(System.out);
+                System.setIn(System.in);
+
+                return "A interface de usuário do funcionário foi executada com sucesso.";
+            }
+            catch (Exception e) {
+                return "A execução da interface de usuário do funcionário falhou: " + e.getMessage();
+            }
+        });
+
+        // Wait for client execution
+        String result = employeeFuture.get(5, TimeUnit.MINUTES);
+        assertEquals("A interface de usuário do funcionário foi executada com sucesso.", result);
+        Thread.sleep(2000);
+
+        return employeeByteArrayOutputStream.toString();
     }
 
     @Test
@@ -222,6 +215,21 @@ public class EmployeeTest {
                     );
     }
 
+    private Order createOrder() {
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.decorateDessert(dessertRecordDecorator);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
+        return this.orderBuilder.build();
+    }
+
     @Test
     public void shouldPrintOrders() {
         Employee employee = new Employee(null, null, null, new PrintStream(this.employeeByteArrayOutputStream));
@@ -231,8 +239,8 @@ public class EmployeeTest {
         var secondOrder = this.createOrder();
 
         ConcurrentHashMap<Integer, Order> orders = new ConcurrentHashMap<>();
-        orders.put(0, firstOrder);
-        orders.put(1, secondOrder);
+        orders.put(1, firstOrder);
+        orders.put(2, secondOrder);
 
         employee.printOrders(orders);
         String employeeOutput = this.employeeByteArrayOutputStream.toString();

@@ -17,8 +17,8 @@ public class Response
 
     @Serial
     private static final long                              serialVersionUID = 1L;
+    private final        ConcurrentHashMap<Integer, Order> orders;
     private final        ResponseType                      responseType;
-    private              ConcurrentHashMap<Integer, Order> orders;
 
     private Response(ResponseType responseType, ConcurrentHashMap<Integer, Order> orders) {
         this.responseType = responseType;
@@ -27,10 +27,11 @@ public class Response
 
     private Response(ResponseType responseType) {
         this.responseType = responseType;
+        this.orders = new ConcurrentHashMap<>();
     }
 
-    public static Response confirmAdvancedOrder(ConcurrentHashMap<Integer, Order> orders) {
-        return new Response(ResponseType.ConfirmAdvancedOrder, orders);
+    public static Response confirmAdvancedOrder() {
+        return new Response(ResponseType.ConfirmAdvancedOrder);
     }
 
     public static Response confirmReceivedOrder() {
@@ -41,11 +42,11 @@ public class Response
         return new Response(ResponseType.SendOrders, orders);
     }
 
-    public ConcurrentHashMap<Integer, Order> getOrders() {
+    public final ConcurrentHashMap<Integer, Order> getOrders() {
         return this.orders;
     }
 
-    public ResponseType getResponseType() {
+    public final ResponseType getResponseType() {
         return this.responseType;
     }
 

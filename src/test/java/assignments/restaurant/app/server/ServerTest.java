@@ -7,6 +7,7 @@
 package assignments.restaurant.app.server;
 
 import assignments.restaurant.Manager;
+import assignments.restaurant.app.client.CustomerTest;
 import assignments.restaurant.component.CategoryType;
 import assignments.restaurant.cuisine.CuisineType;
 import assignments.restaurant.data.MenuComponentRecord;
@@ -20,13 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintStream;
-import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -59,6 +56,20 @@ class ServerTest {
         this.orderBuilder = new OrderBuilder(OrderCategoryType.Delivery);
     }
 
+    private Order createOrder() {
+        this.orderBuilder.setCustomerName(customerName);
+        this.orderBuilder.setAppetizer(appetizerRecord);
+        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
+        this.orderBuilder.setBeverage(beverageRecord);
+        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
+        this.orderBuilder.setMainCourse(mainCourseRecord);
+        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
+        this.orderBuilder.setDessert(dessertRecord);
+        this.orderBuilder.decorateDessert(dessertRecordDecorator);
+        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
+        return this.orderBuilder.build();
+    }
+
     @AfterEach
     void disposeBuilder() {
         this.orderBuilder = null;
@@ -79,30 +90,19 @@ class ServerTest {
     @Test
     void shouldSendAnOrderThroughSocket()
             throws Exception {
-        Future<String> simulatedCustomerFuture = this.clientExecutor.submit(() -> {
-            try (
-                    Socket socket = new Socket(ServerTest.findDefaultHost(), ServerTest.findDefaultPort());
-                    ObjectOutputStream sendToServer = new ObjectOutputStream(socket.getOutputStream())
-            ) {
-                // Create and send an order to the server
-                Order order = this.createOrder();
-                Request request = Request.sendOrder(order);
-                sendToServer.writeObject(request);
-                sendToServer.flush();
+        var orders = this.server.getOrders();
+        var ordersSize = orders.size();
 
-                return "Pedido enviado com sucesso.";
-            }
-        });
-
-        var ordersSize = this.server.getOrders().size();
-
-        // Wait for client execution
-        String result = simulatedCustomerFuture.get(5, TimeUnit.MINUTES);
-        assertEquals("Pedido enviado com sucesso.", result);
-        Thread.sleep(2000);
+        CustomerTest.simulateCustomerActions(
+                this.clientExecutor,
+                ServerTest.findDefaultHost(),
+                ServerTest.findDefaultPort(),
+                "Alice Andrade\n" + "1\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" +
+                "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "1234 5678 1234 5678\n" + "\n"
+                                            );
 
         // Check if order was processed
-        var orders = this.server.getOrders();
+        orders = this.server.getOrders();
         assertEquals(ordersSize + 1, orders.size());
 
         var order = orders.get(1);
@@ -141,13 +141,11 @@ class ServerTest {
                     );
         assertEquals(35.0d, order.getMainCourse().getCost(), 0.001d);
 
-        assertEquals("Pedido enviado com sucesso.", result);
-
         String serverOutput = this.serverByteArrayOutputStream.toString();
         assertEquals(
                 "Um novo cliente se conectou.\n" +
-                "Pedido recebido: {Status: \"Recebido\", Tipo: \"Entrega\", Cliente: \"Alice Andrade\", Custo: 65.0, Pagamento: \"Cartão de Crédito\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n" +
-                "Um cliente se desconectou.\n", serverOutput
+                "Pedido recebido: {Status: \"Recebido\", Tipo: \"Entrega\", Cliente: \"Alice Andrade\", Custo: 65.0, Pagamento: \"Cartão de Crédito\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n",
+                serverOutput
                     );
     }
 
@@ -157,20 +155,6 @@ class ServerTest {
 
     private static int findDefaultPort() {
         return Manager.getInstance().getDefaultSocketPort() + 100;
-    }
-
-    private Order createOrder() {
-        this.orderBuilder.setCustomerName(customerName);
-        this.orderBuilder.setAppetizer(appetizerRecord);
-        this.orderBuilder.decorateAppetizer(appetizerRecordDecorator);
-        this.orderBuilder.setBeverage(beverageRecord);
-        this.orderBuilder.decorateBeverage(beverageRecordDecorator);
-        this.orderBuilder.setMainCourse(mainCourseRecord);
-        this.orderBuilder.decorateMainCourse(mainCourseRecordDecorator);
-        this.orderBuilder.setDessert(dessertRecord);
-        this.orderBuilder.decorateDessert(dessertRecordDecorator);
-        this.orderBuilder.setPaymentStrategy(new CreditCard("1234 5678 1234 5678"));
-        return this.orderBuilder.build();
     }
 
     @BeforeEach
@@ -194,7 +178,9 @@ class ServerTest {
 
     @AfterEach
     void stopServer() {
+        this.clientExecutor.shutdownNow();
         this.serverExecutor.shutdownNow();
+        this.clientExecutor = null;
         this.serverExecutor = null;
         this.server = null;
     }

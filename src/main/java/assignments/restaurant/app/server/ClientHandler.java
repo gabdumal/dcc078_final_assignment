@@ -15,65 +15,69 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ClientHandler
         implements Runnable {
 
-    private final Consumer<Order>                                      addOrder;
-    private final Function<Integer, ConcurrentHashMap<Integer, Order>> advanceOrder;
-    private final Supplier<ConcurrentHashMap<Integer, Order>>          getOrders;
-    private final PrintStream                                          serverPrintStream;
-    private final Socket                                               socket;
-    private       ObjectInputStream                                    receiveFromClient;
+    private final Consumer<Order>                             addOrder;
+    private final Consumer<Integer>                           advanceOrder;
+    private final Supplier<ConcurrentHashMap<Integer, Order>> getOrders;
+    private final ObjectInputStream                           receiveFromClient;
+    private final ObjectOutputStream                          sendToClient;
+    private final PrintStream                                 serverPrintStream;
+    private final Socket                                      socket;
 
     public ClientHandler(
             Socket socket,
             PrintStream serverPrintStream,
             Consumer<Order> addOrder,
             Supplier<ConcurrentHashMap<Integer, Order>> getOrders,
-            Function<Integer, ConcurrentHashMap<Integer, Order>> advanceOrder
+            Consumer<Integer> advanceOrder
                         ) {
-        this.socket = socket;
         this.serverPrintStream = serverPrintStream;
         this.addOrder = addOrder;
         this.getOrders = getOrders;
         this.advanceOrder = advanceOrder;
+
+        this.socket = socket;
+        try {
+            this.sendToClient = new ObjectOutputStream(this.socket.getOutputStream());
+            this.receiveFromClient = new ObjectInputStream(this.socket.getInputStream());
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void run() {
         try {
-            ObjectOutputStream sendToClient = new ObjectOutputStream(this.socket.getOutputStream());
-            this.receiveFromClient = new ObjectInputStream(this.socket.getInputStream());
-
             while (true) {
                 Object receivedObject = this.receiveFromClient.readObject();
-
                 if (receivedObject instanceof Request request) {
                     switch (request.getRequestType()) {
                         case RetrieveOrders -> {
                             var orders = this.getOrders();
+
                             Response response = Response.sendOrders(orders);
-                            sendToClient.writeObject(response);
-                            sendToClient.flush();
+                            this.sendToClient(this.sendToClient, response);
                         }
                         case SendOrder -> {
                             var order = request.getOrder();
                             this.serverPrintStream.println("Pedido recebido: " + order);
                             this.addOrder(order);
+
                             Response response = Response.confirmReceivedOrder();
-                            sendToClient.writeObject(response);
-                            sendToClient.flush();
+                            this.sendToClient(this.sendToClient, response);
                         }
                         case AdvanceOrder -> {
                             var orderId = request.getOrderId();
                             this.serverPrintStream.println("Pedido avançado: " + orderId);
-                            var orders = this.advanceOrder.apply(orderId);
-                            Response response = Response.confirmAdvancedOrder(orders);
-                            sendToClient.writeObject(response);
-                            sendToClient.flush();
+                            this.advanceOrder(orderId);
+
+                            Response response = Response.confirmAdvancedOrder();
+                            this.sendToClient(this.sendToClient, response);
                         }
                         default -> {
                             this.serverPrintStream.println("Requisição desconhecida recebida: " + request);
@@ -106,8 +110,20 @@ public class ClientHandler
         return this.getOrders.get();
     }
 
+    private void sendToClient(ObjectOutputStream sendToClient, Response response)
+            throws IOException {
+        if (!this.socket.isClosed() && this.socket.isConnected()) {
+            sendToClient.writeObject(response);
+            sendToClient.flush();
+        }
+    }
+
     private void addOrder(Order order) {
         this.addOrder.accept(order);
+    }
+
+    private void advanceOrder(Integer orderId) {
+        this.advanceOrder.accept(orderId);
     }
 
 }

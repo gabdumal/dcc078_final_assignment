@@ -21,16 +21,15 @@ public class ServerContext {
         this.orders.put(orderId, order);
     }
 
-    protected synchronized ConcurrentHashMap<Integer, Order> advanceOrder(int orderId) {
+    protected synchronized void advanceOrder(int orderId) {
         var order = this.orders.get(orderId);
         if (null != order) {
             order.advance();
         }
-        return this.orders;
     }
 
     protected synchronized ConcurrentHashMap<Integer, Order> getOrders() {
-        return new ConcurrentHashMap<>(this.orders);
+        return this.orders;
     }
 
 }

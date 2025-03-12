@@ -17,10 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,23 +25,18 @@ public class CustomerTest {
 
     private static final String                customerName = "Alice Andrade";
     private              ExecutorService       clientExecutor;
-    private              ByteArrayOutputStream customerByteArrayOutputStream;
     private              Server                server;
     private              ByteArrayOutputStream serverByteArrayOutputStream;
     private              ExecutorService       serverExecutor;
 
     @AfterEach
     void resetOutputStreams() {
-        Client.setClientPrintStream(System.out);
-        this.customerByteArrayOutputStream = null;
         Server.setServerPrintStream(System.out);
         this.serverByteArrayOutputStream = null;
     }
 
     @BeforeEach
     void setOutputStreams() {
-        this.customerByteArrayOutputStream = new ByteArrayOutputStream();
-        Client.setClientPrintStream(new PrintStream(this.customerByteArrayOutputStream));
         this.serverByteArrayOutputStream = new ByteArrayOutputStream();
         Server.setServerPrintStream(new PrintStream(this.serverByteArrayOutputStream));
     }
@@ -52,37 +44,18 @@ public class CustomerTest {
     @Test
     void shouldCreateOrderOnServer()
             throws Exception {
+        var orders = this.server.getOrders();
+        var ordersSize = orders.size();
 
-        Future<String> customerFuture = this.clientExecutor.submit(() -> {
-            try {
-                String simulatedInput = "Alice Andrade\n" + "1\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" +
-                                        "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" +
-                                        "1234 5678 1234 5678\n" + "\n";
-                System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
-
-                Client.main(new String[]{
-                        CustomerTest.findDefaultHost(),
-                        String.valueOf(CustomerTest.findDefaultPort()),
-                        "-c"
-                });
-                System.setIn(System.in);
-
-                return "A interface de usuário do cliente foi executada com sucesso.";
-            }
-            catch (Exception e) {
-                return "A execução da interface de usuário do cliente falhou: " + e.getMessage();
-            }
-        });
-
-        var ordersSize = this.server.getOrders().size();
-
-        // Wait for client execution
-        String result = customerFuture.get(5, TimeUnit.MINUTES);
-        assertEquals("A interface de usuário do cliente foi executada com sucesso.", result);
-        Thread.sleep(2000);
+        var customerOutput = CustomerTest.simulateCustomerActions(
+                this.clientExecutor,
+                CustomerTest.findDefaultHost(),
+                CustomerTest.findDefaultPort(),
+                "Alice Andrade\n" + "1\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "S\n" +
+                "1\n" + "1\n" + "S\n" + "1\n" + "1\n" + "1234 5678 1234 5678\n" + "\n"
+                                                                 );
 
         // Check if order was processed
-        var orders = this.server.getOrders();
         assertEquals(ordersSize + 1, orders.size());
 
         var order = orders.get(1);
@@ -121,7 +94,6 @@ public class CustomerTest {
                     );
         assertEquals(35.0d, order.getMainCourse().getCost(), 0.001d);
 
-        String customerOutput = this.customerByteArrayOutputStream.toString();
         assertEquals(
                 "Boas-vindas à interface de pedidos do Restaurante!\n" + "\n" + "Qual é seu nome?\n" + "\n" +
                 "Tipos de pedido:\n" + "1. Entrega\n" + "2. Retirada\n" + "3. Mesa\n" +
@@ -159,6 +131,44 @@ public class CustomerTest {
                 "Pedido recebido: {Status: \"Recebido\", Tipo: \"Entrega\", Cliente: \"Alice Andrade\", Custo: 65.0, Pagamento: \"Cartão de Crédito\", Entrada: {Nome: \"Pão de alho\", Descrição: \"Pão francês assado ao molho de alho, azeite e ervas.\", Custo: R$6.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Muçarela\", Descrição: \"Fatias finas de queijo muçarela.\", Custo: R$2.0, Categoria: \"Entrada\", Cozinha: \"Culinária brasileira\"}}, Prato principal: {Nome: \"Feijoada\", Descrição: \"Feijoada completa com arroz, couve, farofa, laranja e torresmo.\", Custo: R$30.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Farofa\", Descrição: \"Farinha de mandioca torrada com bacon e ovos.\", Custo: R$5.0, Categoria: \"Prato principal\", Cozinha: \"Culinária brasileira\"}}, Bebida: {Nome: \"Caipirinha\", Descrição: \"Cachaça, limão, açúcar e gelo.\", Custo: R$10.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Mel\", Descrição: \"Mel puro.\", Custo: R$3.0, Categoria: \"Bebida\", Cozinha: \"Culinária brasileira\"}}, Sobremesa: {Nome: \"Brigadeiro\", Descrição: \"Doce de chocolate com leite condensado e chocolate granulado.\", Custo: R$5.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\", Extra: {Nome: \"Doce de leite\", Descrição: \"Doce de leite pastoso.\", Custo: R$4.0, Categoria: \"Sobremesa\", Cozinha: \"Culinária brasileira\"}}}\n",
                 serverOutput
                     );
+    }
+
+    public static String simulateCustomerActions(
+            ExecutorService clientExecutor,
+            String host,
+            int port,
+            String simulatedInput
+                                                )
+            throws ExecutionException, InterruptedException, TimeoutException {
+        ByteArrayOutputStream customerByteArrayOutputStream = new ByteArrayOutputStream();
+
+        Future<String> customerFuture = clientExecutor.submit(() -> {
+            try {
+                Client.setClientPrintStream(new PrintStream(customerByteArrayOutputStream));
+                System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
+
+                Client.main(new String[]{
+                        host,
+                        String.valueOf(port),
+                        "-c"
+                });
+
+                Client.setClientPrintStream(System.out);
+                System.setIn(System.in);
+
+                return "A interface de usuário do cliente foi executada com sucesso.";
+            }
+            catch (Exception e) {
+                return "A execução da interface de usuário do cliente falhou: " + e.getMessage();
+            }
+        });
+
+        // Wait for client execution
+        String result = customerFuture.get(5, TimeUnit.MINUTES);
+        assertEquals("A interface de usuário do cliente foi executada com sucesso.", result);
+        Thread.sleep(2000);
+
+        return customerByteArrayOutputStream.toString();
     }
 
     private static String findDefaultHost() {
