@@ -101,11 +101,11 @@ public class EmployeeTest {
 
         assertEquals(
                 "Boas-vindas à interface de gerenciamento do Restaurante!\n" + "\n" + "Qual é seu nome?\n" + "\n" +
-                "Pedidos:\n" + "1. Recebido: Alice Andrade - R$67.0 via Cartão de Crédito\n" +
-                "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
-                "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
-                "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" + "Escolha o pedido que deseja avançar:\n" + "\n" +
-                "Agradecemos por usar a interface de gerenciamento do Restaurante!\n" + "\n", employeeOutput
+                "Escolha o pedido cujo estado deseja atualizar (X para sair).\n" + "\n" +
+                "1. Recebido: Alice Andrade - R$65.0 via Cartão de Crédito\n" +
+                "     Pão de alho - R$8.0 - Extras: Muçarela.\n" + "     Feijoada - R$35.0 - Extras: Farofa.\n" +
+                "     Caipirinha - R$13.0 - Extras: Mel.\n" + "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" +
+                "\n" + "Agradecemos por usar a interface de gerenciamento do Restaurante!\n" + "\n", employeeOutput
                     );
 
         String serverOutput = this.serverByteArrayOutputStream.toString();
@@ -245,7 +245,7 @@ public class EmployeeTest {
         employee.printOrders(orders);
         String employeeOutput = this.employeeByteArrayOutputStream.toString();
         assertEquals(
-                "Pedidos:\n" + "1. Preparando: Alice Andrade - R$67.0 via Cartão de Crédito\n" +
+                "1. Preparando: Alice Andrade - R$67.0 via Cartão de Crédito\n" +
                 "     Pão de alho - R$10.0 - Extras: Muçarela. Muçarela.\n" +
                 "     Feijoada - R$35.0 - Extras: Farofa.\n" + "     Caipirinha - R$13.0 - Extras: Mel.\n" +
                 "     Brigadeiro - R$9.0 - Extras: Doce de leite.\n" +

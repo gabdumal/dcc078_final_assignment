@@ -8,10 +8,12 @@ package assignments.restaurant.app.server;
 
 import assignments.restaurant.order.Order;
 
+import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ServerContext {
+public class ServerContext
+        extends Observable {
 
     private final AtomicInteger                     orderCounter = new AtomicInteger(0);
     private final ConcurrentHashMap<Integer, Order> orders       = new ConcurrentHashMap<>();
@@ -19,6 +21,8 @@ public class ServerContext {
     protected synchronized void addOrder(Order order) {
         int orderId = this.orderCounter.incrementAndGet();
         this.orders.put(orderId, order);
+        this.setChanged();
+        this.notifyObservers();
     }
 
     protected synchronized void advanceOrder(int orderId) {
@@ -26,6 +30,8 @@ public class ServerContext {
         if (null != order) {
             order.advance();
         }
+        this.setChanged();
+        this.notifyObservers();
     }
 
     protected synchronized ConcurrentHashMap<Integer, Order> getOrders() {

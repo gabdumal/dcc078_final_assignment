@@ -10,7 +10,6 @@ import assignments.restaurant.order.Order;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +23,7 @@ public class ClientHandler
     private final Consumer<Integer>                           advanceOrder;
     private final Supplier<ConcurrentHashMap<Integer, Order>> getOrders;
     private final ObjectInputStream                           receiveFromClient;
-    private final ObjectOutputStream                          sendToClient;
+    private final ResponseSender                              responseSender;
     private final PrintStream                                 serverPrintStream;
     private final Socket                                      socket;
 
@@ -40,9 +39,10 @@ public class ClientHandler
         this.getOrders = getOrders;
         this.advanceOrder = advanceOrder;
 
+        this.responseSender = new ResponseSender(socket, serverPrintStream);
+
         this.socket = socket;
         try {
-            this.sendToClient = new ObjectOutputStream(this.socket.getOutputStream());
             this.receiveFromClient = new ObjectInputStream(this.socket.getInputStream());
         }
         catch (IOException e) {
@@ -59,25 +59,19 @@ public class ClientHandler
                     switch (request.getRequestType()) {
                         case RetrieveOrders -> {
                             var orders = this.getOrders();
-
-                            Response response = Response.sendOrders(orders);
-                            this.sendToClient(this.sendToClient, response);
+                            this.responseSender.sendOrders(orders);
                         }
                         case SendOrder -> {
                             var order = request.getOrder();
                             this.serverPrintStream.println("Pedido recebido: " + order);
                             this.addOrder(order);
-
-                            Response response = Response.confirmReceivedOrder();
-                            this.sendToClient(this.sendToClient, response);
+                            this.responseSender.confirmReceivedOrder();
                         }
                         case AdvanceOrder -> {
                             var orderId = request.getOrderId();
-                            this.serverPrintStream.println("Pedido avançado: " + orderId);
+                            this.serverPrintStream.println("Pedido progredido: " + orderId);
                             this.advanceOrder(orderId);
-
-                            Response response = Response.confirmAdvancedOrder();
-                            this.sendToClient(this.sendToClient, response);
+                            this.responseSender.confirmAdvancedOrder();
                         }
                         default -> {
                             this.serverPrintStream.println("Requisição desconhecida recebida: " + request);
@@ -108,14 +102,6 @@ public class ClientHandler
 
     private ConcurrentHashMap<Integer, Order> getOrders() {
         return this.getOrders.get();
-    }
-
-    private void sendToClient(ObjectOutputStream sendToClient, Response response)
-            throws IOException {
-        if (!this.socket.isClosed() && this.socket.isConnected()) {
-            sendToClient.writeObject(response);
-            sendToClient.flush();
-        }
     }
 
     private void addOrder(Order order) {
