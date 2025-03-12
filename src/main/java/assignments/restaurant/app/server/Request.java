@@ -42,6 +42,10 @@ public class Request
         return new Request(RequestType.AdvanceOrder, orderId);
     }
 
+    public static Request finishConnection() {
+        return new Request(RequestType.FinishConnection);
+    }
+
     public static Request retrieveOrders() {
         return new Request(RequestType.RetrieveOrders);
     }

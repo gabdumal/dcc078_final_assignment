@@ -10,40 +10,29 @@ import assignments.restaurant.order.Order;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ClientHandler
         implements Runnable {
 
-    private final Consumer<Order>                             addOrder;
-    private final Consumer<Integer>                           advanceOrder;
-    private final Supplier<ConcurrentHashMap<Integer, Order>> getOrders;
-    private final ObjectInputStream                           receiveFromClient;
-    private final ResponseSender                              responseSender;
-    private final PrintStream                                 serverPrintStream;
-    private final Socket                                      socket;
+    private final ObjectInputStream receiveFromClient;
+    private final ResponseSender    responseSender;
+    private final ServerContext     serverContext;
+    private final PrintStream       serverPrintStream;
+    private final Socket            socket;
 
-    public ClientHandler(
-            Socket socket,
-            PrintStream serverPrintStream,
-            Consumer<Order> addOrder,
-            Supplier<ConcurrentHashMap<Integer, Order>> getOrders,
-            Consumer<Integer> advanceOrder
-                        ) {
+    public ClientHandler(Socket socket, ServerContext serverContext, PrintStream serverPrintStream) {
         this.serverPrintStream = serverPrintStream;
-        this.addOrder = addOrder;
-        this.getOrders = getOrders;
-        this.advanceOrder = advanceOrder;
 
-        this.responseSender = new ResponseSender(socket, serverPrintStream);
-
+        this.serverContext = serverContext;
         this.socket = socket;
         try {
+            var sendToClient = new ObjectOutputStream(this.socket.getOutputStream());
             this.receiveFromClient = new ObjectInputStream(this.socket.getInputStream());
+            this.responseSender = new ResponseSender(sendToClient, serverContext, serverPrintStream);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -73,6 +62,9 @@ public class ClientHandler
                             this.advanceOrder(orderId);
                             this.responseSender.confirmAdvancedOrder();
                         }
+                        case FinishConnection -> {
+                            this.responseSender.confirmFinishedConnection();
+                        }
                         default -> {
                             this.serverPrintStream.println("Requisição desconhecida recebida: " + request);
                             break;
@@ -101,15 +93,15 @@ public class ClientHandler
     }
 
     private ConcurrentHashMap<Integer, Order> getOrders() {
-        return this.getOrders.get();
+        return this.serverContext.getOrders();
     }
 
     private void addOrder(Order order) {
-        this.addOrder.accept(order);
+        this.serverContext.addOrder(order);
     }
 
     private void advanceOrder(Integer orderId) {
-        this.advanceOrder.accept(orderId);
+        this.serverContext.advanceOrder(orderId);
     }
 
 }

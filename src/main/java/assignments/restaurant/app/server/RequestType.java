@@ -10,4 +10,5 @@ public enum RequestType {
     RetrieveOrders,
     SendOrder,
     AdvanceOrder,
+    FinishConnection
 }

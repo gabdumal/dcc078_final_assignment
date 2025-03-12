@@ -47,14 +47,6 @@ public class Server {
         Server.serverPrintStream = printStream;
     }
 
-    public void addOrder(Order order) {
-        this.serverContext.addOrder(order);
-    }
-
-    public void advanceOrder(int orderId) {
-        this.serverContext.advanceOrder(orderId);
-    }
-
     public ConcurrentHashMap<Integer, Order> getOrders() {
         return this.serverContext.getOrders();
     }
@@ -85,13 +77,7 @@ public class Server {
                 serverPrintStream.println("Um novo cliente se conectou.");
 
                 // Run the client handler in a separate thread
-                this.threadPool.execute(new ClientHandler(
-                        clientSocket,
-                                                          serverPrintStream,
-                                                          this::addOrder,
-                                                          this::getOrders,
-                                                          this::advanceOrder
-                ));
+                this.threadPool.execute(new ClientHandler(clientSocket, this.serverContext, serverPrintStream));
             }
         }
         catch (IOException e) {

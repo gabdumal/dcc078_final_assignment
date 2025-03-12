@@ -11,7 +11,6 @@ import assignments.restaurant.order.Order;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
-import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,52 +19,57 @@ public class ResponseSender
         implements Observer {
 
     private final ObjectOutputStream sendToClient;
+    private final ServerContext      serverContext;
     private final PrintStream        serverPrintStream;
-    private final Socket             socket;
 
-    public ResponseSender(Socket socket, PrintStream serverPrintStream) {
+    public ResponseSender(ObjectOutputStream sendToClient, ServerContext serverContext, PrintStream serverPrintStream) {
+        this.sendToClient = sendToClient;
+        this.serverContext = serverContext;
         this.serverPrintStream = serverPrintStream;
-
-        this.socket = socket;
-        try {
-            this.sendToClient = new ObjectOutputStream(this.socket.getOutputStream());
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.serverContext.addObserver(this);
     }
 
     protected void confirmAdvancedOrder()
             throws IOException {
         Response response = Response.confirmAdvancedOrder();
-        this.sendToClient(this.sendToClient, response);
+        this.send(this.sendToClient, response);
     }
 
-    private void sendToClient(ObjectOutputStream sendToClient, Response response)
+    private void send(ObjectOutputStream sendToClient, Response response)
             throws IOException {
-        if (!this.socket.isClosed() && this.socket.isConnected()) {
-            sendToClient.writeObject(response);
-            sendToClient.flush();
-        }
+        sendToClient.writeObject(response);
+        sendToClient.flush();
+    }
+
+    protected void confirmFinishedConnection()
+            throws IOException {
+        Response response = Response.confirmFinishedConnection();
+        this.send(this.sendToClient, response);
+        //        this.serverPrintStream.println("Conexão finalizada.");
     }
 
     protected void confirmReceivedOrder()
             throws IOException {
         Response response = Response.confirmReceivedOrder();
-        this.sendToClient(this.sendToClient, response);
+        this.send(this.sendToClient, response);
+    }
+
+    @Override
+    public void update(Observable serverContext, Object object) {
+        try {
+            var orders = this.serverContext.getOrders();
+            var clonedOrders = new ConcurrentHashMap<>(orders);
+            this.sendOrders(clonedOrders);
+        }
+        catch (IOException e) {
+            this.serverPrintStream.println("Erro ao enviar pedidos para o cliente.");
+        }
     }
 
     protected void sendOrders(ConcurrentHashMap<Integer, Order> orders)
             throws IOException {
         Response response = Response.sendOrders(orders);
-        this.sendToClient(this.sendToClient, response);
-    }
-
-    @Override
-    public void update(Observable serverContext, Object arg) {
-        this.serverPrintStream.println("Sending response to client...");
-        this.serverPrintStream.println(serverContext);
-        this.serverPrintStream.println(arg);
+        this.send(this.sendToClient, response);
     }
 
 }

@@ -34,6 +34,10 @@ public class Response
         return new Response(ResponseType.ConfirmAdvancedOrder);
     }
 
+    public static Response confirmFinishedConnection() {
+        return new Response(ResponseType.confirmFinishedConnection);
+    }
+
     public static Response confirmReceivedOrder() {
         return new Response(ResponseType.ConfirmReceivedOrder);
     }

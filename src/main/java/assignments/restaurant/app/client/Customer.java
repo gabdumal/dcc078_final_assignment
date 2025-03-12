@@ -63,7 +63,6 @@ public class Customer
     protected void interact()
             throws IOException {
         this.makeOrder();
-        this.keepUpOrder();
     }
 
     @Override
@@ -106,10 +105,6 @@ public class Customer
         this.sendToServer.flush();
 
         this.clientPrintStream.println("Seu pedido foi recebido com sucesso!");
-    }
-
-    private void keepUpOrder() {
-        //        this.clientPrintStream.println("Acompanhe seu pedido:");
     }
 
     private void pickOrderCategory()
